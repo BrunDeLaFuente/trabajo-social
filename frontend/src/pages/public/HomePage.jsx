@@ -5,6 +5,7 @@ import moodleIcon from "../../assets/img/moodle.png";
 import servicesIcon from "../../assets/img/elearning.png";
 import websisIcon from "../../assets/img/education.png";
 import CareerSection from "../../components/public/CareerSection"; 
+import NoticiasSection from "../../components/public/NoticiasSection";
 
 const HomePage = () => {
   return (
@@ -43,9 +44,8 @@ const HomePage = () => {
           <Text>WebSISS</Text>
         </LinkCard>
       </LinksSection>
-
-      {/* 🔹 Agregamos la nueva sección aquí */}
       <CareerSection />
+      <NoticiasSection />
 
     </Container>
   );
@@ -66,7 +66,7 @@ const Container = styled.div`
 const HeroSection = styled.div`
   position: relative;
   width: 100%;
-  height: 700px; /* Altura por defecto */
+  height: 650px; /* Altura por defecto */
   display: flex;
   align-items: center;
   justify-content: center;

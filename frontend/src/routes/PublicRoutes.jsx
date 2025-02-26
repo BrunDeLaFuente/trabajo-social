@@ -12,6 +12,7 @@ import Tramites from "../pages/public/Pregrado/Tramites";
 import Noticias from "../pages/public/Noticias/Noticias";
 import Talleres from "../pages/public/Noticias/Talleres";
 import Contacto from "../pages/public/Contacto";
+import NoticiaDetalle from "../components/public/NoticiaDetalle";
 
 const PublicRoutes = () => {
   return (
@@ -33,6 +34,8 @@ const PublicRoutes = () => {
         {/* Rutas de Noticias */}
         <Route path="/noticias/anuncios" element={<Noticias />} />
         <Route path="/noticias/talleres" element={<Talleres />} />
+        <Route path="/noticias/:slug" element={<NoticiaDetalle />} />
+
 
         {/* Ruta de Contacto */}
         <Route path="/contacto" element={<Contacto />} />
