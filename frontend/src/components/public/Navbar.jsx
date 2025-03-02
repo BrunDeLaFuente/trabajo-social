@@ -17,7 +17,7 @@ import {
 import { Menu as MenuIcon, ExpandMore, ChevronRight } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import logo from "../../assets/img/logo2.png";
+import logo from "../../assets/img/logo.jpeg";
 
 const navigation = [
   { title: "Inicio", path: "/" },

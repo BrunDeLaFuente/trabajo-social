@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTelegramPlane, FaYoutube } from "react-icons/fa";
 import footerBackground from "../../assets/img/portada.png"; // Imagen del footer
 import logo from "../../assets/img/logo-footer.png"; // Logo principal
-import logoBordeado from "../../assets/img/logo2.png"; // Logo bordeado para la parte superior
+import logoBordeado from "../../assets/img/logo.jpeg"; // Logo bordeado para la parte superior
 
 const Footer = () => {
   return (

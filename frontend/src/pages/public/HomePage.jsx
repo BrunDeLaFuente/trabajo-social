@@ -15,7 +15,7 @@ const HomePage = () => {
         <Overlay />
         <TextOverlay>
           <Title>Carrera de Trabajo Social</Title>
-          <Subtitle>FHYCE | UMSS</Subtitle>
+          <Subtitle>FHCE | UMSS</Subtitle>
         </TextOverlay>
         <WaveSvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
           <path
