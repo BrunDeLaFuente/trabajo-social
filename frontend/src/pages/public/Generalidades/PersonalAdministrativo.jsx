@@ -108,7 +108,7 @@ const ProfileImage = styled.img`
 
 const IconPlaceholder = styled(FaUserTie)`
   font-size: 100px;
-  color: #666;
+  color: #0056b3;
   margin-top: 20px;
 `;
 

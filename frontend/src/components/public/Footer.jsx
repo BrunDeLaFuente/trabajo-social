@@ -105,11 +105,12 @@ const FooterContainer = styled.footer`
 const TopSection = styled.div`
   position: relative;
   background: url(${footerBackground}) no-repeat center center/cover;
-  padding: 80px 5%;
+  padding: 50px 5%;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: left;
+  
 
   @media (max-width: 768px) {
     padding: 50px 5%;
@@ -232,7 +233,7 @@ const BottomSection = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 5%; /* 📌 Reducimos el padding para menor altura */
+  padding: 6px 5%; /* 📌 Reducimos el padding para menor altura */
   background-color: #001a33;
   flex-wrap: wrap;
 
@@ -255,7 +256,7 @@ const BottomContent = styled.div`
 
 const BottomLogoContainer = styled.div`
   img {
-    width: 50px;
+    width: 45px;
 
     @media (max-width: 768px) {
       width: 40px;
@@ -264,7 +265,7 @@ const BottomLogoContainer = styled.div`
 `;
 
 const Copyright = styled.p`
-  font-size: 0.8rem;
+  font-size: 0.7rem;
 
   span {
     font-weight: bold;
@@ -272,12 +273,13 @@ const Copyright = styled.p`
   }
 
   @media (max-width: 768px) {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
   }
 `;
 
 const SocialMedia = styled.div`
   display: flex;
+  font-size: 0.8rem;
   align-items: center;
   gap: 8px; /* 📌 Menos espacio entre los íconos */
 `;

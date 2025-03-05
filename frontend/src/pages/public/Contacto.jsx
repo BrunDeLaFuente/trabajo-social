@@ -2,18 +2,23 @@ import HeroSection from "../../components/public/HeroSection";
 import styled from "styled-components";
 import { FaFacebookF, FaInstagram, FaTelegramPlane, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 
-
 const Contacto = () => {
   return (
     <ContactContainer>
-       <HeroSection title="Contacto" />
+      <HeroSection title="Contacto" />
       <ContentWrapper>
         <InfoCard>
-          <InfoTitle>INFORMACIÓN</InfoTitle>
-          <InfoText>Para obtener cualquier información, visítenos en nuestra dirección o contáctenos a nuestros números.</InfoText>
-          
+          <InfoHeader>
+            <InfoTitle>INFORMACIÓN</InfoTitle>
+            <InfoText>
+              Para obtener cualquier información, visítenos en nuestra dirección o contáctenos a nuestros números.
+            </InfoText>
+          </InfoHeader>
+
           <InfoItem>
-            <FaMapMarkerAlt className="icon" />
+            <IconWrapper color="#E53935">
+              <FaMapMarkerAlt />
+            </IconWrapper>
             <div>
               <strong>Dirección:</strong>
               <p>Campus Central UMSS, Av. Oquendo y Jordán, Facultad de Ciencias y Tecnología.</p>
@@ -21,7 +26,9 @@ const Contacto = () => {
           </InfoItem>
 
           <InfoItem>
-            <FaEnvelope className="icon" />
+            <IconWrapper color="#D32F2F">
+              <FaEnvelope />
+            </IconWrapper>
             <div>
               <strong>Correo:</strong>
               <p>contacto@umss.edu.bo</p>
@@ -29,7 +36,9 @@ const Contacto = () => {
           </InfoItem>
 
           <InfoItem>
-            <FaPhoneAlt className="icon" />
+            <IconWrapper color="#1565C0">
+              <FaPhoneAlt />
+            </IconWrapper>
             <div>
               <strong>Teléfonos:</strong>
               <p>(+591) 4 4231765 – Interno 36317</p>
@@ -39,9 +48,15 @@ const Contacto = () => {
           <SocialSection>
             <strong>Síguenos en:</strong>
             <SocialIcons>
-              <SocialIcon href="#"><FaFacebookF /></SocialIcon>
-              <SocialIcon href="#"><FaInstagram /></SocialIcon>
-              <SocialIcon href="#"><FaTelegramPlane /></SocialIcon>
+              <SocialIcon href="#" $bgColor="#1877F2">
+                <FaFacebookF />
+              </SocialIcon>
+              <SocialIcon href="#" $bgColor="#E4405F">
+                <FaInstagram />
+              </SocialIcon>
+              <SocialIcon href="#" $bgColor="#0088cc">
+                <FaTelegramPlane />
+              </SocialIcon>
             </SocialIcons>
           </SocialSection>
         </InfoCard>
@@ -62,6 +77,7 @@ const Contacto = () => {
 
 export default Contacto;
 
+// 📌 **Estilos**
 const ContactContainer = styled.div`
   width: 100%;
   background-color: #ffffff;
@@ -72,60 +88,74 @@ const ContentWrapper = styled.div`
   display: flex;
   justify-content: center;
   gap: 30px;
-  padding: 30px 5%; /* 📌 Reducción del padding para acercar contenido */
+  padding: 30px 5%;
   flex-wrap: wrap;
 `;
 
+/* 🔹 Estilos para la tarjeta de información */
 const InfoCard = styled.div`
-  background: #f8f9fa;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: white;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
   max-width: 500px;
-  border-left: 6px solid #ff6600;
+  width: 100%;
+`;
+
+const InfoHeader = styled.div`
+  background: #f5f5f5;
+  padding: 15px;
 `;
 
 const InfoTitle = styled.h3`
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
 `;
 
 const InfoText = styled.p`
   font-size: 1rem;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
 const InfoItem = styled.div`
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 12px;
+  padding: 12px 15px;
   font-size: 1.1rem;
+  margin-bottom: 10px;
+`;
 
-  .icon {
-    font-size: 1.6rem;
-    color: #ff6600;
-  }
+const IconWrapper = styled.div`
+  font-size: 1.6rem;
+  color: ${(props) => props.color};
 `;
 
 const SocialSection = styled.div`
-  margin-top: 20px;
+  padding: 15px;
 `;
 
 const SocialIcons = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 10px;
   margin-top: 5px;
 `;
 
 const SocialIcon = styled.a`
-  color: #003366;
-  font-size: 1.8rem;
-  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 5px;
+  background-color: ${(props) => props.$bgColor};
+  color: white;
+  font-size: 1.2rem;
+  transition: opacity 0.3s;
 
   &:hover {
-    color: #ff6600;
+    opacity: 0.8;
   }
 `;
 
