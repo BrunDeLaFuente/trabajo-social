@@ -4,7 +4,7 @@ import platformIcon from "../../assets/img/educacion-en-linea.png";
 import moodleIcon from "../../assets/img/moodle.png";
 import servicesIcon from "../../assets/img/elearning.png";
 import websisIcon from "../../assets/img/education.png";
-import CareerSection from "../../components/public/CareerSection"; 
+import CareerSection from "../../components/public/CareerSection";
 import NoticiasSection from "../../components/public/NoticiasSection";
 
 const HomePage = () => {
@@ -15,7 +15,7 @@ const HomePage = () => {
         <Overlay />
         <TextOverlay>
           <Title>Carrera de Trabajo Social</Title>
-          <Subtitle>FHCE | UMSS</Subtitle>
+          <Subtitle>FHyCE | UMSS</Subtitle>
         </TextOverlay>
         <WaveSvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
           <path
@@ -25,7 +25,7 @@ const HomePage = () => {
           ></path>
         </WaveSvg>
       </HeroSection>
-      
+
       <LinksSection>
         <LinkCard href="https://www.umss.edu.bo/plataformas-educativas-estudiantes/" target="_blank">
           <Icon src={platformIcon} alt="Plataformas Educativas" />
