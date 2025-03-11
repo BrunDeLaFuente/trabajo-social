@@ -109,5 +109,6 @@ const WaveSvg = styled.svg`
   width: 100%;
   max-width: 100vw; /* ✅ Evita que el SVG se expanda más allá del viewport */
   overflow: hidden;
+  bottom: -1px;
 `;
 
