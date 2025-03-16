@@ -70,19 +70,19 @@ const Footer = () => {
         </BottomContent>
         <SocialMedia>
           <span>Visítanos en nuestras RRSS:</span>
-          <SocialIcon href="https://facebook.com">
+          <SocialIcon href="https://www.facebook.com/UmssBolOficial/">
             <FaFacebookF />
           </SocialIcon>
-          <SocialIcon href="https://instagram.com">
+          <SocialIcon href="https://www.instagram.com/umssboloficial/">
             <FaInstagram />
           </SocialIcon>
-          <SocialIcon href="https://linkedin.com">
+          <SocialIcon href="https://bo.linkedin.com/school/umssboloficial/">
             <FaLinkedinIn />
           </SocialIcon>
-          <SocialIcon href="https://t.me">
+          <SocialIcon href="https://t.me/UmssBolOficial">
             <FaTelegramPlane />
           </SocialIcon>
-          <SocialIcon href="https://youtube.com">
+          <SocialIcon href="https://www.youtube.com/c/UniversidadMayordeSanSimonOficial">
             <FaYoutube />
           </SocialIcon>
         </SocialMedia>

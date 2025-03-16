@@ -95,12 +95,13 @@ const SectionTitle = styled.h2`
   font-weight: bold;
   margin: 30px 5px 80px 5%;
   position: relative;
+  color: #003366;
   &:after {
     content: "";
     display: block;
     width: 130px;
     height: 3px;
-    background: black;
+    background:  #ff6600;
     margin-top: 5px;
   }
   
@@ -210,6 +211,7 @@ const UniversitySection = styled.div`
 `;
 
 const UniversityTitle = styled(SectionTitle)`
+  color: #003366;
   text-align: left;
 `;
 
