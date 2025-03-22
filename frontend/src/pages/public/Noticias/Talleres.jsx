@@ -157,11 +157,11 @@ const Talleres = () => {
       margin: 0,
       overflow: "auto",
     }}>
-      <HeroSection title="Talleres" />
+      <HeroSection title="Eventos" />
 
       <FreeWorkshopsSection>
         <TitleContainer>
-          <SectionTitle>TALLERES GRATUITOS</SectionTitle>
+          <SectionTitle>EVENTOS GRATUITOS</SectionTitle>
           <Underline />
         </TitleContainer>
         <Box sx={{ padding: "0 16px", width: "100%", maxWidth: "1400px", margin: "0 auto" }}>
@@ -171,7 +171,7 @@ const Talleres = () => {
 
       <PaidWorkshopsSection>
         <TitleContainer>
-          <SectionTitle>TALLERES CON COSTO</SectionTitle>
+          <SectionTitle>EVENTOS CON COSTO</SectionTitle>
           <Underline />
         </TitleContainer>
         <Box sx={{ padding: "0 16px", width: "100%", maxWidth: "1400px", margin: "0 auto" }}>
