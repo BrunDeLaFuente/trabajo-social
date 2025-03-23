@@ -18,6 +18,7 @@ import { Menu as MenuIcon, ExpandMore, ChevronRight } from "@mui/icons-material"
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import logo from "../../assets/img/logo.jpeg";
+import banner from "../../assets/img/banner.png";
 
 const navigation = [
   { title: "Inicio", path: "/" },
@@ -72,6 +73,9 @@ const navigation = [
   { title: "Contacto", path: "/contacto" },
 ];
 
+function capitalize(text) {
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}
 
 function DesktopNavItem({ item }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -87,22 +91,32 @@ function DesktopNavItem({ item }) {
 
   if (!item.items) {
     return (
-      <Button component={Link} to={item.path} color="inherit" sx={{ fontSize: "0.775rem" }}>
-        {item.title}
+      <Button component={Link} to={item.path} color="inherit" sx={{ fontSize: "0.885rem", textTransform: "capitalize" }}>
+        {capitalize(item.title)}
       </Button>
     );
   }
 
   return (
     <Box onMouseEnter={handleOpen} onMouseLeave={handleClose}>
-      <Button color="inherit" sx={{ fontSize: "0.775rem" }} endIcon={<ExpandMore />}>
-        {item.title}
+      <Button color="inherit" sx={{ fontSize: "0.885rem", textTransform: "capitalize" }} endIcon={<ExpandMore />}>
+        {capitalize(item.title)}
       </Button>
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose} MenuListProps={{ onMouseLeave: handleClose }}>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        slotProps={{
+          list: {
+            onMouseLeave: handleClose
+          }
+        }}
+      >
         {item.items.map((subItem) => (
           <SubMenuItem key={subItem.title} item={subItem} />
         ))}
       </Menu>
+
     </Box>
   );
 }
@@ -121,38 +135,60 @@ function SubMenuItem({ item }) {
 
   if (!item.items) {
     return (
-      <MenuItem sx={{ fontSize: "0.775rem" }} component={Link} to={item.path}>
-        {item.title}
+      <MenuItem sx={{ fontSize: "0.775rem", textTransform: "capitalize" }} component={Link} to={item.path}>
+        {capitalize(item.title)}
       </MenuItem>
     );
   }
 
   return (
     <Box onMouseEnter={handleOpenSubMenu} onMouseLeave={handleCloseSubMenu}>
-      <MenuItem sx={{ fontSize: "0.775rem" }}>
-        {item.title} <ExpandMore />
+      <MenuItem sx={{ fontSize: "0.775rem", textTransform: "capitalize" }}>
+        {capitalize(item.title)} <ExpandMore />
       </MenuItem>
-      <Menu anchorEl={subMenuEl} open={openSubMenu} onClose={handleCloseSubMenu} MenuListProps={{ onMouseLeave: handleCloseSubMenu }}>
+      <Menu
+        anchorEl={subMenuEl}
+        open={openSubMenu}
+        onClose={handleCloseSubMenu}
+        slotProps={{
+          list: {
+            onMouseLeave: handleCloseSubMenu
+          }
+        }}
+      >
         {item.items.map((nestedItem) => (
-          <MenuItem key={nestedItem.title} sx={{ fontSize: "0.775rem" }} component="a" href={nestedItem.path} target="_blank">
-            {nestedItem.title}
+          <MenuItem
+            key={nestedItem.title}
+            sx={{ fontSize: "0.775rem", textTransform: "capitalize" }}
+            component="a"
+            href={nestedItem.path}
+            target="_blank"
+          >
+            {capitalize(nestedItem.title)}
           </MenuItem>
         ))}
       </Menu>
+
     </Box>
   );
 }
 
-
-function MobileNavItem({ item }) {
+function MobileNavItem({ item, onClose }) {
   const [open, setOpen] = useState(false);
   const handleClick = () => setOpen(!open);
 
   return (
     <>
       <ListItem disablePadding>
-        <ListItemButton onClick={item.items ? handleClick : undefined} component={item.path ? Link : "div"} to={item.path}>
-          <ListItemText primary={item.title} />
+        <ListItemButton onClick={item.items ? handleClick : () => onClose()} component={item.path ? Link : "div"} to={item.path}>
+          <ListItemText
+            primary={capitalize(item.title)}
+            slotProps={{
+              primary: {
+                sx: { textTransform: "capitalize" }
+              }
+            }}
+          />
           {item.items && (open ? <ExpandMore /> : <ChevronRight />)}
         </ListItemButton>
       </ListItem>
@@ -161,7 +197,7 @@ function MobileNavItem({ item }) {
           <List component="div" disablePadding>
             {item.items.map((subItem) => (
               <Box key={subItem.title} sx={{ pl: 2 }}>
-                <MobileNavItem item={subItem} />
+                <MobileNavItem item={subItem} onClose={onClose} />
               </Box>
             ))}
           </List>
@@ -197,7 +233,7 @@ export default function Navbar() {
       <Drawer anchor="left" open={mobileOpen} onClose={handleDrawerToggle}>
         <List sx={{ width: 250 }}>
           {navigation.map((item) => (
-            <MobileNavItem key={item.title} item={item} />
+            <MobileNavItem key={item.title} item={item} onClose={() => setMobileOpen(false)} />
           ))}
         </List>
       </Drawer>
@@ -206,7 +242,9 @@ export default function Navbar() {
 }
 
 const StyledAppBar = styled(AppBar)`
-  background-color: #003366;
+  background-blend-mode: multiply;
+  background-image: url(${banner}) !important;
+  background-color: hsl(208, 96.60%, 45.50%) !important;
   transition: background-color 0.3s ease-in-out;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 `;
@@ -218,10 +256,10 @@ const Logo = styled.img`
   border-radius: 10px;
 
   @media (max-width: 180px) {
-    max-width: 200px; /* Tamaño más pequeño en móviles */
+    max-width: 200px;
   }
 
   @media (max-width: 480px) {
-    max-width: 180px; /* Tamaño aún más pequeño en pantallas muy pequeñas */
+    max-width: 180px;
   }
 `;

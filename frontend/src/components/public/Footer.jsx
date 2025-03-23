@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTelegramPlane, FaYoutube } from "react-icons/fa";
-import footerBackground from "../../assets/img/portada.png"; // Imagen del footer
-import logo from "../../assets/img/logo-footer.png"; // Logo principal
-import logoBordeado from "../../assets/img/logo.jpeg"; // Logo bordeado para la parte superior
+import footerBackground from "../../assets/img/portada.png";
+import logo from "../../assets/img/logo-footer.png";
+import logoBordeado from "../../assets/img/logo.jpeg";
+import banner from "../../assets/img/banner.png";
 
 const Footer = () => {
   return (
@@ -230,11 +231,13 @@ const SocialIcon = styled.a`
 `;
 
 const BottomSection = styled.div`
+  background-blend-mode: multiply;
+  background-image: url(${banner});
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 6px 5%; /* 📌 Reducimos el padding para menor altura */
-  background-color: #001a33;
+  background-color: #002a4c;
   flex-wrap: wrap;
 
   @media (max-width: 768px) {

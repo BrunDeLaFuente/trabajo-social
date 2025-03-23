@@ -11,7 +11,6 @@ const HomePage = () => {
   return (
     <Container>
       <HeroSection>
-        <HeroImage src={backgroundImage} alt="Fondo Trabajo Social" />
         <Overlay />
         <TextOverlay>
           <Title>Carrera de Trabajo Social</Title>
@@ -66,26 +65,20 @@ const Container = styled.div`
 const HeroSection = styled.div`
   position: relative;
   width: 100%;
-  height: 650px; /* Altura por defecto */
+  height: 650px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background-blend-mode: multiply;
+  background-image: linear-gradient(1deg, rgba(34, 138, 230, 0.75) 0%, rgba(136, 196, 221, 0.72) 100%), url(${backgroundImage});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
-  /* 📌 En móviles, reducimos la altura */
   @media (max-width: 768px) {
     height: 400px;
   }
-`;
-
-const HeroImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
-  filter: brightness(0.7);
 `;
 
 const Overlay = styled.div`
