@@ -22,3 +22,4 @@ Route::get('/users', [UserController::class, 'index']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('jwt.auth');
 Route::get('/user', [AuthController::class, 'getUser'])->middleware('jwt.auth');
+Route::post('/refresh', [AuthController::class, 'refreshToken']);

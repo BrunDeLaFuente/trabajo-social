@@ -40,18 +40,17 @@ export const AuthProvider = ({ children }) => {
     const login = async (credentials) => {
         try {
             const { data } = await api.post("/login", credentials);
-            console.log("✅ Respuesta del backend:", data);
-
-            localStorage.setItem("auth_token", data.token);
-            setUser(data.user);  // ✅ Fuerza la actualización inmediata
-            //window.location.href = "/admin";
-            //navigate("/admin", { replace: true });
+    
+            localStorage.setItem("auth_token", data.token);      // Token corto
+            localStorage.setItem("refresh_token", data.refresh_token);  // Token largo
+            setUser(data.user);
+    
             window.location.href = "/admin";
         } catch (error) {
             console.error("❌ Error al iniciar sesión", error);
             throw error;
         }
-    };
+    };    
 
     const logout = async () => {
         try {
@@ -60,10 +59,11 @@ export const AuthProvider = ({ children }) => {
             console.error("❌ Error al cerrar sesión", error);
         } finally {
             localStorage.removeItem("auth_token");
+            localStorage.removeItem("refresh_token");
             setUser(null);
             navigate("/login", { replace: true });
         }
-    };
+    };    
 
     return (
         <AuthContext.Provider value={{ user, login, logout, loading }}>
