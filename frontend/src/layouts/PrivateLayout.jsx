@@ -1,27 +1,39 @@
+import { useState } from "react";
 import styled from "styled-components";
 import Sidebar from "../components/admin/Sidebar";
 
 const PrivateLayout = ({ children }) => {
+  const [sidebarWidth, setSidebarWidth] = useState(250)
+
+  // Function to update sidebar width
+  const handleSidebarResize = (width) => {
+    setSidebarWidth(width)
+  }
+
   return (
     <LayoutContainer>
-      <Sidebar />
-      <MainContent>
-        {children}
-      </MainContent>
+      <Sidebar onResize={handleSidebarResize} />
+      <MainContent sidebarWidth={sidebarWidth}>{children}</MainContent>
     </LayoutContainer>
-  );
-};
+  )
+}
 
 export default PrivateLayout;
 
-// Estilos
 const LayoutContainer = styled.div`
   display: flex;
   min-height: 100vh;
-`;
+`
 
-const MainContent = styled.div`
-  flex-grow: 1;
+const MainContent = styled.main`
+  flex: 1;
+  margin-left: ${({ sidebarWidth }) => sidebarWidth}px;
   padding: 20px;
-  background: #f4f4f4;
-`;
+  transition: margin-left 0.3s ease;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    padding: 60px 20px 20px;
+  }
+`
+
