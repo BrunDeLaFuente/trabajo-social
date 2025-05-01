@@ -4,7 +4,7 @@ import HeroSection from "../../../components/public/HeroSection";
 import { FaDownload, FaExternalLinkAlt } from "react-icons/fa";
 import { ChevronDown, ChevronUp } from "lucide-react"
 import mallaImage from "../../../assets/img/imagen-malla.jpg";
-import pdfFile from "../../../assets/img/Malla-Curricular.pdf";
+import pdfFile from "../../../assets/doc/Malla-Curricular.pdf";
 
 const mallaData = {
   imagen: mallaImage,

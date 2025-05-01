@@ -17,74 +17,76 @@ import {
   ChevronUp,
   Menu,
   X,
-} from "lucide-react"
+} from "lucide-react";
 
 // Sidebar width constants
-const SIDEBAR_EXPANDED_WIDTH = 250
-const SIDEBAR_COLLAPSED_WIDTH = 70
-const SIDEBAR_MOBILE_WIDTH = 0
+const SIDEBAR_EXPANDED_WIDTH = 250;
+const SIDEBAR_COLLAPSED_WIDTH = 70;
+const SIDEBAR_MOBILE_WIDTH = 0;
 
 const Sidebar = ({ onResize }) => {
-  const [isOpen, setIsOpen] = useState(true)
-  const [collapsed, setCollapsed] = useState(false)
-  const [openSubMenus, setOpenSubMenus] = useState({})
+  const [isOpen, setIsOpen] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
+  const [openSubMenus, setOpenSubMenus] = useState({});
 
   const { user } = useContext(AuthContext);
   const username = user?.name || "Admin User";
 
   // Toggle sidebar on mobile
   const toggleSidebar = () => {
-    setIsOpen(!isOpen)
-  }
+    setIsOpen(!isOpen);
+  };
 
   // Toggle sidebar collapse on desktop
   const toggleCollapse = () => {
-    setCollapsed(!collapsed)
-  }
+    setCollapsed(!collapsed);
+  };
 
   // Toggle submenu
   const toggleSubMenu = (menuName) => {
     setOpenSubMenus({
       ...openSubMenus,
       [menuName]: !openSubMenus[menuName],
-    })
-  }
+    });
+  };
 
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setCollapsed(false)
+        setCollapsed(false);
         if (window.innerWidth < 576) {
-          setIsOpen(false)
+          setIsOpen(false);
         }
       } else {
-        setIsOpen(true)
+        setIsOpen(true);
       }
-    }
+    };
 
-    window.addEventListener("resize", handleResize)
-    handleResize() // Initialize on mount
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Initialize on mount
 
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Notify parent component about sidebar width changes
   useEffect(() => {
-    let currentWidth = SIDEBAR_MOBILE_WIDTH
+    let currentWidth = SIDEBAR_MOBILE_WIDTH;
 
     if (isOpen) {
-      currentWidth = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_EXPANDED_WIDTH
+      currentWidth = collapsed
+        ? SIDEBAR_COLLAPSED_WIDTH
+        : SIDEBAR_EXPANDED_WIDTH;
     }
 
     if (window.innerWidth < 768) {
-      currentWidth = 0 // On mobile, content takes full width
+      currentWidth = 0; // On mobile, content takes full width
     }
 
     if (onResize) {
-      onResize(currentWidth)
+      onResize(currentWidth);
     }
-  }, [isOpen, collapsed, onResize])
+  }, [isOpen, collapsed, onResize]);
 
   return (
     <>
@@ -117,11 +119,18 @@ const Sidebar = ({ onResize }) => {
 
           {/* Usuarios - Now with dropdown */}
           <NavItem>
-            <NavButton collapsed={collapsed} onClick={() => toggleSubMenu("usuarios")}>
+            <NavButton
+              collapsed={collapsed}
+              onClick={() => toggleSubMenu("usuarios")}
+            >
               <Users size={20} />
               <span>Usuarios</span>
               <div className="chevron">
-                {openSubMenus.usuarios ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {openSubMenus.usuarios ? (
+                  <ChevronUp size={16} />
+                ) : (
+                  <ChevronDown size={16} />
+                )}
               </div>
             </NavButton>
             <SubMenu isOpen={openSubMenus.usuarios} collapsed={collapsed}>
@@ -129,40 +138,65 @@ const Sidebar = ({ onResize }) => {
                 <SubMenuLink to="/admin/usuarios">Usuarios</SubMenuLink>
               </SubMenuItem>
               <SubMenuItem>
-                <SubMenuLink to="/admin/cambiar-contrasena">Cambiar contraseña</SubMenuLink>
+                <SubMenuLink to="/admin/cambiar-contrasena">
+                  Cambiar contraseña
+                </SubMenuLink>
               </SubMenuItem>
             </SubMenu>
           </NavItem>
 
           {/* Carrera */}
           <NavItem>
-            <NavButton collapsed={collapsed} onClick={() => toggleSubMenu("carrera")}>
+            <NavButton
+              collapsed={collapsed}
+              onClick={() => toggleSubMenu("carrera")}
+            >
               <BookOpen size={20} />
               <span>Carrera</span>
               <div className="chevron">
-                {openSubMenus.carrera ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {openSubMenus.carrera ? (
+                  <ChevronUp size={16} />
+                ) : (
+                  <ChevronDown size={16} />
+                )}
               </div>
             </NavButton>
             <SubMenu isOpen={openSubMenus.carrera} collapsed={collapsed}>
               <SubMenuItem>
-                <SubMenuLink to="/admin/informacion-carrera">Información</SubMenuLink>
+                <SubMenuLink to="/admin/informacion-carrera">
+                  Información
+                </SubMenuLink>
               </SubMenuItem>
               <SubMenuItem>
-                <SubMenuLink to="/admin/malla-curricular">Malla curricular</SubMenuLink>
+                <SubMenuLink to="/admin/malla-curricular">
+                  Malla curricular
+                </SubMenuLink>
               </SubMenuItem>
               <SubMenuItem>
-                <SubMenuLink to="/admin/redes-sociales">Redes sociales</SubMenuLink>
+                <SubMenuLink to="/admin/redes-sociales">
+                  Redes sociales
+                </SubMenuLink>
+              </SubMenuItem>
+              <SubMenuItem>
+                <SubMenuLink to="/admin/tramites">Trámites</SubMenuLink>
               </SubMenuItem>
             </SubMenu>
           </NavItem>
 
           {/* Personal */}
           <NavItem>
-            <NavButton collapsed={collapsed} onClick={() => toggleSubMenu("personal")}>
+            <NavButton
+              collapsed={collapsed}
+              onClick={() => toggleSubMenu("personal")}
+            >
               <Briefcase size={20} />
               <span>Personal</span>
               <div className="chevron">
-                {openSubMenus.personal ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {openSubMenus.personal ? (
+                  <ChevronUp size={16} />
+                ) : (
+                  <ChevronDown size={16} />
+                )}
               </div>
             </NavButton>
             <SubMenu isOpen={openSubMenus.personal} collapsed={collapsed}>
@@ -170,7 +204,9 @@ const Sidebar = ({ onResize }) => {
                 <SubMenuLink to="/admin/docentes">Docentes</SubMenuLink>
               </SubMenuItem>
               <SubMenuItem>
-                <SubMenuLink to="/admin/administrativos">Administrativos</SubMenuLink>
+                <SubMenuLink to="/admin/administrativos">
+                  Administrativos
+                </SubMenuLink>
               </SubMenuItem>
               <SubMenuItem>
                 <SubMenuLink to="/admin/autoridades">Autoridades</SubMenuLink>
@@ -180,16 +216,25 @@ const Sidebar = ({ onResize }) => {
 
           {/* Noticias */}
           <NavItem>
-            <NavButton collapsed={collapsed} onClick={() => toggleSubMenu("noticias")}>
+            <NavButton
+              collapsed={collapsed}
+              onClick={() => toggleSubMenu("noticias")}
+            >
               <FileText size={20} />
               <span>Noticias</span>
               <div className="chevron">
-                {openSubMenus.noticias ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {openSubMenus.noticias ? (
+                  <ChevronUp size={16} />
+                ) : (
+                  <ChevronDown size={16} />
+                )}
               </div>
             </NavButton>
             <SubMenu isOpen={openSubMenus.noticias} collapsed={collapsed}>
               <SubMenuItem>
-                <SubMenuLink to="/admin/publicaciones">Publicaciones</SubMenuLink>
+                <SubMenuLink to="/admin/publicaciones">
+                  Publicaciones
+                </SubMenuLink>
               </SubMenuItem>
               <SubMenuItem>
                 <SubMenuLink to="/admin/comunicados">Comunicados</SubMenuLink>
@@ -199,22 +244,35 @@ const Sidebar = ({ onResize }) => {
 
           {/* Eventos */}
           <NavItem>
-            <NavButton collapsed={collapsed} onClick={() => toggleSubMenu("eventos")}>
+            <NavButton
+              collapsed={collapsed}
+              onClick={() => toggleSubMenu("eventos")}
+            >
               <Calendar size={20} />
               <span>Eventos</span>
               <div className="chevron">
-                {openSubMenus.eventos ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {openSubMenus.eventos ? (
+                  <ChevronUp size={16} />
+                ) : (
+                  <ChevronDown size={16} />
+                )}
               </div>
             </NavButton>
             <SubMenu isOpen={openSubMenus.eventos} collapsed={collapsed}>
               <SubMenuItem>
-                <SubMenuLink to="/admin/eventos-sin-costo">Sin costo</SubMenuLink>
+                <SubMenuLink to="/admin/eventos-sin-costo">
+                  Sin costo
+                </SubMenuLink>
               </SubMenuItem>
               <SubMenuItem>
-                <SubMenuLink to="/admin/eventos-con-costo">Con costo</SubMenuLink>
+                <SubMenuLink to="/admin/eventos-con-costo">
+                  Con costo
+                </SubMenuLink>
               </SubMenuItem>
               <SubMenuItem>
-                <SubMenuLink to="/admin/eventos-dashboard">Dashboard</SubMenuLink>
+                <SubMenuLink to="/admin/eventos-dashboard">
+                  Dashboard
+                </SubMenuLink>
               </SubMenuItem>
             </SubMenu>
           </NavItem>
@@ -230,8 +288,8 @@ const Sidebar = ({ onResize }) => {
         </NavMenu>
       </SidebarContainer>
     </>
-  )
-}
+  );
+};
 
 export default Sidebar;
 
@@ -240,8 +298,10 @@ const SidebarContainer = styled.div`
   background-color: #2c3e50;
   color: white;
   width: ${({ isOpen, collapsed }) => {
-    if (!isOpen) return "0px"
-    return collapsed ? `${SIDEBAR_COLLAPSED_WIDTH}px` : `${SIDEBAR_EXPANDED_WIDTH}px`
+    if (!isOpen) return "0px";
+    return collapsed
+      ? `${SIDEBAR_COLLAPSED_WIDTH}px`
+      : `${SIDEBAR_EXPANDED_WIDTH}px`;
   }};
   height: 100vh;
   position: fixed;
@@ -253,11 +313,13 @@ const SidebarContainer = styled.div`
 
   @media (min-width: 768px) {
     width: ${({ isOpen, collapsed }) => {
-    if (!isOpen) return "0px"
-    return collapsed ? `${SIDEBAR_COLLAPSED_WIDTH}px` : `${SIDEBAR_EXPANDED_WIDTH}px`
-  }};
+      if (!isOpen) return "0px";
+      return collapsed
+        ? `${SIDEBAR_COLLAPSED_WIDTH}px`
+        : `${SIDEBAR_EXPANDED_WIDTH}px`;
+    }};
   }
-`
+`;
 
 const SidebarHeader = styled.div`
   display: flex;
@@ -265,7 +327,7 @@ const SidebarHeader = styled.div`
   align-items: center;
   padding: 20px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-`
+`;
 
 const ProfileImage = styled.div`
   width: 100px;
@@ -283,7 +345,7 @@ const ProfileImage = styled.div`
     height: 100%;
     object-fit: cover;
   }
-`
+`;
 
 const Username = styled.h3`
   font-size: 16px;
@@ -293,17 +355,17 @@ const Username = styled.h3`
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 90%;
-`
+`;
 
 const NavMenu = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
-`
+`;
 
 const NavItem = styled.li`
   width: 100%;
-`
+`;
 
 const NavLink = styled(Link)`
   display: flex;
@@ -332,7 +394,7 @@ const NavLink = styled(Link)`
     overflow: hidden;
     text-overflow: ellipsis;
   }
-`
+`;
 
 const NavButton = styled.button`
   display: flex;
@@ -367,16 +429,16 @@ const NavButton = styled.button`
     right: 15px;
     display: ${({ collapsed }) => (collapsed ? "none" : "block")};
   }
-`
+`;
 
 const LogoutButton = styled(NavButton)`
   margin-top: auto;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  
+
   &:hover {
     background-color: #c0392b;
   }
-`
+`;
 
 const SubMenu = styled.ul`
   list-style: none;
@@ -385,11 +447,11 @@ const SubMenu = styled.ul`
   max-height: ${({ isOpen }) => (isOpen ? "500px" : "0")};
   overflow: hidden;
   transition: max-height 0.3s ease;
-`
+`;
 
 const SubMenuItem = styled.li`
   width: 100%;
-`
+`;
 
 const SubMenuLink = styled(Link)`
   display: block;
@@ -406,7 +468,7 @@ const SubMenuLink = styled(Link)`
   &.active {
     background-color: #2980b9;
   }
-`
+`;
 
 const ToggleButton = styled.button`
   position: fixed;
@@ -428,7 +490,7 @@ const ToggleButton = styled.button`
   @media (min-width: 768px) {
     display: none;
   }
-`
+`;
 
 const CollapseButton = styled.button`
   position: fixed;
@@ -449,7 +511,7 @@ const CollapseButton = styled.button`
   @media (min-width: 768px) {
     display: flex;
   }
-`
+`;
 
 const Overlay = styled.div`
   position: fixed;
@@ -464,5 +526,4 @@ const Overlay = styled.div`
   @media (min-width: 768px) {
     display: none;
   }
-`
-
+`;

@@ -14,11 +14,22 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'celular_user',
+        'is_admin',
+        'last_login_at',
+        'current_session_token',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'current_session_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
+        'is_admin' => 'boolean',
     ];
 
     public function getJWTIdentifier()

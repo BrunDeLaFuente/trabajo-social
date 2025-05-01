@@ -7,23 +7,27 @@ import tramiteImg from "../../../assets/img/tramite-universitario.jpg";
 const tramitesData = [
   {
     titulo: "Requisitos para Aprobación del Perfil",
-    descripcion: "Carta de solicitud dirigida al director de Carrera, aprobación de perfil con mención, modalidad de titulación y título del trabajo.",
-    planilla: true,
+    descripcion:
+      "Carta de solicitud dirigida al director de Carrera, aprobación de perfil con mención, modalidad de titulación y título del trabajo.",
+    planilla_url: tramiteImg,
   },
   {
     titulo: "Requisitos para solicitud de Designación de Tribunales",
-    descripcion: "Carta de solicitud dirigida al director de Carrera, indicando disponibilidad de tribunales y tutores.",
-    planilla: true,
+    descripcion:
+      "Carta de solicitud dirigida al director de Carrera, indicando disponibilidad de tribunales y tutores.",
+    planilla: null,
   },
   {
     titulo: "Requisitos para solicitud de Pre Defensa",
-    descripcion: "Carta de solicitud de pre defensa con aprobación de borradores, tabla de disponibilidad de tribunales, carátula y kardex actualizado.",
-    planilla: false,
+    descripcion:
+      "Carta de solicitud de pre defensa con aprobación de borradores, tabla de disponibilidad de tribunales, carátula y kardex actualizado.",
+    planilla: null,
   },
   {
     titulo: "Requisitos para solicitud de Defensa Pública",
-    descripcion: "Carta de solicitud de defensa pública con fotocopia de carnet, formulario de solvencia y acta de pre defensa.",
-    planilla: false,
+    descripcion:
+      "Carta de solicitud de defensa pública con fotocopia de carnet, formulario de solvencia y acta de pre defensa.",
+    planilla_url: tramiteImg,
   },
 ];
 
@@ -41,16 +45,25 @@ const Tramites = () => {
       <CardsContainer>
         {tramitesData.map((tramite, index) => (
           <Card key={index}>
-            <IconContainer><FaFileAlt /></IconContainer>
+            <IconContainer>
+              <FaFileAlt />
+            </IconContainer>
             <Title>{tramite.titulo}</Title>
             <Divider />
             <MoreInfo onClick={() => toggleExpand(index)}>
-              Ver trámite <FaChevronDown className={expandedIndex === index ? "rotated" : ""} />
+              Ver trámite{" "}
+              <FaChevronDown
+                className={expandedIndex === index ? "rotated" : ""}
+              />
             </MoreInfo>
             {expandedIndex === index && (
               <Description>
                 <p>{tramite.descripcion}</p>
-                {tramite.planilla && <PlanillaButton href="#">Descargar Planilla</PlanillaButton>}
+                {tramite.planilla_url && (
+                  <PlanillaButton href={tramite.planilla_url} download>
+                    Descargar Planilla
+                  </PlanillaButton>
+                )}
               </Description>
             )}
           </Card>
@@ -63,11 +76,15 @@ const Tramites = () => {
           <UniversityImage src={tramiteImg} alt="Trámites Universitarios" />
           <UniversityContent>
             <FaUniversity size={40} color="#002f6c" />
-            <p>En este apartado encontrará un resumen y acceso a las páginas
+            <p>
+              En este apartado encontrará un resumen y acceso a las páginas
               oficiales de las unidades en las que se realizan los diversos
               tipos de trámites que contribuyen al buen funcionamiento de la
-              Universidad Mayor de San Simón.</p>
-            <UniversityButton href="https://www.umss.edu.bo/tramites/">Ver más trámites</UniversityButton>
+              Universidad Mayor de San Simón.
+            </p>
+            <UniversityButton href="https://www.umss.edu.bo/tramites/">
+              Ver más trámites
+            </UniversityButton>
           </UniversityContent>
         </UniversityContentWrapper>
       </UniversitySection>
@@ -101,10 +118,10 @@ const SectionTitle = styled.h2`
     display: block;
     width: 130px;
     height: 3px;
-    background:  #ff6600;
+    background: #ff6600;
     margin-top: 5px;
   }
-  
+
   @media (max-width: 768px) {
     font-size: 1.5rem;
     &:after {
@@ -123,7 +140,6 @@ const CardsContainer = styled.div`
   @media (min-width: 1024px) {
     grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
   }
-
 `;
 
 const Card = styled.div`
@@ -247,7 +263,7 @@ const UniversityContent = styled.div`
   align-items: center;
   gap: 20px; /* Agregamos separación entre los elementos */
   background: rgb(255, 253, 246);
-  
+
   p {
     text-align: center;
     line-height: 1.6; /* Mejora la legibilidad del texto */
