@@ -4,6 +4,9 @@ import { AuthContext } from "../context/AuthContext";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import PrivateLayout from "../layouts/PrivateLayout";
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import Informacion from "../pages/admin/Carrera/Informacion";
+import RedesSociales from "../pages/admin/Carrera/RedesSociales";
+import AutoridadesAdmin from "../pages/admin/Personal/AutoridadesAdmin";
 
 const AdminRoutes = () => {
   const { user, loading } = useContext(AuthContext);
@@ -27,16 +30,13 @@ const AdminRoutes = () => {
           path="/cambiar-contrasena"
           element={<h1>Cambiar Contraseña</h1>}
         />
-        <Route
-          path="/informacion-carrera"
-          element={<h1>Información de Carrera</h1>}
-        />
+        <Route path="/informacion-carrera" element={<Informacion />} />
         <Route path="/malla-curricular" element={<h1>Malla Curricular</h1>} />
-        <Route path="/redes-sociales" element={<h1>Redes Sociales</h1>} />
+        <Route path="/redes-sociales" element={<RedesSociales />} />
         <Route path="/tramites" element={<h1>Trámites</h1>} />
         <Route path="/docentes" element={<h1>Docentes</h1>} />
         <Route path="/administrativos" element={<h1>Administrativos</h1>} />
-        <Route path="/autoridades" element={<h1>Autoridades</h1>} />
+        <Route path="/autoridades" element={<AutoridadesAdmin />} />
         <Route path="/publicaciones" element={<h1>Publicaciones</h1>} />
         <Route path="/comunicados" element={<h1>Comunicados</h1>} />
         <Route path="/eventos" element={<h1>Eventos</h1>} />

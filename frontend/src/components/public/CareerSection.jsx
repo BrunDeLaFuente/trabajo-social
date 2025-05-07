@@ -1,61 +1,82 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { FaBookmark } from "react-icons/fa"; // Importamos el icono
+import { FaBookmark } from "react-icons/fa";
+import api from "../../utils/api"; // Ruta correcta según tu estructura
 
-const videoUrl = "https://www.youtube.com/embed/NupRtPrm3rU"; // ✅ Formato correcto para YouTube
+const videoUrl = "https://www.youtube.com/embed/NupRtPrm3rU";
 
 const CareerSection = () => {
-    return (
-        <SectionContainer>
-            <SectionTitleContainer>
-                <SectionTitle>Carrera de Trabajo Social</SectionTitle>
-                <Underline />
-            </SectionTitleContainer>
-            <ContentWrapper>
-                <LeftContainer>
-                    <VideoContainer>
-                        <iframe
-                            src={videoUrl}
-                            width="100%"
-                            height="100%"
-                            style={{ border: "none", borderRadius: "10px" }}
-                            allowFullScreen
-                        ></iframe>
-                    </VideoContainer>
-                </LeftContainer>
-                <RightContainer>
-                    <DescriptionTitle>DESCRIPCIÓN</DescriptionTitle>
-                    <DescriptionText>
-                        <strong>Facultad:</strong> Humanidades y Ciencias de la Educación.{" "}
-                        <VerMas href="https://www.hum.umss.edu.bo/" target="_blank">Ver más</VerMas>
-                    </DescriptionText>
-                    <DescriptionText>
-                        <strong>Carrera:</strong> Trabajo Social.
-                    </DescriptionText>
-                    <DescriptionText>
-                        <strong>Duración:</strong> 5 años.
-                    </DescriptionText>
-                    <DescriptionText>
-                        <strong>Enseñanza:</strong> Presencial y Virtual.
-                    </DescriptionText>
-                    <DescriptionText>
-                        <strong>Idiomas:</strong> Español.
-                    </DescriptionText>
-                    <DescriptionText>
-                        <strong>Grado:</strong> Licenciatura en Trabajo Social.
-                    </DescriptionText>
-                    <CurriculumButton href="/pregrado/malla-curricular">
-                        <FaBookmark style={{ marginRight: "8px" }} /> Malla Curricular
-                    </CurriculumButton>
-                </RightContainer>
-            </ContentWrapper>
-        </SectionContainer>
-    );
+  const [carrera, setCarrera] = useState(null);
+
+  useEffect(() => {
+    const fetchCarrera = async () => {
+      try {
+        const { data } = await api.get("/carrera");
+        setCarrera(data);
+      } catch (error) {
+        console.error("Error al cargar datos de la carrera", error);
+      }
+    };
+
+    fetchCarrera();
+  }, []);
+
+  if (!carrera) return null;
+
+  return (
+    <SectionContainer>
+      <SectionTitleContainer>
+        <SectionTitle>Carrera de Trabajo Social</SectionTitle>
+        <Underline />
+      </SectionTitleContainer>
+      <ContentWrapper>
+        <LeftContainer>
+          <VideoContainer>
+            <iframe
+              src={videoUrl}
+              width="100%"
+              height="100%"
+              style={{ border: "none", borderRadius: "10px" }}
+              allowFullScreen
+              title="Presentación carrera"
+            ></iframe>
+          </VideoContainer>
+        </LeftContainer>
+        <RightContainer>
+          <DescriptionTitle>DESCRIPCIÓN</DescriptionTitle>
+          <DescriptionText>
+            <strong>Facultad:</strong> {carrera.facultad}.{" "}
+            <VerMas href="https://www.hum.umss.edu.bo/" target="_blank">
+              Ver más
+            </VerMas>
+          </DescriptionText>
+          <DescriptionText>
+            <strong>Carrera:</strong> {carrera.nombre_carrera}
+          </DescriptionText>
+          <DescriptionText>
+            <strong>Duración:</strong> {carrera.duracion}
+          </DescriptionText>
+          <DescriptionText>
+            <strong>Enseñanza:</strong> {carrera.ensenanza}
+          </DescriptionText>
+          <DescriptionText>
+            <strong>Idiomas:</strong> {carrera.idiomas}
+          </DescriptionText>
+          <DescriptionText>
+            <strong>Grado:</strong> {carrera.grado}
+          </DescriptionText>
+          <CurriculumButton href="/pregrado/malla-curricular">
+            <FaBookmark style={{ marginRight: "8px" }} /> Malla Curricular
+          </CurriculumButton>
+        </RightContainer>
+      </ContentWrapper>
+    </SectionContainer>
+  );
 };
 
 export default CareerSection;
 
 // 📌 Estilos
-
 const SectionContainer = styled.section`
   width: 100%;
   max-width: 100%;
@@ -169,7 +190,7 @@ const CurriculumButton = styled.a`
   font-weight: bold;
   transition: background 0.3s;
   width: fit-content; /* 📌 Tamaño solo necesario */
-  
+
   &:hover {
     background-color: #cc0000;
   }

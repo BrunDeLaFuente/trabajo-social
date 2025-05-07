@@ -1,30 +1,69 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { FaFacebookF, FaTelegram, FaLinkedinIn, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaTelegram,
+  FaLinkedinIn,
+  FaInstagram,
+  FaWhatsapp,
+  FaTwitter,
+  FaYoutube,
+  FaGlobe,
+} from "react-icons/fa";
+import api from "../../utils/api"; // Ajusta la ruta según tu estructura
+
+const iconMap = {
+  facebook: { icon: <FaFacebookF />, color: "#1877F2" },
+  telegram: { icon: <FaTelegram />, color: "#0088cc" },
+  linkedin: { icon: <FaLinkedinIn />, color: "#0077B5" },
+  instagram: { icon: <FaInstagram />, color: "#E4405F" },
+  x: { icon: <FaTwitter />, color: "#1DA1F2" },
+  youtube: { icon: <FaYoutube />, color: "#FF0000" },
+  whatsapp: { icon: <FaWhatsapp />, color: "#25D366" },
+  default: { icon: <FaGlobe />, color: "#6B7280" },
+};
 
 const SocialBar = () => {
+  const [redes, setRedes] = useState([]);
+
+  useEffect(() => {
+    const fetchRedes = async () => {
+      try {
+        const { data } = await api.get("/carrera");
+        const visibles = data.redes_sociales.filter(
+          (rrss) => rrss.es_publico === 1
+        );
+        setRedes(visibles);
+      } catch (error) {
+        console.error("Error al obtener redes sociales", error);
+      }
+    };
+
+    fetchRedes();
+  }, []);
+
   return (
     <SocialBarContainer>
       <SocialContent>
         <Text>Visítanos en nuestras RRSS:</Text>
         <IconsContainer>
-          <IconLink href="https://facebook.com" target="_blank" $bgColor="#1877F2" title="Seguir en Facebook">
-            <FaFacebookF />
-          </IconLink>
-          <IconLink href="https://t.me" target="_blank" $bgColor="#0088cc" title="Unirse en Telegram">
-            <FaTelegram />
-          </IconLink>
-          <IconLink href="https://linkedin.com" target="_blank" $bgColor="#0077B5" title="Conectar en LinkedIn">
-            <FaLinkedinIn />
-          </IconLink>
-          <IconLink href="https://instagram.com" target="_blank" $bgColor="#E4405F" title="Seguir en Instagram">
-            <FaInstagram />
-          </IconLink>
-          <IconLink href="https://twitter.com" target="_blank" $bgColor="#1DA1F2" title="Seguir en Twitter">
-            <FaTwitter />
-          </IconLink>
-          <IconLink href="https://youtube.com" target="_blank" $bgColor="#FF0000" title="Suscribirse en YouTube">
-            <FaYoutube />
-          </IconLink>
+          {redes.map((rrss) => {
+            const key = rrss.nombre_rrss.toLowerCase();
+            const { icon, color } = iconMap[key] || iconMap.default;
+
+            return (
+              <IconLink
+                key={rrss.id_carrera_rrss}
+                href={rrss.url_rrss}
+                target="_blank"
+                rel="noopener noreferrer"
+                $bgColor={color}
+                title={`Visitar ${rrss.nombre_rrss}`}
+              >
+                {icon}
+              </IconLink>
+            );
+          })}
         </IconsContainer>
       </SocialContent>
     </SocialBarContainer>
@@ -94,5 +133,3 @@ const IconLink = styled.a`
     opacity: 0.8;
   }
 `;
-
-

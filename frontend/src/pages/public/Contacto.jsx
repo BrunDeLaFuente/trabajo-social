@@ -1,8 +1,56 @@
+import { useEffect, useState } from "react";
 import HeroSection from "../../components/public/HeroSection";
 import styled from "styled-components";
-import { FaFacebookF, FaInstagram, FaTelegramPlane, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaTelegramPlane,
+  FaPhoneAlt,
+  FaEnvelope,
+  FaMapMarkerAlt,
+  FaLinkedinIn,
+  FaTwitter,
+  FaYoutube,
+  FaWhatsapp,
+} from "react-icons/fa";
+import api from "../../utils/api";
 
 const Contacto = () => {
+  const [carrera, setCarrera] = useState(null);
+
+  useEffect(() => {
+    const fetchCarrera = async () => {
+      try {
+        const res = await api.get("/carrera");
+        setCarrera(res.data);
+      } catch (error) {
+        console.error("Error al cargar la información de contacto:", error);
+      }
+    };
+    fetchCarrera();
+  }, []);
+
+  const getIcon = (nombre) => {
+    switch (nombre.toLowerCase()) {
+      case "facebook":
+        return { icon: <FaFacebookF />, color: "#1877F2" };
+      case "instagram":
+        return { icon: <FaInstagram />, color: "#E4405F" };
+      case "telegram":
+        return { icon: <FaTelegramPlane />, color: "#0088cc" };
+      case "x":
+        return { icon: <FaTwitter />, color: "#1DA1F2" };
+      case "linkedin":
+        return { icon: <FaLinkedinIn />, color: "#0077B5" };
+      case "youtube":
+        return { icon: <FaYoutube />, color: "#FF0000" };
+      case "whatsapp":
+        return { icon: <FaWhatsapp />, color: "#25D366" };
+      default:
+        return null;
+    }
+  };
+
   return (
     <ContactContainer>
       <HeroSection title="Contacto" />
@@ -11,57 +59,83 @@ const Contacto = () => {
           <InfoHeader>
             <InfoTitle>INFORMACIÓN</InfoTitle>
             <InfoText>
-              Para obtener cualquier información, visítenos en nuestra dirección o contáctenos a nuestros números.
+              Para obtener cualquier información, visítenos en nuestra dirección
+              o contáctenos a nuestros números.
             </InfoText>
           </InfoHeader>
 
-          <InfoItem>
-            <IconWrapper color="#E53935">
-              <FaMapMarkerAlt />
-            </IconWrapper>
-            <div>
-              <strong>Dirección:</strong>
-              <p>Campus Central UMSS, Av. Oquendo y Jordán, Facultad de Ciencias y Tecnología.</p>
-            </div>
-          </InfoItem>
+          {/* Dirección */}
+          {carrera?.direccion && (
+            <InfoItem>
+              <IconWrapper color="#E53935">
+                <FaMapMarkerAlt />
+              </IconWrapper>
+              <div>
+                <strong>Dirección:</strong>
+                <p>{carrera.direccion}</p>
+              </div>
+            </InfoItem>
+          )}
 
-          <InfoItem>
-            <IconWrapper color="#D32F2F">
-              <FaEnvelope />
-            </IconWrapper>
-            <div>
-              <strong>Correo:</strong>
-              <p>contacto@umss.edu.bo</p>
-            </div>
-          </InfoItem>
+          {/* Correos */}
+          {carrera?.correos?.length > 0 && (
+            <InfoItem>
+              <IconWrapper color="#D32F2F">
+                <FaEnvelope />
+              </IconWrapper>
+              <div>
+                <strong>Correo:</strong>
+                {carrera.correos.map((c, i) => (
+                  <p key={i}>{c.correo_carrera}</p>
+                ))}
+              </div>
+            </InfoItem>
+          )}
 
-          <InfoItem>
-            <IconWrapper color="#1565C0">
-              <FaPhoneAlt />
-            </IconWrapper>
-            <div>
-              <strong>Teléfonos:</strong>
-              <p>(+591) 4 4231765 – Interno 36317</p>
-            </div>
-          </InfoItem>
+          {/* Teléfonos */}
+          {carrera?.telefonos?.length > 0 && (
+            <InfoItem>
+              <IconWrapper color="#1565C0">
+                <FaPhoneAlt />
+              </IconWrapper>
+              <div>
+                <strong>Teléfonos:</strong>
+                {carrera.telefonos.map((t, i) => (
+                  <p key={i}>{t.telefono}</p>
+                ))}
+              </div>
+            </InfoItem>
+          )}
 
-          <SocialSection>
-            <strong>Síguenos en:</strong>
-            <SocialIcons>
-              <SocialIcon href="#" $bgColor="#1877F2">
-                <FaFacebookF />
-              </SocialIcon>
-              <SocialIcon href="#" $bgColor="#E4405F">
-                <FaInstagram />
-              </SocialIcon>
-              <SocialIcon href="#" $bgColor="#0088cc">
-                <FaTelegramPlane />
-              </SocialIcon>
-            </SocialIcons>
-          </SocialSection>
+          {/* Redes Sociales */}
+          {carrera?.redes_sociales?.some((r) => r.es_publico === 1) && (
+            <SocialSection>
+              <strong>Síguenos en:</strong>
+              <SocialIcons>
+                {carrera.redes_sociales
+                  .filter((r) => r.es_publico === 1)
+                  .map((rrss) => {
+                    const social = getIcon(rrss.nombre_rrss);
+                    if (!social) return null;
+                    return (
+                      <SocialIcon
+                        key={rrss.id_carrera_rrss}
+                        href={rrss.url_rrss}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        $bgColor={social.color}
+                        title={rrss.nombre_rrss}
+                      >
+                        {social.icon}
+                      </SocialIcon>
+                    );
+                  })}
+              </SocialIcons>
+            </SocialSection>
+          )}
         </InfoCard>
 
-        {/* 📌 Mapa */}
+        {/* Mapa */}
         <MapContainer>
           <iframe
             title="Ubicación"

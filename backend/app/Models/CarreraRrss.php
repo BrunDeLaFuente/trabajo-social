@@ -9,6 +9,7 @@ class CarreraRrss extends Model
 {
     use HasFactory;
 
+    protected $table = 'carrera_rrss';
     protected $primaryKey = 'id_carrera_rrss';
 
     protected $fillable = [
