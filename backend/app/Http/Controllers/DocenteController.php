@@ -36,7 +36,7 @@ class DocenteController extends Controller
         DB::beginTransaction();
         try {
             $persona = Persona::create([
-                'id_tipo_persona' => 1, // Docente
+                'id_tipo_persona' => 3,
                 'nombre_persona' => $request->nombre_persona,
                 'cargo' => $request->cargo,
             ]);

@@ -15,6 +15,7 @@ import {
   ChevronRight,
   AlertTriangle,
   Upload,
+  XCircle,
 } from "lucide-react";
 import api from "../../../utils/api";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
@@ -33,9 +34,11 @@ export default function AutoridadesAdmin() {
   const [formData, setFormData] = useState({
     nombre_persona: "",
     cargo: "",
-    email_persona: "",
+    emails: [],
     imagen_persona: null,
+    quitar_imagen: false,
   });
+  const [newEmail, setNewEmail] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -135,13 +138,20 @@ export default function AutoridadesAdmin() {
   // Abrir modal de formulario para editar
   const openEditModal = (autoridad) => {
     setSelectedAutoridad(autoridad);
+
+    // Extraer los emails de los correos
+    const emails = autoridad.correos.map((correo) => correo.email_persona);
+
     setFormData({
       nombre_persona: autoridad.nombre_persona,
       cargo: autoridad.cargo,
-      email_persona: autoridad.correos[0]?.email_persona || "",
+      emails: emails,
       imagen_persona: null,
+      quitar_imagen: false,
     });
-    setImagePreview(autoridad.imagen_persona);
+
+    // Mostrar la imagen actual si existe
+    setImagePreview(autoridad.imagen_persona_url);
     setFormErrors({});
     setIsFormModalOpen(true);
   };
@@ -152,8 +162,9 @@ export default function AutoridadesAdmin() {
     setFormData({
       nombre_persona: "",
       cargo: "",
-      email_persona: "",
+      emails: [],
       imagen_persona: null,
+      quitar_imagen: false,
     });
     setImagePreview(null);
     setFormErrors({});
@@ -167,9 +178,11 @@ export default function AutoridadesAdmin() {
     setFormData({
       nombre_persona: "",
       cargo: "",
-      email_persona: "",
+      emails: [],
       imagen_persona: null,
+      quitar_imagen: false,
     });
+    setNewEmail("");
     setImagePreview(null);
     setFormErrors({});
   };
@@ -215,6 +228,7 @@ export default function AutoridadesAdmin() {
       setFormData({
         ...formData,
         imagen_persona: file,
+        quitar_imagen: false, // Si se sube una nueva imagen, no se quiere quitar
       });
 
       // Crear URL para previsualización
@@ -232,6 +246,80 @@ export default function AutoridadesAdmin() {
     }
   };
 
+  // Manejar quitar imagen
+  const handleRemoveImage = () => {
+    setFormData({
+      ...formData,
+      imagen_persona: null,
+      quitar_imagen: true,
+    });
+    setImagePreview(null);
+  };
+
+  // Manejar cancelar quitar imagen
+  const handleCancelRemoveImage = () => {
+    setFormData({
+      ...formData,
+      quitar_imagen: false,
+    });
+    // Restaurar la imagen previa si estamos editando
+    if (selectedAutoridad && selectedAutoridad.imagen_persona_url) {
+      setImagePreview(selectedAutoridad.imagen_persona_url);
+    }
+  };
+
+  // Agregar email al formulario
+  const addEmail = () => {
+    if (!newEmail.trim()) {
+      setFormErrors({
+        ...formErrors,
+        newEmail: "El correo no puede estar vacío.",
+      });
+      return;
+    }
+
+    // Validar formato de correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newEmail)) {
+      setFormErrors({
+        ...formErrors,
+        newEmail: "Formato de correo inválido.",
+      });
+      return;
+    }
+
+    // Verificar si el correo ya existe
+    if (formData.emails.includes(newEmail)) {
+      setFormErrors({
+        ...formErrors,
+        newEmail: "Este correo ya ha sido agregado.",
+      });
+      return;
+    }
+
+    setFormData({
+      ...formData,
+      emails: [...formData.emails, newEmail],
+    });
+    setNewEmail("");
+
+    // Limpiar error
+    setFormErrors({
+      ...formErrors,
+      newEmail: null,
+    });
+  };
+
+  // Eliminar email del formulario
+  const removeEmail = (index) => {
+    const updatedEmails = [...formData.emails];
+    updatedEmails.splice(index, 1);
+    setFormData({
+      ...formData,
+      emails: updatedEmails,
+    });
+  };
+
   // Validar formulario
   const validateForm = () => {
     const errors = {};
@@ -244,10 +332,13 @@ export default function AutoridadesAdmin() {
       errors.cargo = "El cargo es obligatorio.";
     }
 
-    if (!formData.email_persona.trim()) {
-      errors.email_persona = "El correo electrónico es obligatorio.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email_persona)) {
-      errors.email_persona = "El correo electrónico no es válido.";
+    // Validar formato de todos los correos
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    for (const email of formData.emails) {
+      if (!emailRegex.test(email)) {
+        errors.emails = `El correo "${email}" tiene un formato inválido.`;
+        break;
+      }
     }
 
     setFormErrors(errors);
@@ -287,21 +378,37 @@ export default function AutoridadesAdmin() {
     try {
       setIsSubmitting(true);
 
-      // Crear FormData para enviar la imagen
+      // Crear FormData para enviar la imagen y los correos
       const formDataToSend = new FormData();
       formDataToSend.append("nombre_persona", formData.nombre_persona);
       formDataToSend.append("cargo", formData.cargo);
-      formDataToSend.append("correos[0]", formData.email_persona);
 
+      // Agregar los correos con la notación correcta
+      formData.emails.forEach((email, index) => {
+        formDataToSend.append(`correos[${index}]`, email);
+      });
+
+      // Agregar la imagen si existe
       if (formData.imagen_persona) {
-        formDataToSend.append("imagen_persona", formData.imagen_persona);
+        formDataToSend.append("imagen", formData.imagen_persona);
+      }
+
+      // Agregar flag para quitar imagen si es necesario
+      if (formData.quitar_imagen) {
+        formDataToSend.append("quitar_imagen", "1");
       }
 
       let response;
 
+      console.log(formDataToSend.get("nombre_persona"))
+      console.log(formDataToSend.get("cargo"))
+      console.log(formDataToSend.get("imagen"))
+      console.log(formDataToSend.get("quitar_imagen"))
+
+
       if (selectedAutoridad) {
         // Actualizar autoridad existente
-        response = await api.put(
+        response = await api.post(
           `/autoridadesActualizar/${selectedAutoridad.id_persona}`,
           formDataToSend,
           {
@@ -409,14 +516,31 @@ export default function AutoridadesAdmin() {
                     <TableCell>{autoridad.cargo}</TableCell>
                     <TableCell>
                       <Mail size={16} />
-                      {autoridad.correos[0]?.email_persona || "Sin correo"}
+                      {autoridad.correos.length > 0
+                        ? autoridad.correos[0].email_persona
+                        : "Sin correo"}
+                      {autoridad.correos.length > 1 && (
+                        <span
+                          title={autoridad.correos
+                            .map((c) => c.email_persona)
+                            .join(", ")}
+                        >
+                          {` (+${autoridad.correos.length - 1} más)`}
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <ProfileImage>
-                        {autoridad.imagen_persona ? (
+                        {autoridad.imagen_persona_url ? (
                           <img
-                            src={autoridad.imagen_persona || "/placeholder.svg"}
+                            src={
+                              autoridad.imagen_persona_url || "/placeholder.svg"
+                            }
                             alt={autoridad.nombre_persona}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "/placeholder.svg";
+                            }}
                           />
                         ) : (
                           <User size={16} />
@@ -457,10 +581,14 @@ export default function AutoridadesAdmin() {
               <MobileCardHeader>
                 <MobileCardTitle>{autoridad.nombre_persona}</MobileCardTitle>
                 <ProfileImage>
-                  {autoridad.imagen_persona ? (
+                  {autoridad.imagen_persona_url ? (
                     <img
-                      src={autoridad.imagen_persona || "/placeholder.svg"}
+                      src={autoridad.imagen_persona_url || "/placeholder.svg"}
                       alt={autoridad.nombre_persona}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/placeholder.svg";
+                      }}
                     />
                   ) : (
                     <User size={16} />
@@ -474,7 +602,16 @@ export default function AutoridadesAdmin() {
                 </MobileCardItem>
                 <MobileCardItem>
                   <Mail size={16} />
-                  {autoridad.correos[0]?.email_persona || "Sin correo"}
+                  {autoridad.correos.length > 0
+                    ? autoridad.correos[0].email_persona
+                    : "Sin correo"}
+                  {autoridad.correos.length > 1 && (
+                    <span
+                      style={{ fontStyle: "italic", marginLeft: "0.25rem" }}
+                    >
+                      {`(+${autoridad.correos.length - 1} más)`}
+                    </span>
+                  )}
                 </MobileCardItem>
               </MobileCardContent>
               <MobileCardActions>
@@ -588,7 +725,7 @@ export default function AutoridadesAdmin() {
             <ModalBody>
               <FormGroup>
                 <Label htmlFor="nombre_persona">
-                  <User size={16} className="inline mr-2" /> Nombre completo
+                  <User size={16} className="inline mr-2" /> Nombre completo *
                 </Label>
                 <Input
                   type="text"
@@ -605,7 +742,7 @@ export default function AutoridadesAdmin() {
 
               <FormGroup>
                 <Label htmlFor="cargo">
-                  <Briefcase size={16} className="inline mr-2" /> Cargo
+                  <Briefcase size={16} className="inline mr-2" /> Cargo *
                 </Label>
                 <Input
                   type="text"
@@ -621,19 +758,63 @@ export default function AutoridadesAdmin() {
               </FormGroup>
 
               <FormGroup>
-                <Label htmlFor="email_persona">
-                  <Mail size={16} className="inline mr-2" /> Correo electrónico
+                <Label>
+                  <Mail size={16} className="inline mr-2" /> Correos
+                  electrónicos
                 </Label>
-                <Input
-                  type="email"
-                  id="email_persona"
-                  name="email_persona"
-                  value={formData.email_persona}
-                  onChange={handleFormChange}
-                  placeholder="Ej. juan.perez@umss.edu.bo"
-                />
-                {formErrors.email_persona && (
-                  <ErrorMessage>{formErrors.email_persona}</ErrorMessage>
+
+                {/* Lista de correos */}
+                <EmailList>
+                  {formData.emails.length > 0 ? (
+                    formData.emails.map((email, index) => (
+                      <EmailItem key={index}>
+                        <EmailContent>
+                          <Mail size={16} />
+                          {email}
+                        </EmailContent>
+                        <EmailActions>
+                          <IconButton
+                            onClick={() => removeEmail(index)}
+                            color="#ef4444"
+                            hoverColor="#dc2626"
+                            title="Eliminar"
+                          >
+                            <Trash size={18} />
+                          </IconButton>
+                        </EmailActions>
+                      </EmailItem>
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        color: "#6b7280",
+                        fontStyle: "italic",
+                        fontSize: "0.875rem",
+                        padding: "0.5rem 0",
+                      }}
+                    >
+                      No hay correos agregados
+                    </div>
+                  )}
+                </EmailList>
+
+                {/* Agregar nuevo correo */}
+                <AddEmailContainer>
+                  <AddEmailInput
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="Agregar nuevo correo"
+                  />
+                  <AddEmailButton onClick={addEmail}>
+                    <Plus size={16} /> Agregar
+                  </AddEmailButton>
+                </AddEmailContainer>
+                {formErrors.newEmail && (
+                  <ErrorMessage>{formErrors.newEmail}</ErrorMessage>
+                )}
+                {formErrors.emails && (
+                  <ErrorMessage>{formErrors.emails}</ErrorMessage>
                 )}
               </FormGroup>
 
@@ -644,27 +825,45 @@ export default function AutoridadesAdmin() {
                 </Label>
                 <ImagePreviewContainer>
                   <ImagePreview>
-                    {imagePreview ? (
+                    {imagePreview && !formData.quitar_imagen ? (
                       <img
                         src={imagePreview || "/placeholder.svg"}
                         alt="Vista previa"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/placeholder.svg";
+                        }}
                       />
                     ) : (
                       <User size={40} />
                     )}
                   </ImagePreview>
-                  <UploadButton htmlFor="imagen_persona">
-                    <Upload size={16} />{" "}
-                    {imagePreview ? "Cambiar imagen" : "Subir imagen"}
-                    <input
-                      type="file"
-                      id="imagen_persona"
-                      name="imagen_persona"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      ref={fileInputRef}
-                    />
-                  </UploadButton>
+
+                  <ImageActions>
+                    {imagePreview && !formData.quitar_imagen ? (
+                      <RemoveImageButton onClick={handleRemoveImage}>
+                        <XCircle size={16} /> Quitar imagen
+                      </RemoveImageButton>
+                    ) : formData.quitar_imagen &&
+                      selectedAutoridad?.imagen_persona ? (
+                      <Button onClick={handleCancelRemoveImage}>
+                        <Upload size={16} /> Restaurar imagen
+                      </Button>
+                    ) : null}
+
+                    <UploadButton htmlFor="imagen_persona">
+                      <Upload size={16} />{" "}
+                      {imagePreview ? "Cambiar imagen" : "Subir imagen"}
+                      <input
+                        type="file"
+                        id="imagen_persona"
+                        name="imagen_persona"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        onChange={handleImageChange}
+                        ref={fileInputRef}
+                      />
+                    </UploadButton>
+                  </ImageActions>
                 </ImagePreviewContainer>
                 {formErrors.imagen_persona && (
                   <ErrorMessage>{formErrors.imagen_persona}</ErrorMessage>
@@ -837,10 +1036,9 @@ const Table = styled.div`
 
 const TableHeader = styled.div`
   display: grid;
-  grid-template-columns: minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(
-      180px,
-      1.5fr
-    ) minmax(80px, 0.5fr) minmax(100px, 0.5fr);
+  grid-template-columns:
+    minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(180px, 1.5fr)
+    minmax(80px, 0.5fr) minmax(100px, 0.5fr);
   background-color: #f9fafb;
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #e5e7eb;
@@ -862,10 +1060,9 @@ const TableBody = styled.div`
 
 const TableRow = styled.div`
   display: grid;
-  grid-template-columns: minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(
-      180px,
-      1.5fr
-    ) minmax(80px, 0.5fr) minmax(100px, 0.5fr);
+  grid-template-columns:
+    minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(180px, 1.5fr)
+    minmax(80px, 0.5fr) minmax(100px, 0.5fr);
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #e5e7eb;
   transition: background-color 0.2s;
@@ -1088,11 +1285,40 @@ const ImagePreview = styled.div`
   justify-content: center;
   background-color: #f9fafb;
   margin-bottom: 0.75rem;
+  position: relative;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+`;
+
+const ImageActions = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+`;
+
+const RemoveImageButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #dc2626;
+  }
+
+  svg {
+    margin-right: 0.5rem;
   }
 `;
 
@@ -1283,5 +1509,117 @@ const DesktopView = styled.div`
 
   @media (max-width: 768px) {
     display: none;
+  }
+`;
+
+// Componentes para múltiples correos
+const EmailList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  width: 100%;
+`;
+
+const EmailItem = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  background-color: #f9fafb;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+`;
+
+const EmailContent = styled.div`
+  flex-grow: 1;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+`;
+
+const EmailActions = styled.div`
+  display: flex;
+  margin-left: 0.5rem;
+
+  @media (max-width: 480px) {
+    margin-left: 0;
+    justify-content: flex-end;
+    width: 100%;
+  }
+`;
+
+const AddEmailContainer = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-top: 0.5rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+`;
+
+const AddEmailInput = styled.input`
+  flex-grow: 1;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+  font-size: 0.875rem;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  }
+
+  @media (max-width: 480px) {
+    border-radius: 0.375rem;
+    width: 100%;
+  }
+`;
+
+const AddEmailButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #2563eb;
+  }
+
+  svg {
+    margin-right: 0.25rem;
+  }
+
+  @media (max-width: 480px) {
+    border-radius: 0.375rem;
+    width: 100%;
   }
 `;

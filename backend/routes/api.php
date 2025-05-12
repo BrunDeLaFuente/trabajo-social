@@ -32,7 +32,7 @@ Route::middleware(['jwt.auth'])->group(function () {
 
     // Autoridades
     Route::post('/autoridadesCrear', [AutoridadController::class, 'store']);
-    Route::put('/autoridadesActualizar/{id}', [AutoridadController::class, 'update']);
+    Route::match(['PUT', 'POST'], '/autoridadesActualizar/{id}', [AutoridadController::class, 'update']);
     Route::delete('/autoridadesEliminar/{id}', [AutoridadController::class, 'destroy']);
 });
 

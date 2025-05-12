@@ -1,87 +1,50 @@
+import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import HeroSection from "../../../components/public/HeroSection";
-import iconoUser from "../../../assets/img/user-icon.png";
 import { FaUserTie } from "react-icons/fa";
-
-const autoridadesData = [
-  {
-    nombre: "PhD. Ing. Mauricio F. Villazón Gómez",
-    cargo: "Director de Carrera",
-    correo1: "mauricio.villazon@fcyt.umss.edu.bo",
-    correo2: "direccion.civil@fcyt.umss.edu.bo",
-    imagen: iconoUser, // Ruta de icono en assets
-  },
-  {
-    nombre: "Ing. Jaime Ayllón Acosta",
-    cargo: "Jefe de Departamento",
-    correo1: "jaimeayllon.a@fcyt.umss.edu.bo",
-    correo2: "departamento.civil@fcyt.umss.edu.bo",
-    imagen: "", // Ruta de icono en assets
-  },
-  {
-    nombre: "PhD. Ing. Mauricio F. Villazón Gómez",
-    cargo: "Director de Carrera",
-    correo1: "mauricio.villazon@fcyt.umss.edu.bo",
-    correo2: "direccion.civil@fcyt.umss.edu.bo",
-    imagen: "", // Ruta de icono en assets
-  },
-  {
-    nombre: "Ing. Jaime Ayllón Acosta",
-    cargo: "Jefe de Departamento",
-    correo1: "jaimeayllon.a@fcyt.umss.edu.bo",
-    correo2: "departamento.civil@fcyt.umss.edu.bo",
-    imagen: "", // Ruta de icono en assets
-  },
-  {
-    nombre: "PhD. Ing. Mauricio F. Villazón Gómez",
-    cargo: "Director de Carrera",
-    correo1: "mauricio.villazon@fcyt.umss.edu.bo",
-    correo2: "direccion.civil@fcyt.umss.edu.bo",
-    imagen: "", // Ruta de icono en assets
-  },
-  {
-    nombre: "Ing. Jaime Ayllón Acosta",
-    cargo: "Jefe de Departamento",
-    correo1: "jaimeayllon.a@fcyt.umss.edu.bo",
-    correo2: "departamento.civil@fcyt.umss.edu.bo",
-    imagen: "", // Ruta de icono en assets
-  },
-  {
-    nombre: "PhD. Ing. Mauricio F. Villazón Gómez",
-    cargo: "Director de Carrera",
-    correo1: "mauricio.villazon@fcyt.umss.edu.bo",
-    correo2: "direccion.civil@fcyt.umss.edu.bo",
-    imagen: "", // Ruta de icono en assets
-  },
-  {
-    nombre: "Ing. Jaime Ayllón Acosta",
-    cargo: "Jefe de Departamento",
-    correo1: "jaimeayllon.a@fcyt.umss.edu.bo",
-    correo2: "departamento.civil@fcyt.umss.edu.bo",
-    imagen: "", // Ruta de icono en assets
-  },
-];
+import api from "../../../utils/api"; // Asegúrate de tener configurado axios baseURL
 
 const Autoridades = () => {
+  const [autoridades, setAutoridades] = useState([]);
+
+  useEffect(() => {
+    const fetchAutoridades = async () => {
+      try {
+        const response = await api.get("/autoridades");
+        setAutoridades(response.data);
+      } catch (error) {
+        console.error("Error al obtener autoridades:", error);
+      }
+    };
+
+    fetchAutoridades();
+  }, []);
+
   return (
     <PageContainer>
       <HeroSection title="Autoridades de la Carrera" />
       <ContentWrapper>
-        {autoridadesData.map((autoridad, index) => (
-          <Card key={index}>
+        {autoridades.map((autoridad) => (
+          <Card key={autoridad.id_persona}>
             <ImageContainer>
-              {autoridad.imagen ? (
-                <ProfileImage src={autoridad.imagen} alt={autoridad.nombre} />
+              {autoridad.imagen_persona_url ? (
+                <ProfileImage
+                  src={autoridad.imagen_persona_url}
+                  alt={autoridad.nombre_persona}
+                  onError={(e) => (e.target.src = "/placeholder.svg")}
+                />
               ) : (
                 <IconPlaceholder />
               )}
             </ImageContainer>
-            <Name>{autoridad.nombre}</Name>
+            <Name>{autoridad.nombre_persona}</Name>
             <Position>{autoridad.cargo}</Position>
-            <EmailContainer>
-              <EmailLabel>Correo:</EmailLabel> {autoridad.correo1}
-            </EmailContainer>
-            <EmailContainer>{autoridad.correo2}</EmailContainer>
+            {autoridad.correos.map((correo, idx) => (
+              <EmailContainer key={correo.id_persona_correo}>
+                {idx === 0 && <EmailLabel>Correo:</EmailLabel>}{" "}
+                {correo.email_persona}
+              </EmailContainer>
+            ))}
           </Card>
         ))}
       </ContentWrapper>

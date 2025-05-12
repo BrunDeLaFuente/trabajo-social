@@ -1,5 +1,11 @@
 import styled from "styled-components";
-import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTelegramPlane, FaYoutube } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+  FaTelegramPlane,
+  FaYoutube,
+} from "react-icons/fa";
 import footerBackground from "../../assets/img/portada.png";
 import logo from "../../assets/img/logo-footer.png";
 import logoBordeado from "../../assets/img/logo.jpeg";
@@ -8,7 +14,6 @@ import banner from "../../assets/img/banner.png";
 const Footer = () => {
   return (
     <FooterContainer>
-      {/* 🔹 Sección superior con enlaces */}
       <TopSection>
         <Overlay />
         <ContentWrapper>
@@ -18,22 +23,36 @@ const Footer = () => {
           <LinksSection>
             <Column>
               <ColumnTitle>Centros y Laboratorios</ColumnTitle>
-              <FooterLink href="/centro-aguas">Centro de Aguas y Saneamiento Ambiental</FooterLink>
+              <FooterLink href="/centro-aguas">
+                Centro de Aguas y Saneamiento Ambiental
+              </FooterLink>
               <FooterLink href="/geotecnia">Geotecnia</FooterLink>
               <FooterLink href="/hidraulica">Hidráulica</FooterLink>
               <FooterLink href="/pavimentos">Pavimentos y Asfaltos</FooterLink>
-              <FooterLink href="/resistencia-materiales">Resistencia de Materiales</FooterLink>
+              <FooterLink href="/resistencia-materiales">
+                Resistencia de Materiales
+              </FooterLink>
             </Column>
             <Column>
               <ColumnTitle>Enlaces</ColumnTitle>
-              <FooterLink href="https://www.umss.edu.bo/correos-y-plataformas-educativas/">Correo y Plataformas Educativas</FooterLink>
-              <FooterLink href="https://sigea.hum.umss.edu.bo/">SIGEA</FooterLink>
-              <FooterLink href="https://websis.umss.edu.bo/">WebSISS</FooterLink>
+              <FooterLink href="https://www.umss.edu.bo/correos-y-plataformas-educativas/">
+                Correo y Plataformas Educativas
+              </FooterLink>
+              <FooterLink href="https://sigea.hum.umss.edu.bo/">
+                SIGEA
+              </FooterLink>
+              <FooterLink href="https://websis.umss.edu.bo/">
+                WebSISS
+              </FooterLink>
             </Column>
             <Column>
               <ColumnTitle>Postgrado</ColumnTitle>
-              <FooterLink href="https://posgrado.hum.umss.edu.bo/">Postgrado Facultativo</FooterLink>
-              <FooterLink href="https://posgrado.umss.edu.bo/">Postgrado Universitario</FooterLink>
+              <FooterLink href="https://posgrado.hum.umss.edu.bo/">
+                Postgrado Facultativo
+              </FooterLink>
+              <FooterLink href="https://posgrado.umss.edu.bo/">
+                Postgrado Universitario
+              </FooterLink>
             </Column>
             <Column>
               <ColumnTitle>Síguenos en</ColumnTitle>
@@ -66,7 +85,8 @@ const Footer = () => {
             <img src={logo} alt="Umss" />
           </BottomLogoContainer>
           <Copyright>
-            DERECHOS RESERVADOS © {new Date().getFullYear()} - <span>UNIVERSIDAD MAYOR DE SAN SIMÓN</span>
+            DERECHOS RESERVADOS © {new Date().getFullYear()} -{" "}
+            <span>UNIVERSIDAD MAYOR DE SAN SIMÓN</span>
           </Copyright>
         </BottomContent>
         <SocialMedia>
@@ -111,7 +131,6 @@ const TopSection = styled.div`
   flex-direction: column;
   align-items: center;
   text-align: left;
-  
 
   @media (max-width: 768px) {
     padding: 50px 5%;
@@ -286,4 +305,3 @@ const SocialMedia = styled.div`
   align-items: center;
   gap: 8px; /* 📌 Menos espacio entre los íconos */
 `;
-

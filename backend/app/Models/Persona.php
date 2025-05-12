@@ -33,4 +33,11 @@ class Persona extends Model
     {
         return $this->belongsToMany(Asignatura::class, 'docente_asignatura', 'id_persona', 'id_asignatura');
     }
+
+    public function getImagenPersonaUrlAttribute()
+    {
+        return $this->imagen_persona
+            ? url('storage/' . $this->imagen_persona)
+            : null;
+    }
 }

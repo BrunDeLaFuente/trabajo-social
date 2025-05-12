@@ -367,7 +367,17 @@ export default function Informacion() {
                   onChange={(e) => handleEmailChange(index, e.target.value)}
                 />
               ) : (
-                <ItemContent>{correo.correo_carrera}</ItemContent>
+                <ItemContent>
+                  <Mail
+                    size={16}
+                    style={{
+                      display: "inline-block",
+                      marginRight: "0.5rem",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                  {correo.correo_carrera}
+                </ItemContent>
               )}
 
               <ButtonGroup>
@@ -432,7 +442,17 @@ export default function Informacion() {
                   onChange={(e) => handlePhoneChange(index, e.target.value)}
                 />
               ) : (
-                <ItemContent>{telefono.telefono}</ItemContent>
+                <ItemContent>
+                  <Phone
+                    size={16}
+                    style={{
+                      display: "inline-block",
+                      marginRight: "0.5rem",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                  {telefono.telefono}
+                </ItemContent>
               )}
 
               <ButtonGroup>
@@ -607,10 +627,15 @@ const ItemRow = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+  margin-bottom: 0.5rem;
 
   @media (max-width: 480px) {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 0.5rem;
   }
 `;
@@ -618,11 +643,15 @@ const ItemRow = styled.div`
 const ItemContent = styled.div`
   flex-grow: 1;
   padding: 0.5rem;
-  background-color: #f9fafb;
-  border-radius: 0.375rem;
   font-size: 0.875rem;
   word-break: break-word;
   overflow-wrap: break-word;
+
+  @media (max-width: 480px) {
+    width: 100%;
+    border-bottom: 1px dashed #e5e7eb;
+    padding-bottom: 0.5rem;
+  }
 `;
 
 const ItemInput = styled.input`
@@ -638,10 +667,6 @@ const ItemInput = styled.input`
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
   }
-
-  @media (max-width: 480px) {
-    width: 100%;
-  }
 `;
 
 const ButtonGroup = styled.div`
@@ -652,6 +677,7 @@ const ButtonGroup = styled.div`
     margin-left: 0;
     justify-content: flex-end;
     width: 100%;
+    padding-top: 0.25rem;
   }
 `;
 
