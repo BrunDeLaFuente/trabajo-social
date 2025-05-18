@@ -1,73 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import HeroSection from "../../../components/public/HeroSection";
 import { FaUserTie } from "react-icons/fa";
-
-// 📌 Datos estáticos de docentes
-const docentesData = [
-  {
-    nombre: "Ing. Víctor H. Alvarez Iriarte",
-    profesion: "Ingeniero",
-    asignaturas: ["Ingeniería Económica"],
-  },
-  {
-    nombre: "Ing. Marko J. Andrade Uzieda",
-    profesion: "Ingeniero",
-    asignaturas: ["Física I", "Física II", "Estructuras Hiperestáticas"],
-  },
-  {
-    nombre: "Ing. Omar Antezana Roman",
-    profesion: "Ingeniero",
-    asignaturas: ["Dibujo Técnico", "Análisis Numérico", "Estructuras Hiperestáticas", "Hormigón Armado I"],
-  },
-  {
-    nombre: "Lic. Ligia J. Aranibar La Fuente",
-    profesion: "Licenciada",
-    asignaturas: ["Economía Política"],
-  },
-  {
-    nombre: "Ing. Jaime Ayllón Acosta",
-    profesion: "Ingeniero Civil",
-    asignaturas: ["Maquinaria y equipo de construcción", "Carreteras II", "Aeropuertos"],
-  },
-  {
-    nombre: "Ing. Javier Caballero Flores",
-    profesion: "Ingeniero Civil",
-    asignaturas: ["Estructuras de madera y metálicas", "Taller de modalidades de graduación I"],
-  },
-  {
-    nombre: "Ing. Marko J. Andrade Uzieda",
-    profesion: "Ingeniero",
-    asignaturas: ["Física I", "Física II", "Estructuras Hiperestáticas"],
-  },
-  {
-    nombre: "Ing. Omar Antezana Roman",
-    profesion: "Ingeniero",
-    asignaturas: ["Dibujo Técnico", "Análisis Numérico", "Estructuras Hiperestáticas", "Hormigón Armado I"],
-  },
-  {
-    nombre: "Lic. Ligia J. Aranibar La Fuente",
-    profesion: "Licenciada",
-    asignaturas: ["Economía Política"],
-  },
-  {
-    nombre: "Ing. Jaime Ayllón Acosta",
-    profesion: "Ingeniero Civil",
-    asignaturas: ["Maquinaria y equipo de construcción", "Carreteras II", "Aeropuertos"],
-  },
-  {
-    nombre: "Ing. Javier Caballero Flores",
-    profesion: "Ingeniero Civil",
-    asignaturas: ["Estructuras de madera y metálicas", "Taller de modalidades de graduación I"],
-  },
-];
+import api from "../../../utils/api";
 
 const PersonalDocente = () => {
   const [busqueda, setBusqueda] = useState("");
+  const [docentes, setDocentes] = useState([]);
 
-  // Filtrar docentes según la búsqueda
-  const docentesFiltrados = docentesData.filter((docente) =>
-    [docente.nombre, docente.profesion, ...docente.asignaturas]
+  useEffect(() => {
+    const fetchDocentes = async () => {
+      try {
+        const response = await api.get("/docentes");
+        setDocentes(response.data.docentes);
+      } catch (error) {
+        console.error("Error al obtener docentes:", error);
+      }
+    };
+
+    fetchDocentes();
+  }, []);
+
+  const docentesFiltrados = docentes.filter((docente) =>
+    [
+      docente.nombre_persona,
+      docente.cargo,
+      ...docente.asignaturas.map((a) => a.nombre_asignatura),
+    ]
       .join(" ")
       .toLowerCase()
       .includes(busqueda.toLowerCase())
@@ -86,17 +45,29 @@ const PersonalDocente = () => {
         <DocentesContainer>
           {docentesFiltrados.length > 0 ? (
             docentesFiltrados.map((docente, index) => (
-              <DocenteCard key={index} $alternar={index % 2 === 0}>
+              <DocenteCard key={docente.id_persona} $alternar={index % 2 === 0}>
                 <IconContainer>
-                  <FaUserTie />
+                  {docente.imagen_persona_url ? (
+                    <Img
+                      src={docente.imagen_persona_url}
+                      alt={docente.nombre_persona}
+                    />
+                  ) : (
+                    <FaUserTie />
+                  )}
                 </IconContainer>
                 <DocenteInfo>
-                  <Name>{docente.nombre}</Name>
-                  <Profesion>{docente.profesion}</Profesion>
+                  <Name>{docente.nombre_persona}</Name>
+                  {docente.correos.length > 0 && (
+                    <SmallCorreo>
+                      {docente.correos[0].email_persona}
+                    </SmallCorreo>
+                  )}
+                  <Profesion>{docente.cargo}</Profesion>
                   <AsignaturaBoton>Asignatura</AsignaturaBoton>
                   <AsignaturasList>
-                    {docente.asignaturas.map((asignatura, idx) => (
-                      <li key={idx}>{asignatura}</li>
+                    {docente.asignaturas.map((asig) => (
+                      <li key={asig.id_asignatura}>{asig.nombre_asignatura}</li>
                     ))}
                   </AsignaturasList>
                 </DocenteInfo>
@@ -250,3 +221,15 @@ const NoResults = styled.p`
   font-style: italic;
 `;
 
+const Img = styled.img`
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 50%;
+`;
+
+const SmallCorreo = styled.small`
+  font-size: 0.8rem;
+  color: #555;
+  margin-bottom: 5px;
+`;
