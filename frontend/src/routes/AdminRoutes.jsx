@@ -7,6 +7,9 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import Informacion from "../pages/admin/Carrera/Informacion";
 import RedesSociales from "../pages/admin/Carrera/RedesSociales";
 import AutoridadesAdmin from "../pages/admin/Personal/AutoridadesAdmin";
+import AdministrativosAdmin from "../pages/admin/Personal/AdministrativosAdmin";
+import DocentesAdmin from "../pages/admin/Personal/DocentesAdmin";
+import AsignaturasAdmin from "../pages/admin/Personal/AsignaturasAdmin";
 
 const AdminRoutes = () => {
   const { user, loading } = useContext(AuthContext);
@@ -34,8 +37,9 @@ const AdminRoutes = () => {
         <Route path="/malla-curricular" element={<h1>Malla Curricular</h1>} />
         <Route path="/redes-sociales" element={<RedesSociales />} />
         <Route path="/tramites" element={<h1>Trámites</h1>} />
-        <Route path="/docentes" element={<h1>Docentes</h1>} />
-        <Route path="/administrativos" element={<h1>Administrativos</h1>} />
+        <Route path="/docentes" element={<DocentesAdmin />} />
+        <Route path="/docentes/asignaturas" element={<AsignaturasAdmin />} />
+        <Route path="/administrativos" element={<AdministrativosAdmin />} />
         <Route path="/autoridades" element={<AutoridadesAdmin />} />
         <Route path="/publicaciones" element={<h1>Publicaciones</h1>} />
         <Route path="/comunicados" element={<h1>Comunicados</h1>} />

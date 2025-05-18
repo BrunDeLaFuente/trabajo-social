@@ -1,45 +1,48 @@
+import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import HeroSection from "../../../components/public/HeroSection";
-import iconoUser from "../../../assets/img/user-icon.png";
 import { FaUserTie } from "react-icons/fa";
-
-const personalData = [
-  {
-    nombre: "Lic. Gabriela Alejandra Pozo Irigoyen",
-    cargo: "Secretaria",
-    correo1: "g.pozo@umss.edu",
-    correo2: "",
-    imagen: iconoUser,
-  },
-  {
-    nombre: "Omar Camacho",
-    cargo: "Personal de Apoyo",
-    correo1: "",
-    correo2: "",
-    imagen: "",
-  },
-];
+import api from "../../../utils/api";
 
 const PersonalAdministrativo = () => {
+  const [administrativos, setAdministrativos] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await api.get("/administrativos");
+        setAdministrativos(data);
+      } catch (error) {
+        console.error("Error al cargar administrativos:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <PageContainer>
       <HeroSection title="Personal Administrativo" />
       <ContentWrapper>
-        {personalData.map((autoridad, index) => (
-          <Card key={index}>
+        {administrativos.map((admin) => (
+          <Card key={admin.id_persona}>
             <ImageContainer>
-              {autoridad.imagen ? (
-                <ProfileImage src={autoridad.imagen} alt={autoridad.nombre} />
+              {admin.imagen_persona_url ? (
+                <ProfileImage
+                  src={admin.imagen_persona_url}
+                  alt={admin.nombre_persona}
+                />
               ) : (
                 <IconPlaceholder />
               )}
             </ImageContainer>
-            <Name>{autoridad.nombre}</Name>
-            <Position>{autoridad.cargo}</Position>
-            <EmailContainer>
-              <EmailLabel>Correo:</EmailLabel> {autoridad.correo1}
-            </EmailContainer>
-            <EmailContainer>{autoridad.correo2}</EmailContainer>
+            <Name>{admin.nombre_persona}</Name>
+            <Position>{admin.cargo}</Position>
+            {admin.correos.map((correo) => (
+              <EmailContainer key={correo.id_persona_correo}>
+                <EmailLabel>Correo:</EmailLabel> {correo.email_persona}
+              </EmailContainer>
+            ))}
           </Card>
         ))}
       </ContentWrapper>

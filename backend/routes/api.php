@@ -10,6 +10,7 @@ use App\Http\Controllers\CarreraRrssController;
 use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\AdministrativoController;
 use App\Http\Controllers\AutoridadController;
+use App\Http\Controllers\AsignaturaController;
 
 // 🔒 Rutas PRIVADAS (requieren JWT)
 Route::middleware(['jwt.auth'])->group(function () {
@@ -21,14 +22,20 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::put('/rrssUpdate', [CarreraRrssController::class, 'update']);
 
     // Docentes
-    Route::post('/docentes', [DocenteController::class, 'store']);
-    Route::put('/docentes/{id}', [DocenteController::class, 'update']);
-    Route::delete('/docentes/{id}', [DocenteController::class, 'destroy']);
+    Route::post('/docentesCrear', [DocenteController::class, 'store']);
+    Route::match(['PUT', 'POST'], '/docentesActualizar/{id}', [DocenteController::class, 'update']);
+    Route::delete('/docentesEliminar/{id}', [DocenteController::class, 'destroy']);
+    Route::post('/docentes-importar', [DocenteController::class, 'importar']);
+    Route::get('/asignaturas', [AsignaturaController::class, 'index']);
+    Route::get('/asignaturasBuscar/{id}', [AsignaturaController::class, 'show']);
+    Route::post('/asignaturasCrear', [AsignaturaController::class, 'store']);
+    Route::match(['PUT', 'POST'], '/asignaturasActualizar/{id}', [AsignaturaController::class, 'update']);
+    Route::delete('/asignaturasEliminar/{id}', [AsignaturaController::class, 'destroy']);
 
     // Administrativos
-    Route::post('/administrativos', [AdministrativoController::class, 'store']);
-    Route::put('/administrativos/{id}', [AdministrativoController::class, 'update']);
-    Route::delete('/administrativos/{id}', [AdministrativoController::class, 'destroy']);
+    Route::post('/administrativosCrear', [AdministrativoController::class, 'store']);
+    Route::match(['PUT', 'POST'], '/administrativosActualizar/{id}', [AdministrativoController::class, 'update']);
+    Route::delete('/administrativosEliminar/{id}', [AdministrativoController::class, 'destroy']);
 
     // Autoridades
     Route::post('/autoridadesCrear', [AutoridadController::class, 'store']);

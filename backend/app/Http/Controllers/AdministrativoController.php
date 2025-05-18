@@ -15,7 +15,8 @@ class AdministrativoController extends Controller
     {
         $administrativos = Persona::with('correos')
             ->whereHas('tipo', fn($q) => $q->where('nombre_tipo', 'Administrativo'))
-            ->get();
+            ->get()
+            ->each->append('imagen_persona_url');
 
         return response()->json($administrativos);
     }
@@ -25,9 +26,9 @@ class AdministrativoController extends Controller
         $request->validate([
             'nombre_persona' => 'required|string|max:255',
             'cargo' => 'required|string|max:255',
-            'imagen' => 'nullable|image|max:2048',
-            'correos' => 'nullable|array',
+            'correos' => 'array',
             'correos.*' => 'email',
+            'imagen' => 'nullable|image|max:2048',
         ]);
 
         DB::beginTransaction();
@@ -51,14 +52,13 @@ class AdministrativoController extends Controller
             }
 
             DB::commit();
-            return response()->json($persona->load('correos'), 201);
+            return response()->json($persona->load('correos')->append('imagen_persona_url'), 201);
         } catch (QueryException $e) {
             DB::rollback();
-            if ($e->errorInfo[1] == 1062) {
-                return response()->json(['message' => 'El correo electrónico ya fue registrado.'], 422);
-            }
-
-            return response()->json(['message' => 'Error inesperado.', 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'Ocurrió un error inesperado.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -69,9 +69,10 @@ class AdministrativoController extends Controller
         $request->validate([
             'nombre_persona' => 'required|string|max:255',
             'cargo' => 'required|string|max:255',
-            'imagen' => 'nullable|image|max:2048',
-            'correos' => 'nullable|array',
+            'correos' => 'array',
             'correos.*' => 'email',
+            'imagen' => 'nullable|image|max:2048',
+            'quitar_imagen' => 'nullable|boolean',
         ]);
 
         DB::beginTransaction();
@@ -81,13 +82,20 @@ class AdministrativoController extends Controller
                 'cargo' => $request->cargo,
             ]);
 
+            // ✅ Quitar imagen si viene el flag
+            if ($request->boolean('quitar_imagen') && $persona->imagen_persona) {
+                Storage::disk('public')->deleteDirectory("personas/{$persona->id_persona}");
+                $persona->update(['imagen_persona' => null]);
+            }
+
+            // ✅ Subir nueva imagen si se envía
             if ($request->hasFile('imagen')) {
                 Storage::disk('public')->deleteDirectory("personas/{$persona->id_persona}");
                 $path = $request->file('imagen')->store("personas/{$persona->id_persona}", 'public');
                 $persona->update(['imagen_persona' => $path]);
             }
 
-            // Reemplazar correos
+            // 🔄 Reemplazar correos
             PersonaCorreo::where('id_persona', $persona->id_persona)->delete();
             foreach ($request->correos ?? [] as $correo) {
                 PersonaCorreo::create([
@@ -97,14 +105,13 @@ class AdministrativoController extends Controller
             }
 
             DB::commit();
-            return response()->json($persona->load('correos'));
+            return response()->json($persona->load('correos')->append('imagen_persona_url'));
         } catch (QueryException $e) {
             DB::rollback();
-            if ($e->errorInfo[1] == 1062) {
-                return response()->json(['message' => 'El correo electrónico ya fue registrado.'], 422);
-            }
-
-            return response()->json(['message' => 'Error inesperado.', 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'Ocurrió un error inesperado.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 

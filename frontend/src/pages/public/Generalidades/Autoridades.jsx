@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import HeroSection from "../../../components/public/HeroSection";
 import { FaUserTie } from "react-icons/fa";
-import api from "../../../utils/api"; // Asegúrate de tener configurado axios baseURL
+import api from "../../../utils/api";
 
 const Autoridades = () => {
   const [autoridades, setAutoridades] = useState([]);

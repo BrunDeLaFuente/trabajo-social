@@ -30,7 +30,7 @@ class CarreraController extends Controller
      */
     public function show()
     {
-        $carrera = Carrera::with(['correos', 'telefonos', 'redesSociales'])->find(1);
+        $carrera = Carrera::with(['correos', 'telefonos', 'redesSociales'])->first();
 
         if (!$carrera) {
             return response()->json(['message' => 'Carrera no encontrada'], 404);
@@ -46,7 +46,7 @@ class CarreraController extends Controller
 
     public function update(Request $request)
     {
-        $carrera = Carrera::findOrFail(1); // Solo hay una carrera
+        $carrera = Carrera::firstOrFail();
 
         // ✅ Validar datos principales
         $request->validate([

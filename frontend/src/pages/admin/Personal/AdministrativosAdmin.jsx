@@ -21,16 +21,16 @@ import api from "../../../utils/api";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import CajaMensaje from "../../../components/utils/CajaMensaje";
 
-export default function AutoridadesAdmin() {
-  const [autoridades, setAutoridades] = useState([]);
-  const [filteredAutoridades, setFilteredAutoridades] = useState([]);
+export default function AdministrativosAdmin() {
+  const [administrativos, setAdministrativos] = useState([]);
+  const [filteredAdministrativos, setFilteredAdministrativos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  const [selectedAutoridad, setSelectedAutoridad] = useState(null);
+  const [selectedAdministrativo, setSelectedAdministrativo] = useState(null);
   const [formData, setFormData] = useState({
     nombre_persona: "",
     cargo: "",
@@ -66,18 +66,22 @@ export default function AutoridadesAdmin() {
     setMensajes((prev) => prev.filter((m) => m.id !== id));
   };
 
-  // Cargar datos de autoridades
+  // Cargar datos de administrativos
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await api.get("/autoridades");
-        setAutoridades(response.data);
-        setFilteredAutoridades(response.data);
+        const response = await api.get("/administrativos");
+        setAdministrativos(response.data);
+        setFilteredAdministrativos(response.data);
         setTotalPages(Math.ceil(response.data.length / itemsPerPage));
       } catch (error) {
         console.error("Error al cargar los datos:", error);
-        agregarMensaje("fail", "#D32F2F", "Error al cargar las autoridades.");
+        agregarMensaje(
+          "fail",
+          "#D32F2F",
+          "Error al cargar los administrativos."
+        );
       } finally {
         setLoading(false);
       }
@@ -86,36 +90,36 @@ export default function AutoridadesAdmin() {
     fetchData();
   }, []);
 
-  // Filtrar autoridades cuando cambia el término de búsqueda
+  // Filtrar administrativos cuando cambia el término de búsqueda
   useEffect(() => {
     if (searchTerm.trim() === "") {
-      setFilteredAutoridades(autoridades);
+      setFilteredAdministrativos(administrativos);
     } else {
       const term = searchTerm.toLowerCase();
-      const filtered = autoridades.filter(
-        (autoridad) =>
-          autoridad.nombre_persona.toLowerCase().includes(term) ||
-          autoridad.cargo.toLowerCase().includes(term) ||
-          autoridad.correos.some((correo) =>
+      const filtered = administrativos.filter(
+        (administrativo) =>
+          administrativo.nombre_persona.toLowerCase().includes(term) ||
+          administrativo.cargo.toLowerCase().includes(term) ||
+          administrativo.correos.some((correo) =>
             correo.email_persona.toLowerCase().includes(term)
           )
       );
-      setFilteredAutoridades(filtered);
+      setFilteredAdministrativos(filtered);
     }
     setCurrentPage(1);
-    setTotalPages(Math.ceil(filteredAutoridades.length / itemsPerPage));
-  }, [searchTerm, autoridades]);
+    setTotalPages(Math.ceil(filteredAdministrativos.length / itemsPerPage));
+  }, [searchTerm, administrativos]);
 
   // Actualizar total de páginas cuando cambian los resultados filtrados
   useEffect(() => {
-    setTotalPages(Math.ceil(filteredAutoridades.length / itemsPerPage));
-  }, [filteredAutoridades]);
+    setTotalPages(Math.ceil(filteredAdministrativos.length / itemsPerPage));
+  }, [filteredAdministrativos]);
 
-  // Obtener autoridades para la página actual
+  // Obtener administrativos para la página actual
   const getCurrentPageItems = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return filteredAutoridades.slice(startIndex, endIndex);
+    return filteredAdministrativos.slice(startIndex, endIndex);
   };
 
   // Manejar cambio de página
@@ -124,41 +128,41 @@ export default function AutoridadesAdmin() {
   };
 
   // Abrir modal de eliminación
-  const openDeleteModal = (autoridad) => {
-    setSelectedAutoridad(autoridad);
+  const openDeleteModal = (administrativo) => {
+    setSelectedAdministrativo(administrativo);
     setIsDeleteModalOpen(true);
   };
 
   // Cerrar modal de eliminación
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
-    setSelectedAutoridad(null);
+    setSelectedAdministrativo(null);
   };
 
   // Abrir modal de formulario para editar
-  const openEditModal = (autoridad) => {
-    setSelectedAutoridad(autoridad);
+  const openEditModal = (administrativo) => {
+    setSelectedAdministrativo(administrativo);
 
     // Extraer los emails de los correos
-    const emails = autoridad.correos.map((correo) => correo.email_persona);
+    const emails = administrativo.correos.map((correo) => correo.email_persona);
 
     setFormData({
-      nombre_persona: autoridad.nombre_persona,
-      cargo: autoridad.cargo,
+      nombre_persona: administrativo.nombre_persona,
+      cargo: administrativo.cargo,
       emails: emails,
       imagen_persona: null,
       quitar_imagen: false,
     });
 
     // Mostrar la imagen actual si existe
-    setImagePreview(autoridad.imagen_persona_url);
+    setImagePreview(administrativo.imagen_persona_url);
     setFormErrors({});
     setIsFormModalOpen(true);
   };
 
   // Abrir modal de formulario para agregar
   const openAddModal = () => {
-    setSelectedAutoridad(null);
+    setSelectedAdministrativo(null);
     setFormData({
       nombre_persona: "",
       cargo: "",
@@ -174,7 +178,7 @@ export default function AutoridadesAdmin() {
   // Cerrar modal de formulario
   const closeFormModal = () => {
     setIsFormModalOpen(false);
-    setSelectedAutoridad(null);
+    setSelectedAdministrativo(null);
     setFormData({
       nombre_persona: "",
       cargo: "",
@@ -263,8 +267,8 @@ export default function AutoridadesAdmin() {
       quitar_imagen: false,
     });
     // Restaurar la imagen previa si estamos editando
-    if (selectedAutoridad && selectedAutoridad.imagen_persona_url) {
-      setImagePreview(selectedAutoridad.imagen_persona_url);
+    if (selectedAdministrativo && selectedAdministrativo.imagen_persona_url) {
+      setImagePreview(selectedAdministrativo.imagen_persona_url);
     }
   };
 
@@ -345,49 +349,54 @@ export default function AutoridadesAdmin() {
     return Object.keys(errors).length === 0;
   };
 
-  // Eliminar autoridad
+  // Eliminar administrativo
   const handleDelete = async () => {
-    if (!selectedAutoridad) return;
+    if (!selectedAdministrativo) return;
 
     try {
       setIsSubmitting(true);
-      await api.delete(`/autoridadesEliminar/${selectedAutoridad.id_persona}`);
+      await api.delete(
+        `/administrativosEliminar/${selectedAdministrativo.id_persona}`
+      );
 
-      // Actualizar lista de autoridades
-      setAutoridades(
-        autoridades.filter((a) => a.id_persona !== selectedAutoridad.id_persona)
+      // Actualizar lista de administrativos
+      setAdministrativos(
+        administrativos.filter(
+          (a) => a.id_persona !== selectedAdministrativo.id_persona
+        )
       );
       agregarMensaje(
         "success",
         "#2E7D32",
-        "Autoridad eliminada correctamente."
+        "Administrativo eliminado correctamente."
       );
       closeDeleteModal();
     } catch (error) {
       console.error("Error al eliminar:", error);
-      agregarMensaje("fail", "#D32F2F", "Error al eliminar la autoridad.");
+      agregarMensaje("fail", "#D32F2F", "Error al eliminar el administrativo.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Guardar autoridad (crear o actualizar)
+  // Guardar administrativo (crear o actualizar)
   const handleSave = async () => {
     if (!validateForm()) return;
 
-    // Verificar si ya existe una autoridad con el mismo nombre
+    // Verificar si ya existe un administrativo con el mismo nombre
     const nombreNormalizado = formData.nombre_persona.trim().toLowerCase();
-    const autoridadExistente = autoridades.find(
+    const administrativoExistente = administrativos.find(
       (a) =>
         a.nombre_persona.toLowerCase() === nombreNormalizado &&
-        (!selectedAutoridad || a.id_persona !== selectedAutoridad.id_persona)
+        (!selectedAdministrativo ||
+          a.id_persona !== selectedAdministrativo.id_persona)
     );
 
-    if (autoridadExistente) {
+    if (administrativoExistente) {
       agregarMensaje(
         "warning",
         "#ED6C02",
-        "Ya existe una autoridad con este nombre."
+        "Ya existe un administrativo con este nombre."
       );
       return;
     }
@@ -417,10 +426,10 @@ export default function AutoridadesAdmin() {
 
       let response;
 
-      if (selectedAutoridad) {
-        // Actualizar autoridad existente
+      if (selectedAdministrativo) {
+        // Actualizar administrativo existente
         response = await api.post(
-          `/autoridadesActualizar/${selectedAutoridad.id_persona}`,
+          `/administrativosActualizar/${selectedAdministrativo.id_persona}`,
           formDataToSend,
           {
             headers: {
@@ -429,28 +438,34 @@ export default function AutoridadesAdmin() {
           }
         );
 
-        // Actualizar lista de autoridades
-        setAutoridades(
-          autoridades.map((a) =>
-            a.id_persona === selectedAutoridad.id_persona ? response.data : a
+        // Actualizar lista de administrativos
+        setAdministrativos(
+          administrativos.map((a) =>
+            a.id_persona === selectedAdministrativo.id_persona
+              ? response.data
+              : a
           )
         );
         agregarMensaje(
           "success",
           "#2E7D32",
-          "Autoridad actualizada correctamente."
+          "Administrativo actualizado correctamente."
         );
       } else {
-        // Crear nueva autoridad
-        response = await api.post("/autoridadesCrear", formDataToSend, {
+        // Crear nuevo administrativo
+        response = await api.post("/administrativosCrear", formDataToSend, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
 
-        // Actualizar lista de autoridades
-        setAutoridades([...autoridades, response.data]);
-        agregarMensaje("success", "#2E7D32", "Autoridad creada correctamente.");
+        // Actualizar lista de administrativos
+        setAdministrativos([...administrativos, response.data]);
+        agregarMensaje(
+          "success",
+          "#2E7D32",
+          "Administrativo creado correctamente."
+        );
       }
 
       closeFormModal();
@@ -459,7 +474,9 @@ export default function AutoridadesAdmin() {
       agregarMensaje(
         "fail",
         "#D32F2F",
-        `Error al ${selectedAutoridad ? "actualizar" : "crear"} la autoridad.`
+        `Error al ${
+          selectedAdministrativo ? "actualizar" : "crear"
+        } el administrativo.`
       );
     } finally {
       setIsSubmitting(false);
@@ -467,7 +484,7 @@ export default function AutoridadesAdmin() {
   };
 
   if (loading) {
-    return <LoadingSpinner message="Cargando autoridades..." />;
+    return <LoadingSpinner message="Cargando administrativos..." />;
   }
 
   return (
@@ -486,7 +503,7 @@ export default function AutoridadesAdmin() {
       ))}
 
       <Title>
-        <User size={24} /> Autoridades de la carrera
+        <User size={24} /> Personal administrativo de la carrera
       </Title>
 
       <TopControls>
@@ -503,7 +520,7 @@ export default function AutoridadesAdmin() {
         </SearchContainer>
 
         <AddButton onClick={openAddModal}>
-          <Plus size={16} /> Agregar autoridad
+          <Plus size={16} /> Agregar administrativo
         </AddButton>
       </TopControls>
 
@@ -521,33 +538,34 @@ export default function AutoridadesAdmin() {
 
             <TableBody>
               {getCurrentPageItems().length > 0 ? (
-                getCurrentPageItems().map((autoridad) => (
-                  <TableRow key={autoridad.id_persona}>
-                    <TableCell>{autoridad.nombre_persona}</TableCell>
-                    <TableCell>{autoridad.cargo}</TableCell>
+                getCurrentPageItems().map((administrativo) => (
+                  <TableRow key={administrativo.id_persona}>
+                    <TableCell>{administrativo.nombre_persona}</TableCell>
+                    <TableCell>{administrativo.cargo}</TableCell>
                     <TableCell>
                       <Mail size={16} />
-                      {autoridad.correos.length > 0
-                        ? autoridad.correos[0].email_persona
+                      {administrativo.correos.length > 0
+                        ? administrativo.correos[0].email_persona
                         : "Sin correo"}
-                      {autoridad.correos.length > 1 && (
+                      {administrativo.correos.length > 1 && (
                         <span
-                          title={autoridad.correos
+                          title={administrativo.correos
                             .map((c) => c.email_persona)
                             .join(", ")}
                         >
-                          {` (+${autoridad.correos.length - 1} más)`}
+                          {` (+${administrativo.correos.length - 1} más)`}
                         </span>
                       )}
                     </TableCell>
                     <TableCell>
                       <ProfileImage>
-                        {autoridad.imagen_persona_url ? (
+                        {administrativo.imagen_persona_url ? (
                           <img
                             src={
-                              autoridad.imagen_persona_url || "/placeholder.svg"
+                              administrativo.imagen_persona_url ||
+                              "/placeholder.svg"
                             }
-                            alt={autoridad.nombre_persona}
+                            alt={administrativo.nombre_persona}
                             onError={(e) => {
                               e.target.onerror = null;
                               e.target.src = "/placeholder.svg";
@@ -561,13 +579,13 @@ export default function AutoridadesAdmin() {
                     <TableCell>
                       <ActionButtons>
                         <EditButton
-                          onClick={() => openEditModal(autoridad)}
+                          onClick={() => openEditModal(administrativo)}
                           title="Editar"
                         >
                           <Edit size={16} />
                         </EditButton>
                         <DeleteButton
-                          onClick={() => openDeleteModal(autoridad)}
+                          onClick={() => openDeleteModal(administrativo)}
                           title="Eliminar"
                         >
                           <Trash size={16} />
@@ -577,7 +595,7 @@ export default function AutoridadesAdmin() {
                   </TableRow>
                 ))
               ) : (
-                <NoResults>No se encontraron autoridades</NoResults>
+                <NoResults>No se encontraron administrativos</NoResults>
               )}
             </TableBody>
           </Table>
@@ -587,15 +605,19 @@ export default function AutoridadesAdmin() {
       {/* Vista móvil */}
       <MobileView>
         {getCurrentPageItems().length > 0 ? (
-          getCurrentPageItems().map((autoridad) => (
-            <MobileCard key={autoridad.id_persona}>
+          getCurrentPageItems().map((administrativo) => (
+            <MobileCard key={administrativo.id_persona}>
               <MobileCardHeader>
-                <MobileCardTitle>{autoridad.nombre_persona}</MobileCardTitle>
+                <MobileCardTitle>
+                  {administrativo.nombre_persona}
+                </MobileCardTitle>
                 <ProfileImage>
-                  {autoridad.imagen_persona_url ? (
+                  {administrativo.imagen_persona_url ? (
                     <img
-                      src={autoridad.imagen_persona_url || "/placeholder.svg"}
-                      alt={autoridad.nombre_persona}
+                      src={
+                        administrativo.imagen_persona_url || "/placeholder.svg"
+                      }
+                      alt={administrativo.nombre_persona}
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = "/placeholder.svg";
@@ -609,31 +631,31 @@ export default function AutoridadesAdmin() {
               <MobileCardContent>
                 <MobileCardItem>
                   <Briefcase size={16} />
-                  {autoridad.cargo}
+                  {administrativo.cargo}
                 </MobileCardItem>
                 <MobileCardItem>
                   <Mail size={16} />
-                  {autoridad.correos.length > 0
-                    ? autoridad.correos[0].email_persona
+                  {administrativo.correos.length > 0
+                    ? administrativo.correos[0].email_persona
                     : "Sin correo"}
-                  {autoridad.correos.length > 1 && (
+                  {administrativo.correos.length > 1 && (
                     <span
                       style={{ fontStyle: "italic", marginLeft: "0.25rem" }}
                     >
-                      {`(+${autoridad.correos.length - 1} más)`}
+                      {`(+${administrativo.correos.length - 1} más)`}
                     </span>
                   )}
                 </MobileCardItem>
               </MobileCardContent>
               <MobileCardActions>
                 <EditButton
-                  onClick={() => openEditModal(autoridad)}
+                  onClick={() => openEditModal(administrativo)}
                   title="Editar"
                 >
                   <Edit size={16} />
                 </EditButton>
                 <DeleteButton
-                  onClick={() => openDeleteModal(autoridad)}
+                  onClick={() => openDeleteModal(administrativo)}
                   title="Eliminar"
                 >
                   <Trash size={16} />
@@ -642,7 +664,7 @@ export default function AutoridadesAdmin() {
             </MobileCard>
           ))
         ) : (
-          <NoResults>No se encontraron autoridades</NoResults>
+          <NoResults>No se encontraron administrativos</NoResults>
         )}
       </MobileView>
 
@@ -690,7 +712,7 @@ export default function AutoridadesAdmin() {
                 <AlertTriangle size={24} className="text-red-500" />
                 <p>
                   ¿Está seguro que desea eliminar a{" "}
-                  <strong>{selectedAutoridad?.nombre_persona}</strong>?
+                  <strong>{selectedAdministrativo?.nombre_persona}</strong>?
                 </p>
               </div>
               <p className="text-gray-500 text-sm">
@@ -727,7 +749,9 @@ export default function AutoridadesAdmin() {
           <ModalContent>
             <ModalHeader>
               <ModalTitle>
-                {selectedAutoridad ? "Editar autoridad" : "Agregar autoridad"}
+                {selectedAdministrativo
+                  ? "Editar administrativo"
+                  : "Agregar administrativo"}
               </ModalTitle>
               <ModalCloseButton onClick={closeFormModal}>
                 <X size={20} />
@@ -744,7 +768,7 @@ export default function AutoridadesAdmin() {
                   name="nombre_persona"
                   value={formData.nombre_persona}
                   onChange={handleFormChange}
-                  placeholder="Ej. Dr. Juan Pérez"
+                  placeholder="Ej. Lic. Carmen Fernández"
                 />
                 {formErrors.nombre_persona && (
                   <ErrorMessage>{formErrors.nombre_persona}</ErrorMessage>
@@ -761,7 +785,7 @@ export default function AutoridadesAdmin() {
                   name="cargo"
                   value={formData.cargo}
                   onChange={handleFormChange}
-                  placeholder="Ej. Director de Carrera"
+                  placeholder="Ej. Secretaria Académica"
                 />
                 {formErrors.cargo && (
                   <ErrorMessage>{formErrors.cargo}</ErrorMessage>
@@ -856,7 +880,7 @@ export default function AutoridadesAdmin() {
                         <XCircle size={16} /> Quitar imagen
                       </RemoveImageButton>
                     ) : formData.quitar_imagen &&
-                      selectedAutoridad?.imagen_persona ? (
+                      selectedAdministrativo?.imagen_persona ? (
                       <Button onClick={handleCancelRemoveImage}>
                         <Upload size={16} /> Restaurar imagen
                       </Button>

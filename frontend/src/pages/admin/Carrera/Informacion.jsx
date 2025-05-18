@@ -94,7 +94,7 @@ export default function Informacion() {
     });
   };
 
-  // Agregar nuevo correo
+  // Modificar la función addEmail para verificar si el correo ya existe
   const addEmail = () => {
     if (!newEmail.trim()) {
       agregarMensaje("warning", "#ED6C02", "El correo no puede estar vacío.");
@@ -105,6 +105,20 @@ export default function Informacion() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(newEmail)) {
       agregarMensaje("warning", "#ED6C02", "Formato de correo inválido.");
+      return;
+    }
+
+    // Verificar si el correo ya existe
+    const correoExistente = carrera.correos.find(
+      (correo) => correo.correo_carrera.toLowerCase() === newEmail.toLowerCase()
+    );
+
+    if (correoExistente) {
+      agregarMensaje(
+        "warning",
+        "#ED6C02",
+        "Este correo ya ha sido registrado."
+      );
       return;
     }
 
@@ -123,10 +137,24 @@ export default function Informacion() {
     setNewEmail("");
   };
 
-  // Agregar nuevo teléfono
+  // Modificar la función addPhone para verificar si el teléfono ya existe
   const addPhone = () => {
     if (!newPhone.trim()) {
       agregarMensaje("warning", "#ED6C02", "El teléfono no puede estar vacío.");
+      return;
+    }
+
+    // Verificar si el teléfono ya existe
+    const telefonoExistente = carrera.telefonos.find(
+      (telefono) => telefono.telefono === newPhone.trim()
+    );
+
+    if (telefonoExistente) {
+      agregarMensaje(
+        "warning",
+        "#ED6C02",
+        "Este teléfono ya ha sido registrado."
+      );
       return;
     }
 
