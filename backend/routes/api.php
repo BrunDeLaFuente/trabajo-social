@@ -11,6 +11,7 @@ use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\AdministrativoController;
 use App\Http\Controllers\AutoridadController;
 use App\Http\Controllers\AsignaturaController;
+use App\Http\Controllers\TramiteController;
 
 // 🔒 Rutas PRIVADAS (requieren JWT)
 Route::middleware(['jwt.auth'])->group(function () {
@@ -41,6 +42,12 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::post('/autoridadesCrear', [AutoridadController::class, 'store']);
     Route::match(['PUT', 'POST'], '/autoridadesActualizar/{id}', [AutoridadController::class, 'update']);
     Route::delete('/autoridadesEliminar/{id}', [AutoridadController::class, 'destroy']);
+
+    // Trámites
+    Route::post('/tramitesCrear', [TramiteController::class, 'store']);
+    Route::get('/tramites/{id}', [TramiteController::class, 'show']);
+    Route::match(['PUT', 'POST'], '/tramitesActualizar/{id}', [TramiteController::class, 'update']);
+    Route::delete('/tramitesEliminar/{id}', [TramiteController::class, 'destroy']);
 });
 
 
@@ -61,4 +68,7 @@ Route::middleware([])->group(function () {
 
     // Autoridades
     Route::get('/autoridades', [AutoridadController::class, 'index']);
+
+    // Trámites
+    Route::get('/tramites', [TramiteController::class, 'index']);
 });

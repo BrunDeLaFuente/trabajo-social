@@ -6,6 +6,7 @@ import PrivateLayout from "../layouts/PrivateLayout";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import Informacion from "../pages/admin/Carrera/Informacion";
 import RedesSociales from "../pages/admin/Carrera/RedesSociales";
+import TramitesAdmin from "../pages/admin/Carrera/TramitesAdmin";
 import AutoridadesAdmin from "../pages/admin/Personal/AutoridadesAdmin";
 import AdministrativosAdmin from "../pages/admin/Personal/AdministrativosAdmin";
 import DocentesAdmin from "../pages/admin/Personal/DocentesAdmin";
@@ -36,7 +37,7 @@ const AdminRoutes = () => {
         <Route path="/informacion-carrera" element={<Informacion />} />
         <Route path="/malla-curricular" element={<h1>Malla Curricular</h1>} />
         <Route path="/redes-sociales" element={<RedesSociales />} />
-        <Route path="/tramites" element={<h1>Trámites</h1>} />
+        <Route path="/tramites" element={<TramitesAdmin />} />
         <Route path="/docentes" element={<DocentesAdmin />} />
         <Route path="/docentes/asignaturas" element={<AsignaturasAdmin />} />
         <Route path="/administrativos" element={<AdministrativosAdmin />} />

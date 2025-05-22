@@ -1,54 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import HeroSection from "../../../components/public/HeroSection";
 import { FaFileAlt, FaChevronDown, FaUniversity } from "react-icons/fa";
+import api from "../../../utils/api";
 import tramiteImg from "../../../assets/img/tramite-universitario.jpg";
 
-const tramitesData = [
-  {
-    titulo: "Requisitos para Aprobación del Perfil",
-    descripcion:
-      "Carta de solicitud dirigida al director de Carrera, aprobación de perfil con mención, modalidad de titulación y título del trabajo.",
-    planilla_url: tramiteImg,
-  },
-  {
-    titulo: "Requisitos para solicitud de Designación de Tribunales",
-    descripcion:
-      "Carta de solicitud dirigida al director de Carrera, indicando disponibilidad de tribunales y tutores.",
-    planilla: null,
-  },
-  {
-    titulo: "Requisitos para solicitud de Pre Defensa",
-    descripcion:
-      "Carta de solicitud de pre defensa con aprobación de borradores, tabla de disponibilidad de tribunales, carátula y kardex actualizado.",
-    planilla: null,
-  },
-  {
-    titulo: "Requisitos para solicitud de Defensa Pública",
-    descripcion:
-      "Carta de solicitud de defensa pública con fotocopia de carnet, formulario de solvencia y acta de pre defensa.",
-    planilla_url: tramiteImg,
-  },
-];
-
 const Tramites = () => {
+  const [tramites, setTramites] = useState([]);
   const [expandedIndex, setExpandedIndex] = useState(null);
 
   const toggleExpand = (index) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
+  useEffect(() => {
+    const fetchTramites = async () => {
+      try {
+        const response = await api.get("/tramites");
+        setTramites(response.data);
+      } catch (error) {
+        console.error("Error al obtener los trámites:", error);
+      }
+    };
+
+    fetchTramites();
+  }, []);
+
   return (
     <PageContainer>
       <HeroSection title="Trámites" />
       <SectionTitle>TRÁMITES DE LA CARRERA</SectionTitle>
       <CardsContainer>
-        {tramitesData.map((tramite, index) => (
-          <Card key={index}>
+        {tramites.map((tramite, index) => (
+          <Card key={tramite.id_tramite}>
             <IconContainer>
               <FaFileAlt />
             </IconContainer>
-            <Title>{tramite.titulo}</Title>
+            <Title>{tramite.titulo_tramite}</Title>
             <Divider />
             <MoreInfo onClick={() => toggleExpand(index)}>
               Ver trámite{" "}
@@ -58,9 +46,13 @@ const Tramites = () => {
             </MoreInfo>
             {expandedIndex === index && (
               <Description>
-                <p>{tramite.descripcion}</p>
-                {tramite.planilla_url && (
-                  <PlanillaButton href={tramite.planilla_url} download>
+                <p>{tramite.descripcion_tramite}</p>
+                {tramite.planilla_download_url && (
+                  <PlanillaButton
+                    href={tramite.planilla_download_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Descargar Planilla
                   </PlanillaButton>
                 )}

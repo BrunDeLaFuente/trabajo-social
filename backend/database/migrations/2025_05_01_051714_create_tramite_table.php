@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('tramite', function (Blueprint $table) {
             $table->id('id_tramite');
             $table->string('titulo_tramite')->unique();
-            $table->text('descripcion_tramite');
+            $table->text('descripcion_tramite')->nullable();
             $table->string('planilla_url', 500)->nullable();
             $table->timestamps();
         });
