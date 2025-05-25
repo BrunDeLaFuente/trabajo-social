@@ -1,144 +1,144 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import HeroSection from "../../../components/public/HeroSection";
 import { FaDownload, FaExternalLinkAlt } from "react-icons/fa";
-import { ChevronDown, ChevronUp } from "lucide-react"
-import mallaImage from "../../../assets/img/imagen-malla.jpg";
-import pdfFile from "../../../assets/doc/Malla-Curricular.pdf";
-
-const mallaData = {
-  imagen: mallaImage,
-  archivo: pdfFile,
-  semestres: [
-    {
-      numero: "Primer semestre",
-      materias: [
-        {
-          nombre: "Álgebra I",
-          codigo: "TS101",
-          contenido: ["Lógica y conjuntos.", "Relaciones y funciones.", "Geometría analítica en el plano."],
-        },
-        {
-          nombre: "Dibujo Técnico",
-          codigo: "TS102",
-          contenido: [],
-        },
-        {
-          nombre: "Cálculo I",
-          codigo: "TS103",
-          contenido: [],
-        },
-      ],
-    },
-    {
-      numero: "Segundo semestre",
-      materias: [
-        {
-          nombre: "Geometría Descriptiva",
-          codigo: "TS201",
-          contenido: [],
-        },
-        {
-          nombre: "Álgebra II",
-          codigo: "TS202",
-          contenido: ["Álgebra Lineal", "Álgebra Matricial", "Teoría Matricial"],
-        },
-      ],
-    },
-  ],
-};
+import { ChevronDown, ChevronUp } from "lucide-react";
+import api from "../../../utils/api";
 
 const MallaCurricular = () => {
-
   const [expandedSemesters, setExpandedSemesters] = useState([]);
   const [expandedMaterias, setExpandedMaterias] = useState([]);
+  const [mallaData, setMallaData] = useState(null);
+
+  useEffect(() => {
+    const fetchMalla = async () => {
+      try {
+        const response = await api.get("/malla");
+        setMallaData(response.data);
+      } catch (error) {
+        console.error("Error al obtener la malla curricular:", error);
+      }
+    };
+
+    fetchMalla();
+  }, []);
 
   const toggleSemester = (semesterId) => {
     setExpandedSemesters((prev) =>
-      prev.includes(semesterId) ? prev.filter((id) => id !== semesterId) : [...prev, semesterId],
-    )
-  }
+      prev.includes(semesterId)
+        ? prev.filter((id) => id !== semesterId)
+        : [...prev, semesterId]
+    );
+  };
 
   const toggleMateria = (materiaId) => {
     setExpandedMaterias((prev) =>
-      prev.includes(materiaId) ? prev.filter((id) => id !== materiaId) : [...prev, materiaId],
-    )
-  }
+      prev.includes(materiaId)
+        ? prev.filter((id) => id !== materiaId)
+        : [...prev, materiaId]
+    );
+  };
 
   return (
     <PageContainer>
       <HeroSection title="Malla Curricular" />
+      {mallaData && (
+        <TopSection>
+          <ImageContainer>
+            <img src={mallaData.imagen_url} alt="Malla Curricular" />
+          </ImageContainer>
+          <ButtonBox>
+            <h3>Ver Malla Curricular</h3>
+            <ButtonContainer>
+              <DownloadButton href={mallaData.archivo_pdf_url} download>
+                Descargar en PDF <FaDownload />
+              </DownloadButton>
 
-      <TopSection>
-        <ImageContainer>
-          <img src={mallaData.imagen} alt="Malla Curricular" />
-        </ImageContainer>
-        <ButtonBox>
-          <h3>Ver Malla Curricular</h3>
-          <ButtonContainer>
-            <DownloadButton href={mallaData.archivo} download>
-              Descargar en PDF <FaDownload />
-            </DownloadButton>
-            <ViewButton href="https://websis.umss.edu.bo/umss_carrerasDesc.asp?codSer=UMSS&idCat=&qual=108061">
-              Ver en WebSiss <FaExternalLinkAlt />
-            </ViewButton>
-          </ButtonContainer>
-        </ButtonBox>
-      </TopSection>
-
+              <ViewButton href="https://websis.umss.edu.bo/umss_carrerasDesc.asp?codSer=UMSS&idCat=&qual=108061">
+                Ver en WebSiss <FaExternalLinkAlt />
+              </ViewButton>
+            </ButtonContainer>
+          </ButtonBox>
+        </TopSection>
+      )}
       <ContentSection>
-        <SectionTitle>Contenidos Mínimos</SectionTitle>
-        <Container>
-          <SemestersGrid>
-            {mallaData.semestres.map((semestre, sIndex) => (
-              <SemesterCard key={sIndex}>
-                <SemesterHeader
-                  $isExpanded={expandedSemesters.includes(`sem-${sIndex}`)}
-                  onClick={() => toggleSemester(`sem-${sIndex}`)}
-                >
-                  <SemesterTitle>{semestre.numero}</SemesterTitle>
-                  <MateriasCount>{semestre.materias.length} materias</MateriasCount>
-                  <ChevronIcon>
-                    {expandedSemesters.includes(`sem-${sIndex}`) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                  </ChevronIcon>
-                </SemesterHeader>
+        {mallaData && <SectionTitle>Contenidos Mínimos</SectionTitle>}
+        {mallaData && (
+          <Container>
+            <SemestersGrid>
+              {mallaData.semestres.map((semestre, sIndex) => (
+                <SemesterCard key={sIndex}>
+                  <SemesterHeader
+                    $isExpanded={expandedSemesters.includes(`sem-${sIndex}`)}
+                    onClick={() => toggleSemester(`sem-${sIndex}`)}
+                  >
+                    <SemesterTitle>{semestre.numero}</SemesterTitle>
+                    <MateriasCount>
+                      {semestre.materias.length} materias
+                    </MateriasCount>
+                    <ChevronIcon>
+                      {expandedSemesters.includes(`sem-${sIndex}`) ? (
+                        <ChevronUp size={18} />
+                      ) : (
+                        <ChevronDown size={18} />
+                      )}
+                    </ChevronIcon>
+                  </SemesterHeader>
+                  {expandedSemesters.includes(`sem-${sIndex}`) && (
+                    <SemesterContent>
+                      {semestre.materias.map((materia, mIndex) => {
+                        const materiaId = `materia-${sIndex}-${mIndex}`;
+                        const isExpanded = expandedMaterias.includes(materiaId);
 
-                {expandedSemesters.includes(`sem-${sIndex}`) && (
-                  <SemesterContent>
-                    {semestre.materias.map((materia, mIndex) => {
-                      const materiaId = `materia-${sIndex}-${mIndex}`
-                      const isExpanded = expandedMaterias.includes(materiaId)
+                        return (
+                          <MateriaItem key={mIndex}>
+                            <MateriaHeader
+                              onClick={() => toggleMateria(materiaId)}
+                            >
+                              <MateriaTitle>
+                                {materia.nombre_materia}
+                              </MateriaTitle>
+                              <MateriaCode>
+                                {materia.codigo_materia}
+                              </MateriaCode>
+                              <ChevronIcon>
+                                {isExpanded ? (
+                                  <ChevronUp size={16} />
+                                ) : (
+                                  <ChevronDown size={16} />
+                                )}
+                              </ChevronIcon>
+                            </MateriaHeader>
 
-                      return (
-                        <MateriaItem key={mIndex}>
-                          <MateriaHeader onClick={() => toggleMateria(materiaId)}>
-                            <MateriaTitle>{materia.nombre}</MateriaTitle>
-                            <MateriaCode>{materia.codigo}</MateriaCode>
-                            <ChevronIcon>{isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}</ChevronIcon>
-                          </MateriaHeader>
-
-                          {isExpanded && (
-                            <MateriaContent>
-                              {materia.contenido && materia.contenido.length > 0 ? (
-                                <ContentList>
-                                  {materia.contenido.map((item, cIndex) => (
-                                    <ContentItem key={cIndex}>{item}</ContentItem>
-                                  ))}
-                                </ContentList>
-                              ) : (
-                                <EmptyContent>No hay contenido disponible para esta materia.</EmptyContent>
-                              )}
-                            </MateriaContent>
-                          )}
-                        </MateriaItem>
-                      )
-                    })}
-                  </SemesterContent>
-                )}
-              </SemesterCard>
-            ))}
-          </SemestersGrid>
-        </Container>
+                            {isExpanded && (
+                              <MateriaContent>
+                                {materia.contenidos &&
+                                materia.contenidos.length > 0 ? (
+                                  <ContentList>
+                                    {materia.contenidos.map((item, cIndex) => (
+                                      <ContentItem key={cIndex}>
+                                        {item.descripcion}
+                                      </ContentItem>
+                                    ))}
+                                  </ContentList>
+                                ) : (
+                                  <EmptyContent>
+                                    No hay contenido disponible para esta
+                                    materia.
+                                  </EmptyContent>
+                                )}
+                              </MateriaContent>
+                            )}
+                          </MateriaItem>
+                        );
+                      })}
+                    </SemesterContent>
+                  )}
+                </SemesterCard>
+              ))}
+            </SemestersGrid>
+          </Container>
+        )}
       </ContentSection>
     </PageContainer>
   );
@@ -180,7 +180,7 @@ const ButtonBox = styled.div`
   flex: 1;
   max-width: 350px;
   text-align: center;
-  background:rgb(224, 227, 230);
+  background: rgb(224, 227, 230);
   padding: 20px;
   border-radius: 10px;
 
@@ -236,7 +236,7 @@ const SectionTitle = styled.h2`
 
   @media (max-width: 768px) {
     font-size: 1.5rem;
-  } 
+  }
 `;
 
 const Container = styled.div`
@@ -244,17 +244,17 @@ const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
-`
+`;
 
 const SemestersGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
-  
+
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
   }
-`
+`;
 
 const SemesterCard = styled.div`
   border: 1px solid #e2e8f0;
@@ -262,7 +262,7 @@ const SemesterCard = styled.div`
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   background-color: white;
-`
+`;
 
 const SemesterHeader = styled.div`
   padding: 1rem;
@@ -272,51 +272,52 @@ const SemesterHeader = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
-  border-bottom: ${(props) => (props.$isExpanded ? "1px solid #e2e8f0" : "none")};
-  
+  border-bottom: ${(props) =>
+    props.$isExpanded ? "1px solid #e2e8f0" : "none"};
+
   &:hover {
     background-color: #f1f5f9;
   }
-`
+`;
 
 const SemesterTitle = styled.div`
   flex: 1;
-`
+`;
 
 const MateriasCount = styled.div`
   font-size: 0.875rem;
   color: #64748b;
-`
+`;
 
 const SemesterContent = styled.div`
   padding: 1rem;
-`
+`;
 
 const MateriaItem = styled.div`
   margin-bottom: 0.75rem;
   border-bottom: 1px solid #f1f5f9;
-  
+
   &:last-child {
     margin-bottom: 0;
     border-bottom: none;
   }
-`
+`;
 
 const MateriaHeader = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0.75rem 0;
   cursor: pointer;
-  
+
   @media (min-width: 640px) {
     flex-direction: row;
     align-items: center;
   }
-`
+`;
 
 const MateriaTitle = styled.div`
   font-weight: 500;
-`
+`;
 
 const MateriaCode = styled.span`
   display: inline-block;
@@ -326,36 +327,36 @@ const MateriaCode = styled.span`
   background-color: #f1f5f9;
   border: 1px solid #e2e8f0;
   margin-top: 0.25rem;
-  
+
   @media (min-width: 640px) {
     margin-left: 0.5rem;
     margin-top: 0;
   }
-`
+`;
 
 const MateriaContent = styled.div`
   padding: 0.75rem 0 1rem;
-`
+`;
 
 const ContentList = styled.ul`
   list-style-type: disc;
   padding-left: 1.5rem;
   margin: 0;
-`
+`;
 
 const ContentItem = styled.li`
   font-size: 0.875rem;
   margin-bottom: 0.25rem;
-`
+`;
 
 const EmptyContent = styled.p`
   font-size: 0.875rem;
   color: #64748b;
   font-style: italic;
-`
+`;
 
 const ChevronIcon = styled.div`
   margin-left: 0.5rem;
   display: flex;
   align-items: center;
-`
+`;

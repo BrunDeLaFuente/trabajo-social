@@ -17,4 +17,18 @@ class MallaCurricular extends Model
     {
         return $this->hasMany(Semestre::class, 'id_malla');
     }
+
+    public function getImagenUrlAttribute()
+    {
+        return $this->imagen
+            ? url('storage/' . $this->imagen)
+            : null;
+    }
+
+    public function getArchivoPdfUrlAttribute()
+    {
+        return $this->archivo_pdf
+            ? url('storage/' . $this->archivo_pdf)
+            : null;
+    }
 }

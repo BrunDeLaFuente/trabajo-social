@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('malla_curricular', function (Blueprint $table) {
             $table->id('id_malla');
-            $table->string('imagen');
+            $table->string('imagen')->nullable();
             $table->string('archivo_pdf')->nullable();
             $table->timestamps();
         });

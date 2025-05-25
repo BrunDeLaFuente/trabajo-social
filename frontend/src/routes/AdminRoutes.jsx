@@ -11,6 +11,7 @@ import AutoridadesAdmin from "../pages/admin/Personal/AutoridadesAdmin";
 import AdministrativosAdmin from "../pages/admin/Personal/AdministrativosAdmin";
 import DocentesAdmin from "../pages/admin/Personal/DocentesAdmin";
 import AsignaturasAdmin from "../pages/admin/Personal/AsignaturasAdmin";
+import MallaAdmin from "../pages/admin/Carrera/MallaAdmin";
 
 const AdminRoutes = () => {
   const { user, loading } = useContext(AuthContext);
@@ -35,7 +36,7 @@ const AdminRoutes = () => {
           element={<h1>Cambiar Contraseña</h1>}
         />
         <Route path="/informacion-carrera" element={<Informacion />} />
-        <Route path="/malla-curricular" element={<h1>Malla Curricular</h1>} />
+        <Route path="/malla-curricular" element={<MallaAdmin />} />
         <Route path="/redes-sociales" element={<RedesSociales />} />
         <Route path="/tramites" element={<TramitesAdmin />} />
         <Route path="/docentes" element={<DocentesAdmin />} />

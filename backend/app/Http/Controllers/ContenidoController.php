@@ -2,47 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contenido;
 use Illuminate\Http\Request;
 
 class ContenidoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return response()->json(Contenido::all());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'id_materia' => 'required|exists:materia,id_materia',
+            'descripcion' => 'required|string',
+        ]);
+
+        $contenido = Contenido::create($request->only('id_materia', 'descripcion'));
+        return response()->json($contenido, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        return response()->json(Contenido::findOrFail($id));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $contenido = Contenido::findOrFail($id);
+        $request->validate([
+            'descripcion' => 'required|string',
+        ]);
+
+        $contenido->update($request->only('descripcion'));
+        return response()->json($contenido);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $contenido = Contenido::findOrFail($id);
+        $contenido->delete();
+        return response()->json(['message' => 'Contenido eliminado']);
     }
 }

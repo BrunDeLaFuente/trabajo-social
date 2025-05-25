@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
             TipoPersonaSeeder::class,
             AsignaturaSeeder::class,
             PersonaSeeder::class,
+            TramitesSeeder::class,
+            MallaCurricularSeeder::class,
         ]);
     }
 }

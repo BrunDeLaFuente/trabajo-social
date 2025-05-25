@@ -12,6 +12,10 @@ use App\Http\Controllers\AdministrativoController;
 use App\Http\Controllers\AutoridadController;
 use App\Http\Controllers\AsignaturaController;
 use App\Http\Controllers\TramiteController;
+use App\Http\Controllers\MallaCurricularController;
+use App\Http\Controllers\SemestreController;
+use App\Http\Controllers\MateriaController;
+use App\Http\Controllers\ContenidoController;
 
 // 🔒 Rutas PRIVADAS (requieren JWT)
 Route::middleware(['jwt.auth'])->group(function () {
@@ -48,6 +52,29 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::get('/tramites/{id}', [TramiteController::class, 'show']);
     Route::match(['PUT', 'POST'], '/tramitesActualizar/{id}', [TramiteController::class, 'update']);
     Route::delete('/tramitesEliminar/{id}', [TramiteController::class, 'destroy']);
+
+    // Malla curricular
+    Route::match(['PUT', 'POST'], '/mallaActualizar', [MallaCurricularController::class, 'update']);
+    Route::post('/malla-importar', [SemestreController::class, 'importar']);
+
+
+    Route::get('/semestres', [SemestreController::class, 'index']);
+    Route::get('/semestres/{id}', [SemestreController::class, 'show']);
+    Route::post('/semestresCrear', [SemestreController::class, 'store']);
+    Route::match(['PUT', 'POST'], '/semestresActualizar/{id}', [SemestreController::class, 'update']);
+    Route::delete('/semestresEliminar/{id}', [SemestreController::class, 'destroy']);
+
+    Route::get('/materias', [MateriaController::class, 'index']);
+    Route::get('/materias/{id}', [MateriaController::class, 'show']);
+    Route::post('/materiasCrear', [MateriaController::class, 'store']);
+    Route::match(['PUT', 'POST'], '/materiasActualizar/{id}', [MateriaController::class, 'update']);
+    Route::delete('/materiasEliminar/{id}', [MateriaController::class, 'destroy']);
+
+    Route::get('/contenidos', [ContenidoController::class, 'index']);
+    Route::get('/contenidos/{id}', [ContenidoController::class, 'show']);
+    Route::post('/contenidosCrear', [ContenidoController::class, 'store']);
+    Route::match(['PUT', 'POST'], '/contenidosActualizar/{id}', [ContenidoController::class, 'update']);
+    Route::delete('/contenidosEliminar/{id}', [ContenidoController::class, 'destroy']);
 });
 
 
@@ -71,4 +98,7 @@ Route::middleware([])->group(function () {
 
     // Trámites
     Route::get('/tramites', [TramiteController::class, 'index']);
+
+    // Malla curricular
+    Route::get('/malla', [MallaCurricularController::class, 'show']);
 });

@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id('id_materia');
             $table->unsignedBigInteger('id_semestre');
             $table->string('nombre_materia', 255);
-            $table->string('codigo_materia', 50)->unique();
+            $table->string('codigo_materia', 50)->nullable();
             $table->timestamps();
 
             $table->foreign('id_semestre')->references('id_semestre')->on('semestre')->onDelete('cascade');
