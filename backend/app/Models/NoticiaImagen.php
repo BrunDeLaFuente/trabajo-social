@@ -21,4 +21,11 @@ class NoticiaImagen extends Model
     {
         return $this->belongsTo(Noticia::class, 'id_noticia');
     }
+
+    public function getUrlAttribute()
+    {
+        return $this->ruta_imagen_noticia
+            ? url('storage/' . $this->ruta_imagen_noticia)
+            : null;
+    }
 }

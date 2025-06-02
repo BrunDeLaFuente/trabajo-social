@@ -12,6 +12,9 @@ import AdministrativosAdmin from "../pages/admin/Personal/AdministrativosAdmin";
 import DocentesAdmin from "../pages/admin/Personal/DocentesAdmin";
 import AsignaturasAdmin from "../pages/admin/Personal/AsignaturasAdmin";
 import MallaAdmin from "../pages/admin/Carrera/MallaAdmin";
+import ArticulosAdmin from "../pages/admin/Noticias/ArticulosAdmin";
+import ArticulosCrear from "../pages/admin/Noticias/ArticulosCrear";
+import ArticulosEditar from "../pages/admin/Noticias/ArticulosEditar";
 
 const AdminRoutes = () => {
   const { user, loading } = useContext(AuthContext);
@@ -43,7 +46,9 @@ const AdminRoutes = () => {
         <Route path="/docentes/asignaturas" element={<AsignaturasAdmin />} />
         <Route path="/administrativos" element={<AdministrativosAdmin />} />
         <Route path="/autoridades" element={<AutoridadesAdmin />} />
-        <Route path="/publicaciones" element={<h1>Publicaciones</h1>} />
+        <Route path="/articulos" element={<ArticulosAdmin />} />
+        <Route path="/articulos/agregar" element={<ArticulosCrear />} />
+        <Route path="/articulos/editar/:id" element={<ArticulosEditar />} />
         <Route path="/comunicados" element={<h1>Comunicados</h1>} />
         <Route path="/eventos" element={<h1>Eventos</h1>} />
         <Route path="/eventos-sin-costo" element={<h1>Eventos Sin Costo</h1>} />

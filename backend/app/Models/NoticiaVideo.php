@@ -21,4 +21,11 @@ class NoticiaVideo extends Model
     {
         return $this->belongsTo(Noticia::class, 'id_noticia');
     }
+
+    public function getUrlAttribute()
+    {
+        return $this->ruta_video_noticia
+            ? url('storage/' . $this->ruta_video_noticia)
+            : null;
+    }
 }

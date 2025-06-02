@@ -1,38 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import HeroSection from "../../../components/public/HeroSection";
-
-const noticiasData = [
-  {
-    titulo: "Innovaciones en el Trabajo Social Comunitario",
-    descripcion: "Un análisis sobre los nuevos enfoques en intervención social.",
-    fecha: "Mar 5, 2024",
-    categoria: "Artículo",
-    slug: "innovaciones-trabajo-social",
-  },
-  {
-    titulo: "Estrategias para la Inclusión Social",
-    descripcion: "Métodos y casos de éxito en inclusión social.",
-    fecha: "Feb 20, 2024",
-    categoria: "Artículo",
-    slug: "estrategias-inclusion-social",
-  },
-  {
-    titulo: "Comunicado Oficial: Cambio en el Calendario Académico",
-    descripcion: "Modificaciones en el cronograma de actividades académicas.",
-    fecha: "Feb 10, 2024",
-    categoria: "Comunicado",
-    slug: "comunicado-cambio-calendario",
-  },
-];
+import api from "../../../utils/api";
 
 const Noticias = () => {
+  const [noticias, setNoticias] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const noticiasFiltradas = noticiasData.filter((noticia) =>
-    noticia.titulo.toLowerCase().includes(searchTerm.toLowerCase())
+  useEffect(() => {
+    const fetchNoticias = async () => {
+      try {
+        const noticiasPublicas = await api.get("/noticias");
+        setNoticias(noticiasPublicas.data);
+      } catch (error) {
+        console.error("Error al cargar las noticias:", error);
+      }
+    };
+
+    fetchNoticias();
+  }, []);
+
+  const noticiasFiltradas = noticias.filter((noticia) =>
+    (noticia.titulo_noticia || "")
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
+
+  const formatearFecha = (fechaISO) => {
+    const meses = [
+      "Ene",
+      "Feb",
+      "Mar",
+      "Abr",
+      "May",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dic",
+    ];
+    const fecha = new Date(fechaISO);
+    return `${
+      meses[fecha.getMonth()]
+    } ${fecha.getDate()}, ${fecha.getFullYear()}`;
+  };
 
   return (
     <PageContainer>
@@ -50,11 +64,22 @@ const Noticias = () => {
         <NoticiasGrid>
           {noticiasFiltradas.length > 0 ? (
             noticiasFiltradas.map((noticia, index) => (
-              <NoticiaCard key={index} to={`/noticias/${noticia.slug}`}>
-                <Titulo>{noticia.titulo}</Titulo>
-                <Descripcion>{noticia.descripcion}</Descripcion>
+              <NoticiaCard
+                key={index}
+                to={`/noticias/anuncios/${noticia.slug}`}
+              >
+                <Titulo>{noticia.titulo_noticia}</Titulo>
+                <Descripcion>
+                  {noticia.contenido
+                    .replace(/<\/?[^>]+(>|$)/g, "")
+                    .substring(0, 100)}
+                  ...
+                </Descripcion>
                 <Fecha>
-                  {noticia.fecha} | <Categoria categoria={noticia.categoria}>{noticia.categoria}</Categoria>
+                  {formatearFecha(noticia.fecha_publicacion_noticia)} |{" "}
+                  <Categoria categoria={noticia.categoria}>
+                    {noticia.categoria}
+                  </Categoria>
                 </Fecha>
               </NoticiaCard>
             ))
@@ -159,7 +184,7 @@ const Fecha = styled.p`
 
 const Categoria = styled.span`
   font-weight: bold;
-  color: ${(props) => (props.categoria === "Artículo" ? "#008f39" : "#ff6600")};
+  color: ${(props) => (props.categoria === "Articulo" ? "#008f39" : "#ff6600")};
 `;
 
 const NoResults = styled.p`
@@ -167,4 +192,3 @@ const NoResults = styled.p`
   color: #777;
   margin-top: 20px;
 `;
-

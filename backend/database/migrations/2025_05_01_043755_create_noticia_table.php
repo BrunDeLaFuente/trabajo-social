@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('autor')->nullable();
             $table->text('contenido');
             $table->enum('categoria', ['Articulo', 'Comunicado']);
+            $table->boolean('es_publico')->default(true);
             $table->string('slug')->unique();
             $table->timestamps();
         });

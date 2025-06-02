@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Save, X, Globe } from "lucide-react";
 import styled from "styled-components";
@@ -205,66 +203,118 @@ export default function RedesSociales() {
         <Globe size={24} /> Redes sociales
       </Title>
 
-      <SocialList>
-        {redes.map((red, index) => {
-          const { icon, color } = getSocialIcon(red.nombre_rrss);
-          return (
-            <SocialItem key={red.id_carrera_rrss}>
-              <SocialHeader>
-                <SocialIcon style={{ backgroundColor: color }}>
-                  {icon}
-                </SocialIcon>
-                <SocialName>{red.nombre_rrss}</SocialName>
-              </SocialHeader>
+      <ContentArea>
+        <TableContainer>
+          <Table>
+            {/* Header de la tabla - solo visible en desktop */}
+            <TableHeader>
+              <TableHeaderCell>Red Social</TableHeaderCell>
+              <TableHeaderCell>URL</TableHeaderCell>
+              <TableHeaderCell>Público</TableHeaderCell>
+              <TableHeaderCell>Estado</TableHeaderCell>
+            </TableHeader>
 
-              <SocialContent>
-                <InputGroup>
-                  <Label htmlFor={`url-${red.id_carrera_rrss}`}>URL</Label>
-                  <Input
-                    type="url"
-                    id={`url-${red.id_carrera_rrss}`}
-                    value={red.url_rrss}
-                    onChange={(e) => handleUrlChange(index, e.target.value)}
-                    placeholder={`URL de ${red.nombre_rrss}`}
-                  />
-                </InputGroup>
+            <TableBody>
+              {redes.map((red, index) => {
+                const { icon, color } = getSocialIcon(red.nombre_rrss);
+                return (
+                  <TableRow key={red.id_carrera_rrss}>
+                    {/* Red Social */}
+                    <TableCell>
+                      <SocialIcon style={{ backgroundColor: color }}>
+                        {icon}
+                      </SocialIcon>
+                      <SocialName>{red.nombre_rrss}</SocialName>
+                    </TableCell>
 
-                <CheckboxContainer>
-                  <Checkbox
-                    type="checkbox"
-                    id={`public-${red.id_carrera_rrss}`}
-                    checked={red.es_publico === 1}
-                    onChange={(e) =>
-                      handlePublicChange(index, e.target.checked)
-                    }
-                  />
-                  <Label htmlFor={`public-${red.id_carrera_rrss}`}>
-                    Mostrar públicamente
-                  </Label>
-                </CheckboxContainer>
-              </SocialContent>
-            </SocialItem>
-          );
-        })}
-      </SocialList>
+                    {/* URL */}
+                    <TableCell>
+                      <MobileFieldContainer>
+                        <MobileLabel>URL</MobileLabel>
+                        <Input
+                          type="url"
+                          value={red.url_rrss}
+                          onChange={(e) =>
+                            handleUrlChange(index, e.target.value)
+                          }
+                          placeholder={`URL de ${red.nombre_rrss}`}
+                        />
+                      </MobileFieldContainer>
+                    </TableCell>
 
-      {/* Botones de acción */}
-      <ActionButtons>
-        <CancelButton onClick={handleCancel} disabled={saving}>
-          <X size={18} /> Cancelar
-        </CancelButton>
-        <SaveButton onClick={handleSave} disabled={saving}>
-          {saving ? (
-            <>
-              <SpinIcon>⟳</SpinIcon> Guardando...
-            </>
-          ) : (
-            <>
-              <Save size={18} /> Guardar cambios
-            </>
-          )}
-        </SaveButton>
-      </ActionButtons>
+                    {/* Público */}
+                    <TableCell>
+                      <MobileFieldContainer>
+                        <MobileLabel>Mostrar públicamente</MobileLabel>
+                        <CheckboxContainer>
+                          <Checkbox
+                            type="checkbox"
+                            id={`public-${red.id_carrera_rrss}`}
+                            checked={red.es_publico === 1}
+                            onChange={(e) =>
+                              handlePublicChange(index, e.target.checked)
+                            }
+                          />
+                          <CheckboxLabel
+                            htmlFor={`public-${red.id_carrera_rrss}`}
+                          >
+                            {red.es_publico === 1 ? "Sí" : "No"}
+                          </CheckboxLabel>
+                        </CheckboxContainer>
+                      </MobileFieldContainer>
+                    </TableCell>
+
+                    {/* Estado */}
+                    <TableCell>
+                      <MobileFieldContainer>
+                        <MobileLabel>Estado</MobileLabel>
+                        <span
+                          style={{
+                            padding: "0.25rem 0.5rem",
+                            borderRadius: "0.375rem",
+                            fontSize: "0.75rem",
+                            fontWeight: "500",
+                            backgroundColor:
+                              red.url_rrss && isValidUrl(red.url_rrss)
+                                ? "#dcfce7"
+                                : "#fef2f2",
+                            color:
+                              red.url_rrss && isValidUrl(red.url_rrss)
+                                ? "#166534"
+                                : "#dc2626",
+                          }}
+                        >
+                          {red.url_rrss && isValidUrl(red.url_rrss)
+                            ? "Válida"
+                            : "Inválida"}
+                        </span>
+                      </MobileFieldContainer>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* Botones de acción - siempre visibles */}
+        <ActionButtons>
+          <CancelButton onClick={handleCancel} disabled={saving}>
+            <X size={16} /> Cancelar
+          </CancelButton>
+          <SaveButton onClick={handleSave} disabled={saving}>
+            {saving ? (
+              <>
+                <SpinIcon>⟳</SpinIcon> Guardando...
+              </>
+            ) : (
+              <>
+                <Save size={16} /> Guardar cambios
+              </>
+            )}
+          </SaveButton>
+        </ActionButtons>
+      </ContentArea>
     </Container>
   );
 }
@@ -277,9 +327,17 @@ const Container = styled.div`
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 4rem);
+  max-height: 800px;
+  min-height: 600px;
 
   @media (max-width: 768px) {
     padding: 1rem;
+    height: calc(100vh - 2rem);
+    max-height: none;
+    min-height: 400px;
   }
 `;
 
@@ -293,54 +351,139 @@ const Title = styled.h1`
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  flex-shrink: 0;
 
   @media (max-width: 768px) {
     font-size: 1.25rem;
+    margin-bottom: 1rem;
   }
 `;
 
-const SocialList = styled.div`
+const ContentArea = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
-`;
-
-const SocialItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 1rem;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   background-color: #f9fafb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
 
   @media (max-width: 768px) {
-    padding: 0.75rem;
+    height: calc(100vh - 3rem);
+    min-height: 400px;
   }
 `;
 
-const SocialHeader = styled.div`
+const TableContainer = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 0.5rem 0.5rem 0 0;
+
+  /* Estilos para el scrollbar */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+`;
+
+const Table = styled.div`
+  width: 100%;
+  min-width: 800px;
+
+  @media (max-width: 768px) {
+    min-width: 100%;
+  }
+`;
+
+const TableHeader = styled.div`
+  display: grid;
+  grid-template-columns: 200px 3fr 120px 120px;
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+  font-weight: 600;
+  color: #374151;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const TableHeaderCell = styled.div`
+  padding: 0.5rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
 `;
 
-const SocialName = styled.h3`
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
-  margin: 0;
+const TableBody = styled.div`
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+  }
+`;
+
+const TableRow = styled.div`
+  display: grid;
+  grid-template-columns: 200px 3fr 120px 120px;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s;
+  align-items: center;
+
+  &:hover {
+    background-color: #f9fafb;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
 
   @media (max-width: 768px) {
-    font-size: 1rem;
+    display: block;
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background-color: white;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+  }
+`;
+
+const TableCell = styled.div`
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  @media (max-width: 768px) {
+    padding: 0.25rem 0;
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 `;
 
@@ -353,6 +496,7 @@ const SocialIcon = styled.div`
   border-radius: 50%;
   color: white;
   font-size: 1.25rem;
+  flex-shrink: 0;
 
   @media (max-width: 768px) {
     width: 2rem;
@@ -361,30 +505,20 @@ const SocialIcon = styled.div`
   }
 `;
 
-const SocialContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+const SocialName = styled.span`
+  font-weight: 600;
+  color: #333;
+  margin-left: 0.5rem;
 
   @media (max-width: 768px) {
-    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 700;
   }
-`;
-
-const InputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-`;
-
-const Label = styled.label`
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #4b5563;
 `;
 
 const Input = styled.input`
   width: 100%;
+  min-width: 0;
   padding: 0.5rem;
   border: 1px solid #d1d5db;
   border-radius: 0.375rem;
@@ -396,12 +530,21 @@ const Input = styled.input`
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
   }
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const CheckboxContainer = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+
+  @media (max-width: 768px) {
+    justify-content: flex-start;
+  }
 `;
 
 const Checkbox = styled.input`
@@ -410,11 +553,33 @@ const Checkbox = styled.input`
   cursor: pointer;
 `;
 
+const CheckboxLabel = styled.label`
+  font-size: 0.875rem;
+  color: #4b5563;
+  cursor: pointer;
+  user-select: none;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
+`;
+
 const ActionButtons = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 1rem;
+  padding: 1rem 1.5rem;
+  background-color: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  border-radius: 0 0 0.5rem 0.5rem;
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    justify-content: center;
+  }
 `;
 
 const Button = styled.button`
@@ -427,6 +592,7 @@ const Button = styled.button`
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  border: none;
 
   &:disabled {
     opacity: 0.7;
@@ -435,6 +601,13 @@ const Button = styled.button`
 
   svg {
     margin-right: 0.25rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    flex: 1;
+    max-width: 120px;
   }
 `;
 
@@ -474,6 +647,30 @@ const SpinIcon = styled.span`
     }
     to {
       transform: rotate(360deg);
+    }
+  }
+`;
+
+const MobileLabel = styled.div`
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+
+  @media (min-width: 769px) {
+    display: none;
+  }
+`;
+
+const MobileFieldContainer = styled.div`
+  @media (max-width: 768px) {
+    margin-bottom: 0.5rem;
+    width: 100%;
+
+    &:last-child {
+      margin-bottom: 0;
     }
   }
 `;

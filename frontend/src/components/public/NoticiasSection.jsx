@@ -1,26 +1,45 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-
-const noticias = [
-  {
-    titulo: "FIRMA DEL ACUERDO DE COOPERACIÓN INTERINSTITUCIONAL",
-    descripcion:
-      "Licenciatura de Trabajo Social de la Facultad de Humanidades y Ciencias de la Educación de la UMSS y ProgettoMondo MLAL.",
-    fecha: "Ago 16, 2023",
-    categoria: "Noticias",
-    slug: "firma-del-acuerdo-de-cooperacion",
-  },
-  {
-    titulo:
-      "TALLER DE SISTEMATIZACIÓN DE EXPERIENCIAS FORMATIVAS Y DE INTERVENCIÓN EN TRABAJO SOCIAL",
-    descripcion: "Dirigido a estudiantes de Trabajo Social.",
-    fecha: "Ago 2, 2023",
-    categoria: "Eventos",
-    slug: "taller-de-sistematizacion",
-  },
-];
+import api from "../../utils/api";
 
 const NoticiasSection = () => {
+  const [noticias, setNoticias] = useState([]);
+
+  useEffect(() => {
+    const fetchNoticias = async () => {
+      try {
+        const noticiasPublicas = await api.get("/noticias");
+        setNoticias(noticiasPublicas.data);
+      } catch (error) {
+        console.error("Error al cargar las noticias:", error);
+      }
+    };
+
+    fetchNoticias();
+  }, []);
+
+  const formatearFecha = (fechaISO) => {
+    const meses = [
+      "Ene",
+      "Feb",
+      "Mar",
+      "Abr",
+      "May",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dic",
+    ];
+    const fecha = new Date(fechaISO);
+    return `${
+      meses[fecha.getMonth()]
+    } ${fecha.getDate()}, ${fecha.getFullYear()}`;
+  };
+
   return (
     <SectionContainer>
       <TitleContainer>
@@ -28,12 +47,23 @@ const NoticiasSection = () => {
         <Underline />
       </TitleContainer>
       <NoticiasGrid>
-        {noticias.map((noticia, index) => (
-          <NoticiaCard key={index} to={`/noticias/${noticia.slug}`}>
-            <Titulo>{noticia.titulo}</Titulo>
-            {noticia.descripcion && <Descripcion>{noticia.descripcion}</Descripcion>}
+        {noticias.map((noticia) => (
+          <NoticiaCard
+            key={noticia.id_noticia}
+            to={`/noticias/anuncios/${noticia.slug}`}
+          >
+            <Titulo>{noticia.titulo_noticia}</Titulo>
+            <Descripcion>
+              {noticia.contenido
+                .replace(/<\/?[^>]+(>|$)/g, "")
+                .substring(0, 100)}
+              ...
+            </Descripcion>
             <Fecha>
-              {noticia.fecha} | <Categoria>{noticia.categoria}</Categoria>
+              {formatearFecha(noticia.fecha_publicacion_noticia)} |{" "}
+              <Categoria tipo={noticia.categoria}>
+                {noticia.categoria}
+              </Categoria>
             </Fecha>
           </NoticiaCard>
         ))}
@@ -123,5 +153,5 @@ const Fecha = styled.p`
 
 const Categoria = styled.span`
   font-weight: bold;
-  color: #ff6600;
+  color: ${(props) => (props.tipo === "Articulo" ? "#008f39" : "#ff6600")};
 `;

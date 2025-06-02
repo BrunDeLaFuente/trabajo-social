@@ -16,6 +16,8 @@ use App\Http\Controllers\MallaCurricularController;
 use App\Http\Controllers\SemestreController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\ContenidoController;
+use App\Http\Controllers\NoticiaController;
+
 
 // 🔒 Rutas PRIVADAS (requieren JWT)
 Route::middleware(['jwt.auth'])->group(function () {
@@ -75,6 +77,20 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::post('/contenidosCrear', [ContenidoController::class, 'store']);
     Route::match(['PUT', 'POST'], '/contenidosActualizar/{id}', [ContenidoController::class, 'update']);
     Route::delete('/contenidosEliminar/{id}', [ContenidoController::class, 'destroy']);
+
+    // Noticias
+
+    // Artículos
+    Route::get('/articulos', [NoticiaController::class, 'indexArticulos']);
+    Route::post('/articulosCrear', [NoticiaController::class, 'store']);
+    Route::match(['PUT', 'POST'], '/articulosActualizar/{id}', [NoticiaController::class, 'update']);
+    Route::delete('/articulosEliminar/{id}', [NoticiaController::class, 'destroy']);
+
+    // Comunicados
+    Route::get('/comunicados', [NoticiaController::class, 'indexComunicados']);
+    Route::post('/comunicadosCrear', [NoticiaController::class, 'store']);
+    Route::match(['PUT', 'POST'], '/comunicadosActualizar/{id}', [NoticiaController::class, 'update']);
+    Route::delete('/comunicadosEliminar/{id}', [NoticiaController::class, 'destroy']);
 });
 
 
@@ -101,4 +117,7 @@ Route::middleware([])->group(function () {
 
     // Malla curricular
     Route::get('/malla', [MallaCurricularController::class, 'show']);
+
+    // Noticias
+    Route::get('/noticias', [NoticiaController::class, 'index']);
 });

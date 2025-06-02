@@ -30,28 +30,57 @@ const PublicRoutes = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/nuestra-carrera" element={<NuestraCarrera />} />
         <Route path="/autoridades" element={<Autoridades />} />
-        <Route path="/personal-administrativo" element={<PersonalAdministrativo />} />
+        <Route
+          path="/personal-administrativo"
+          element={<PersonalAdministrativo />}
+        />
         <Route path="/personal-docente" element={<PersonalDocente />} />
 
         {/* Rutas de Pregrado */}
-        <Route path="/pregrado/modalidades-ingreso" element={<ModalidadesIngreso />} />
-        <Route path="/pregrado/malla-curricular" element={<MallaCurricular />} />
-        <Route path="/pregrado/modalidades-titulacion" element={<ModalidadesTitulacion />} />
+        <Route
+          path="/pregrado/modalidades-ingreso"
+          element={<ModalidadesIngreso />}
+        />
+        <Route
+          path="/pregrado/malla-curricular"
+          element={<MallaCurricular />}
+        />
+        <Route
+          path="/pregrado/modalidades-titulacion"
+          element={<ModalidadesTitulacion />}
+        />
         <Route path="/pregrado/tramites" element={<Tramites />} />
 
         {/* Rutas de Modalidades de titulacion */}
-        <Route path="/pregrado/modalidades-titulacion/tesis" element={<Tesis />} />
-        <Route path="/pregrado/modalidades-titulacion/excelencia" element={<Excelencia />} />
-        <Route path="/pregrado/modalidades-titulacion/trabajo-dirigido" element={<Trabajo />} />
-        <Route path="/pregrado/modalidades-titulacion/adscripcion" element={<Adscripcion />} />
-        <Route path="/pregrado/modalidades-titulacion/examen" element={<Examen />} />
-        <Route path="/pregrado/modalidades-titulacion/proyecto" element={<Proyecto />} />
+        <Route
+          path="/pregrado/modalidades-titulacion/tesis"
+          element={<Tesis />}
+        />
+        <Route
+          path="/pregrado/modalidades-titulacion/excelencia"
+          element={<Excelencia />}
+        />
+        <Route
+          path="/pregrado/modalidades-titulacion/trabajo-dirigido"
+          element={<Trabajo />}
+        />
+        <Route
+          path="/pregrado/modalidades-titulacion/adscripcion"
+          element={<Adscripcion />}
+        />
+        <Route
+          path="/pregrado/modalidades-titulacion/examen"
+          element={<Examen />}
+        />
+        <Route
+          path="/pregrado/modalidades-titulacion/proyecto"
+          element={<Proyecto />}
+        />
 
         {/* Rutas de Noticias */}
         <Route path="/noticias/anuncios" element={<Noticias />} />
+        <Route path="/noticias/anuncios/:slug" element={<NoticiaDetalle />} />
         <Route path="/noticias/talleres" element={<Talleres />} />
-        <Route path="/noticias/:slug" element={<NoticiaDetalle />} />
-
 
         {/* Ruta de Contacto */}
         <Route path="/contacto" element={<Contacto />} />

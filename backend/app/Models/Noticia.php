@@ -18,6 +18,7 @@ class Noticia extends Model
         'autor',
         'contenido',
         'categoria',
+        'es_publico',
         'slug',
     ];
 
