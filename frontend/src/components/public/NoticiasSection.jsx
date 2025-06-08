@@ -56,7 +56,7 @@ const NoticiasSection = () => {
             <Descripcion>
               {noticia.contenido
                 .replace(/<\/?[^>]+(>|$)/g, "")
-                .substring(0, 100)}
+                .substring(0, 30)}
               ...
             </Descripcion>
             <Fecha>

@@ -16,6 +16,7 @@ class Evento extends Model
         'es_pago',
         'costo',
         'es_publico',
+        'formulario',
         'imagen_evento',
         'qr_pago',
         'slug'

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('email_inscripcion')->nullable();
             $table->char('celular_inscripcion', 7)->nullable();
             $table->string('comprobante_pago')->nullable();
-            $table->string('certificado_entregado')->nullable(); // archivo PDF del certificado
+            $table->boolean('certificado_entregado')->default(false);
             $table->boolean('entrada')->default(false);
             $table->boolean('salida')->default(false);
             $table->timestamps();

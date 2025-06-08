@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('password');
 
             // Nuevos campos personalizados
-            $table->char('celular_user', 7)->nullable();
+            $table->char('celular_user', 8)->nullable();
             $table->boolean('is_admin')->default(false);
             $table->timestamp('last_login_at')->nullable();
             $table->string('current_session_token')->nullable();

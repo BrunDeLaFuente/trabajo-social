@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Expositor extends Model
 {
+    protected $table = 'expositor';
     protected $primaryKey = 'id_expositor';
     protected $fillable = ['nombre_expositor'];
 

@@ -3,6 +3,10 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import PrivateLayout from "../layouts/PrivateLayout";
+
+import NoAutorizado from "../pages/admin/NoAutorizado";
+import AdminOnlyRoute from "../routes/AdminOnlyRoute";
+
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import Informacion from "../pages/admin/Carrera/Informacion";
 import RedesSociales from "../pages/admin/Carrera/RedesSociales";
@@ -15,6 +19,10 @@ import MallaAdmin from "../pages/admin/Carrera/MallaAdmin";
 import ArticulosAdmin from "../pages/admin/Noticias/ArticulosAdmin";
 import ArticulosCrear from "../pages/admin/Noticias/ArticulosCrear";
 import ArticulosEditar from "../pages/admin/Noticias/ArticulosEditar";
+import ComunicadosAdmin from "../pages/admin/Noticias/ComunicadosAdmin";
+import ComunicadosCrear from "../pages/admin/Noticias/ComunicadosCrear";
+import ComunicadosEditar from "../pages/admin/Noticias/ComunicadosEditar";
+import UsuariosAdmin from "../pages/admin/Usuarios/UsuariosAdmin";
 
 const AdminRoutes = () => {
   const { user, loading } = useContext(AuthContext);
@@ -33,7 +41,15 @@ const AdminRoutes = () => {
     <PrivateLayout>
       <Routes>
         <Route path="/" element={<AdminDashboard />} />
-        <Route path="/usuarios" element={<h1>Usuarios</h1>} />
+        <Route
+          path="/usuarios"
+          element={
+            <AdminOnlyRoute>
+              <UsuariosAdmin />
+            </AdminOnlyRoute>
+          }
+        />
+        <Route path="/no-autorizado" element={<NoAutorizado />} />
         <Route
           path="/cambiar-contrasena"
           element={<h1>Cambiar Contraseña</h1>}
@@ -49,7 +65,9 @@ const AdminRoutes = () => {
         <Route path="/articulos" element={<ArticulosAdmin />} />
         <Route path="/articulos/agregar" element={<ArticulosCrear />} />
         <Route path="/articulos/editar/:id" element={<ArticulosEditar />} />
-        <Route path="/comunicados" element={<h1>Comunicados</h1>} />
+        <Route path="/comunicados" element={<ComunicadosAdmin />} />
+        <Route path="/comunicados/agregar" element={<ComunicadosCrear />} />
+        <Route path="/comunicados/editar/:id" element={<ComunicadosEditar />} />
         <Route path="/eventos" element={<h1>Eventos</h1>} />
         <Route path="/eventos-sin-costo" element={<h1>Eventos Sin Costo</h1>} />
         <Route path="/eventos-con-costo" element={<h1>Eventos Con Costo</h1>} />

@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
@@ -17,6 +16,8 @@ use App\Http\Controllers\SemestreController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\ContenidoController;
 use App\Http\Controllers\NoticiaController;
+use App\Http\Controllers\AsistenteController;
+use App\Http\Controllers\ExpositorController;
 
 
 // 🔒 Rutas PRIVADAS (requieren JWT)
@@ -91,13 +92,37 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::post('/comunicadosCrear', [NoticiaController::class, 'store']);
     Route::match(['PUT', 'POST'], '/comunicadosActualizar/{id}', [NoticiaController::class, 'update']);
     Route::delete('/comunicadosEliminar/{id}', [NoticiaController::class, 'destroy']);
+
+    // Eventos
+
+    // Asistentes
+    Route::get('/asistentes', [AsistenteController::class, 'index']);
+    Route::post('/asistentesCrear', [AsistenteController::class, 'store']);
+    Route::match(['PUT', 'POST'], '/asistentesActualizar/{id}', [AsistenteController::class, 'update']);
+    Route::delete('/asistentesEliminar/{id}', [AsistenteController::class, 'destroy']);
+
+    // Expositores
+    Route::get('/expositores', [ExpositorController::class, 'index']);
+    Route::post('/expositoresCrear', [ExpositorController::class, 'store']);
+    Route::match(['PUT', 'POST'], '/expositoresActualizar/{id}', [ExpositorController::class, 'update']);
+    Route::delete('/expositoresEliminar/{id}', [ExpositorController::class, 'destroy']);
 });
 
 
+Route::middleware(['jwt.auth', 'admin'])->group(function () {
+    Route::get('/usuarios', [UserController::class, 'indexColaboradores']);
+    Route::post('/usuariosCrear', [UserController::class, 'store']);
+    Route::match(['PUT', 'POST'], '/usuariosActualizar/{id}', [UserController::class, 'update']);
+    Route::delete('/usuariosEliminar/{id}', [UserController::class, 'destroy']);
+});
+
 // 🟢 Rutas PÚBLICAS (sin middleware)
 Route::middleware([])->group(function () {
-    Route::get('/users', [UserController::class, 'index']);
+    //Route::get('/users', [UserController::class, 'index']);
+
+    // Login
     Route::post('/login', [AuthController::class, 'login']);
+
     Route::post('/refresh', [AuthController::class, 'refreshToken']);
 
     // Carrera
@@ -120,4 +145,5 @@ Route::middleware([])->group(function () {
 
     // Noticias
     Route::get('/noticias', [NoticiaController::class, 'index']);
+    Route::get('/noticias/{slug}', [NoticiaController::class, 'mostrarPorSlug']);
 });

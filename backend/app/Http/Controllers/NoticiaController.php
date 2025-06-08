@@ -25,6 +25,25 @@ class NoticiaController extends Controller
         return response()->json($noticias);
     }
 
+    public function mostrarPorSlug($slug)
+    {
+        $noticia = Noticia::with(['imagenes', 'videos', 'archivos'])
+            ->where('slug', $slug)
+            ->where('es_publico', 1)
+            ->first();
+
+        if (!$noticia) {
+            return response()->json(['message' => 'Noticia no encontrada'], 404);
+        }
+
+        // Agregar accessors a cada relación
+        $noticia->imagenes->each->append('url');
+        $noticia->videos->each->append('url');
+        $noticia->archivos->each->append('url');
+
+        return response()->json($noticia);
+    }
+
     public function indexArticulos()
     {
         $articulos = Noticia::with(['imagenes', 'videos', 'archivos'])

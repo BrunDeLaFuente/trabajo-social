@@ -18,7 +18,8 @@ return new class extends Migration
             $table->boolean('es_pago')->default(false);
             $table->decimal('costo', 10, 2)->nullable();
             $table->boolean('es_publico')->default(true);
-            $table->string('imagen_evento');
+            $table->boolean('formulario')->default(false);
+            $table->string('imagen_evento')->nullable();
             $table->string('qr_pago')->nullable();
             $table->string('slug')->unique()->nullable();
             $table->timestamps();

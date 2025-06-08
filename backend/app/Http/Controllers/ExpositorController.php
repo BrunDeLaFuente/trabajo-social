@@ -2,47 +2,66 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Expositor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 
 class ExpositorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): JsonResponse
     {
-        //
+        $expositores = Expositor::all();
+        return response()->json($expositores);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        //
+        $request->validate([
+            'nombre_expositor' => 'required|string|max:255|unique:expositor',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $expositor = Expositor::create($request->only('nombre_expositor'));
+            DB::commit();
+            return response()->json(['message' => 'Expositor creado correctamente', 'data' => $expositor]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error al crear expositor', 'message' => $e->getMessage()], 500);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(Request $request, $id): JsonResponse
     {
-        //
+        $expositor = Expositor::findOrFail($id);
+
+        $request->validate([
+            'nombre_expositor' => 'required|string|max:255|unique:expositor,nombre_expositor,' . $expositor->id_expositor . ',id_expositor',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $expositor->update($request->only('nombre_expositor'));
+            DB::commit();
+            return response()->json(['message' => 'Expositor actualizado', 'data' => $expositor]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error al actualizar expositor', 'message' => $e->getMessage()], 500);
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy($id): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        DB::beginTransaction();
+        try {
+            $expositor = Expositor::findOrFail($id);
+            $expositor->delete();
+            DB::commit();
+            return response()->json(['message' => 'Expositor eliminado']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error al eliminar expositor', 'message' => $e->getMessage()], 500);
+        }
     }
 }

@@ -134,9 +134,11 @@ const Sidebar = ({ onResize }) => {
               </div>
             </NavButton>
             <SubMenu isOpen={openSubMenus.usuarios} collapsed={collapsed}>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/usuarios">Usuarios</SubMenuLink>
-              </SubMenuItem>
+              {user?.is_admin && (
+                <SubMenuItem>
+                  <SubMenuLink to="/admin/usuarios">Usuarios</SubMenuLink>
+                </SubMenuItem>
+              )}
               <SubMenuItem>
                 <SubMenuLink to="/admin/cambiar-contrasena">
                   Cambiar contraseña
