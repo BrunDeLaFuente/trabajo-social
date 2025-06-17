@@ -1,8 +1,81 @@
-"use client"
+import { useState, useEffect } from "react";
+import styled from "styled-components";
+import { CheckCircle, AlertCircle, AlertTriangle, X } from "lucide-react";
 
-import { useState, useEffect } from "react"
-import styled from "styled-components"
-import { CheckCircle, AlertCircle, AlertTriangle, X } from "lucide-react"
+const CajaMensaje = ({
+  tipo = "success",
+  color = "#000000",
+  mensaje = "",
+  duracion = 5000,
+  backgroundColor = "",
+  onClose = () => {},
+}) => {
+  const [visible, setVisible] = useState(true);
+
+  // Determinar el color de fondo predeterminado según el tipo si no se proporciona
+  const getBgColor = () => {
+    if (backgroundColor) return backgroundColor;
+
+    switch (tipo) {
+      case "success":
+        return "#E6F7EF";
+      case "fail":
+        return "#FEECEC";
+      case "warning":
+        return "#FFF8E6";
+      default:
+        return "#E6F7EF";
+    }
+  };
+
+  // Seleccionar el icono según el tipo
+  const renderIcono = () => {
+    switch (tipo) {
+      case "success":
+        return <CheckCircle size={20} />;
+      case "fail":
+        return <AlertCircle size={20} />;
+      case "warning":
+        return <AlertTriangle size={20} />;
+      default:
+        return <CheckCircle size={20} />;
+    }
+  };
+
+  // Efecto para ocultar el mensaje después de la duración especificada
+  useEffect(() => {
+    if (duracion > 0) {
+      const timer = setTimeout(() => {
+        setVisible(false);
+        setTimeout(() => {
+          onClose();
+        }, 300); // Esperar a que termine la animación de fade out
+      }, duracion);
+
+      return () => clearTimeout(timer);
+    }
+  }, [duracion, onClose]);
+
+  // Manejar el cierre manual
+  const handleClose = () => {
+    setVisible(false);
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
+
+  return (
+    <MensajeContainer backgroundColor={getBgColor()} visible={visible}>
+      <IconoWrapper color={color}>{renderIcono()}</IconoWrapper>
+      <Contenido color={color}>{mensaje}</Contenido>
+      <CerrarBoton onClick={handleClose} color={color}>
+        <X size={16} />
+      </CerrarBoton>
+    </MensajeContainer>
+  );
+};
+
+export default CajaMensaje;
 
 // Estilos con styled-components
 const MensajeContainer = styled.div`
@@ -43,7 +116,7 @@ const MensajeContainer = styled.div`
       opacity: 1;
     }
   }
-`
+`;
 
 const IconoWrapper = styled.div`
   margin-right: 12px;
@@ -51,7 +124,7 @@ const IconoWrapper = styled.div`
   align-items: center;
   justify-content: center;
   color: ${(props) => props.color || "#000000"};
-`
+`;
 
 const Contenido = styled.div`
   flex: 1;
@@ -62,7 +135,7 @@ const Contenido = styled.div`
   @media (max-width: 768px) {
     font-size: 13px;
   }
-`
+`;
 
 const CerrarBoton = styled.button`
   background: transparent;
@@ -80,79 +153,4 @@ const CerrarBoton = styled.button`
   &:hover {
     opacity: 1;
   }
-`
-
-const CajaMensaje = ({
-  tipo = "success",
-  color = "#000000",
-  mensaje = "",
-  duracion = 5000,
-  backgroundColor = "",
-  onClose = () => {},
-}) => {
-  const [visible, setVisible] = useState(true)
-
-  // Determinar el color de fondo predeterminado según el tipo si no se proporciona
-  const getBgColor = () => {
-    if (backgroundColor) return backgroundColor
-
-    switch (tipo) {
-      case "success":
-        return "#E6F7EF"
-      case "fail":
-        return "#FEECEC"
-      case "warning":
-        return "#FFF8E6"
-      default:
-        return "#E6F7EF"
-    }
-  }
-
-  // Seleccionar el icono según el tipo
-  const renderIcono = () => {
-    switch (tipo) {
-      case "success":
-        return <CheckCircle size={20} />
-      case "fail":
-        return <AlertCircle size={20} />
-      case "warning":
-        return <AlertTriangle size={20} />
-      default:
-        return <CheckCircle size={20} />
-    }
-  }
-
-  // Efecto para ocultar el mensaje después de la duración especificada
-  useEffect(() => {
-    if (duracion > 0) {
-      const timer = setTimeout(() => {
-        setVisible(false)
-        setTimeout(() => {
-          onClose()
-        }, 300) // Esperar a que termine la animación de fade out
-      }, duracion)
-
-      return () => clearTimeout(timer)
-    }
-  }, [duracion, onClose])
-
-  // Manejar el cierre manual
-  const handleClose = () => {
-    setVisible(false)
-    setTimeout(() => {
-      onClose()
-    }, 300)
-  }
-
-  return (
-    <MensajeContainer backgroundColor={getBgColor()} visible={visible}>
-      <IconoWrapper color={color}>{renderIcono()}</IconoWrapper>
-      <Contenido color={color}>{mensaje}</Contenido>
-      <CerrarBoton onClick={handleClose} color={color}>
-        <X size={16} />
-      </CerrarBoton>
-    </MensajeContainer>
-  )
-}
-
-export default CajaMensaje
+`;

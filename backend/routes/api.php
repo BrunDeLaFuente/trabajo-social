@@ -24,6 +24,7 @@ use App\Http\Controllers\ExpositorController;
 Route::middleware(['jwt.auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'getUser']);
+    Route::post('/cambiar-password', [UserController::class, 'cambiarPassword']);
 
     // Carrera
     Route::put('/carreraUpdate', [CarreraController::class, 'update']);
@@ -80,13 +81,16 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::delete('/contenidosEliminar/{id}', [ContenidoController::class, 'destroy']);
 
     // Noticias
+    Route::get('/noticiasAdmin', [NoticiaController::class, 'index']);
+    Route::post('/noticiasCrear', [NoticiaController::class, 'store']);
+    Route::delete('/noticiasEliminar/{id}', [NoticiaController::class, 'destroy']);
+    Route::match(['PUT', 'POST'], '/noticiasActualizar/{id}', [NoticiaController::class, 'update']);
 
     // Artículos
     Route::get('/articulos', [NoticiaController::class, 'indexArticulos']);
     Route::post('/articulosCrear', [NoticiaController::class, 'store']);
     Route::match(['PUT', 'POST'], '/articulosActualizar/{id}', [NoticiaController::class, 'update']);
     Route::delete('/articulosEliminar/{id}', [NoticiaController::class, 'destroy']);
-
     // Comunicados
     Route::get('/comunicados', [NoticiaController::class, 'indexComunicados']);
     Route::post('/comunicadosCrear', [NoticiaController::class, 'store']);
@@ -144,6 +148,6 @@ Route::middleware([])->group(function () {
     Route::get('/malla', [MallaCurricularController::class, 'show']);
 
     // Noticias
-    Route::get('/noticias', [NoticiaController::class, 'index']);
+    Route::get('/noticias', [NoticiaController::class, 'indexPublic']);
     Route::get('/noticias/{slug}', [NoticiaController::class, 'mostrarPorSlug']);
 });

@@ -11,6 +11,8 @@ import {
   File,
   AlertCircle,
   Clock,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import api from "../../utils/api";
 
@@ -19,6 +21,10 @@ const NoticiaDetalle = () => {
   const [noticia, setNoticia] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Agregar estos estados al inicio del componente, después de los estados existentes
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isImageHovered, setIsImageHovered] = useState(false);
 
   useEffect(() => {
     const fetchNoticia = async () => {
@@ -47,6 +53,27 @@ const NoticiaDetalle = () => {
     }
   }, [slug]);
 
+  // Agregar este useEffect después del useEffect existente para manejar el autoplay del carrusel
+  useEffect(() => {
+    if (
+      !noticia ||
+      !noticia.imagenes ||
+      noticia.imagenes.length <= 1 ||
+      noticia.categoria !== "Articulo"
+    )
+      return;
+
+    const interval = setInterval(() => {
+      if (!isImageHovered) {
+        setCurrentImageIndex((prevIndex) =>
+          prevIndex === noticia.imagenes.length - 1 ? 0 : prevIndex + 1
+        );
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [noticia, isImageHovered]);
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("es-ES", {
@@ -58,10 +85,32 @@ const NoticiaDetalle = () => {
     });
   };
 
-  const handleDownload = (url, filename) => {
+  const handleDownload = (url, filename, type = "archivo", index = 1) => {
     const link = document.createElement("a");
     link.href = url;
-    link.download = filename || "archivo";
+
+    // Obtener la extensión del archivo original
+    const originalExtension = filename
+      ? filename.split(".").pop().toLowerCase()
+      : "";
+
+    // Crear el nuevo nombre usando el slug de la noticia
+    let newFilename;
+    if (type === "imagen") {
+      newFilename = `${noticia.slug}-imagen-${index}.${
+        originalExtension || "jpg"
+      }`;
+    } else if (type === "video") {
+      newFilename = `${noticia.slug}-video-${index}.${
+        originalExtension || "mp4"
+      }`;
+    } else {
+      newFilename = `${noticia.slug}-archivo-${index}.${
+        originalExtension || "pdf"
+      }`;
+    }
+
+    link.download = newFilename;
     link.target = "_blank";
     document.body.appendChild(link);
     link.click();
@@ -84,6 +133,25 @@ const NoticiaDetalle = () => {
   const canPreviewFile = (filename) => {
     const extension = filename.split(".").pop().toLowerCase();
     return ["pdf"].includes(extension);
+  };
+
+  // Agregar estas funciones después de las funciones existentes
+  const nextImage = () => {
+    if (!noticia.imagenes) return;
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === noticia.imagenes.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const prevImage = () => {
+    if (!noticia.imagenes) return;
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? noticia.imagenes.length - 1 : prevIndex - 1
+    );
+  };
+
+  const goToImage = (index) => {
+    setCurrentImageIndex(index);
   };
 
   if (loading) {
@@ -142,7 +210,7 @@ const NoticiaDetalle = () => {
                 {isArticle && (
                   <InfoItem>
                     <InfoIcon>
-                      <User style={{ color: "#1e40af" }} />
+                      <User style={{ color: "#059669" }} />
                     </InfoIcon>
                     <span>{noticia.autor}</span>
                   </InfoItem>
@@ -168,27 +236,89 @@ const NoticiaDetalle = () => {
             {isArticle ? (
               // Layout para Artículos
               <div>
-                {/* Imágenes en grid de 3 columnas */}
+                {/* Imágenes en carrusel para artículos */}
                 {noticia.imagenes && noticia.imagenes.length > 0 && (
                   <MediaSection>
                     <SectionTitle>
                       <ImageIcon style={{ color: "#2563eb" }} />
-                      Imágenes
+                      Imágenes ({noticia.imagenes.length})
                     </SectionTitle>
-                    <ImageGrid $isArticle={true}>
-                      {noticia.imagenes.map((imagen, index) => (
-                        <ImageContainer
-                          key={imagen.id_noticia_imagen}
-                          $isArticle={true}
+
+                    <CarouselContainer
+                      onMouseEnter={() => setIsImageHovered(true)}
+                      onMouseLeave={() => setIsImageHovered(false)}
+                    >
+                      <CarouselWrapper>
+                        <CarouselTrack
+                          style={{
+                            transform: `translateX(-${
+                              currentImageIndex * 100
+                            }%)`,
+                          }}
                         >
-                          <Image
-                            src={imagen.url || "/placeholder.svg"}
-                            alt={`Imagen ${index + 1} del artículo`}
-                            $isArticle={true}
-                          />
-                        </ImageContainer>
-                      ))}
-                    </ImageGrid>
+                          {noticia.imagenes.map((imagen, index) => (
+                            <CarouselSlide key={imagen.id_noticia_imagen}>
+                              <CarouselImage
+                                src={imagen.url || "/placeholder.svg"}
+                                alt={`Imagen ${index + 1} del artículo`}
+                                onLoad={(e) => {
+                                  // Ajustar altura del contenedor basado en la imagen
+                                  const img = e.target;
+                                  const container = img.closest(
+                                    "[data-carousel-container]"
+                                  );
+                                  if (container) {
+                                    container.style.height = `${Math.min(
+                                      img.naturalHeight *
+                                        (img.offsetWidth / img.naturalWidth),
+                                      500
+                                    )}px`;
+                                  }
+                                }}
+                              />
+                            </CarouselSlide>
+                          ))}
+                        </CarouselTrack>
+
+                        {/* Controles de navegación */}
+                        {noticia.imagenes.length > 1 && (
+                          <>
+                            <CarouselButton
+                              $position="left"
+                              onClick={prevImage}
+                            >
+                              <ChevronLeft size={24} />
+                            </CarouselButton>
+                            <CarouselButton
+                              $position="right"
+                              onClick={nextImage}
+                            >
+                              <ChevronRight size={24} />
+                            </CarouselButton>
+                          </>
+                        )}
+
+                        {/* Indicadores */}
+                        {noticia.imagenes.length > 1 && (
+                          <CarouselIndicators>
+                            {noticia.imagenes.map((_, index) => (
+                              <CarouselDot
+                                key={index}
+                                $active={index === currentImageIndex}
+                                onClick={() => goToImage(index)}
+                              />
+                            ))}
+                          </CarouselIndicators>
+                        )}
+
+                        {/* Contador de imágenes */}
+                        {noticia.imagenes.length > 1 && (
+                          <ImageCounter>
+                            {currentImageIndex + 1} / {noticia.imagenes.length}
+                          </ImageCounter>
+                        )}
+                      </CarouselWrapper>
+                    </CarouselContainer>
                   </MediaSection>
                 )}
 
@@ -240,7 +370,12 @@ const NoticiaDetalle = () => {
                               </FileInfo>
                               <FileDownloadButton
                                 onClick={() =>
-                                  handleDownload(archivo.url, filename)
+                                  handleDownload(
+                                    archivo.url,
+                                    filename,
+                                    "archivo",
+                                    index + 1
+                                  )
                                 }
                               >
                                 <Download />
@@ -285,7 +420,9 @@ const NoticiaDetalle = () => {
                             onClick={() =>
                               handleDownload(
                                 imagen.url,
-                                `imagen-${index + 1}.jpg`
+                                `imagen-${index + 1}.jpg`,
+                                "imagen",
+                                index + 1
                               )
                             }
                           >
@@ -319,7 +456,9 @@ const NoticiaDetalle = () => {
                             onClick={() =>
                               handleDownload(
                                 video.url,
-                                `video-${index + 1}.mp4`
+                                `video-${index + 1}.mp4`,
+                                "video",
+                                index + 1
                               )
                             }
                           >
@@ -393,7 +532,7 @@ const MainContainer = styled.div`
 `;
 
 const LoadingContainer = styled.div`
-  min-height: 60vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -425,7 +564,7 @@ const LoadingText = styled.p`
 `;
 
 const ErrorContainer = styled.div`
-  min-height: 60vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -498,7 +637,7 @@ const Title = styled.h1`
 
   @media (max-width: 768px) {
     font-size: 1.25rem;
-    text-align: center;
+    text-align: center; /* Centrar título en dispositivos móviles */
   }
 `;
 
@@ -659,10 +798,11 @@ const ImageContainer = styled.div`
     transform: ${(props) => (props.$isArticle ? "scale(1.05)" : "scale(1.02)")};
   }
 
+  /* Hacer que el contenedor de imágenes para comunicados sea más pequeño */
   ${(props) =>
     !props.$isArticle &&
     css`
-      min-height: 250px;
+      min-height: 250px; /* Cambiado de 400px a 250px para hacerlo más pequeño */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -673,7 +813,10 @@ const Image = styled.img`
   width: 100%;
   object-fit: ${(props) => (props.$isArticle ? "cover" : "contain")};
   height: ${(props) => (props.$isArticle ? "12rem" : "auto")};
-  max-height: ${(props) => (props.$isArticle ? "12rem" : "none")};
+  max-height: ${(props) =>
+    props.$isArticle
+      ? "12rem"
+      : "none"}; /* Quitar límite de altura para comunicados */
   background-color: #f3f4f6;
   transition: transform 0.3s ease;
 
@@ -850,5 +993,162 @@ const FooterContent = styled.div`
     width: 1rem;
     height: 1rem;
     margin-right: 0.5rem;
+  }
+`;
+
+// Agregar estos styled components después de los existentes
+
+const CarouselContainer = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  background: #f8fafc;
+`;
+
+const CarouselWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 400px;
+
+  @media (max-width: 768px) {
+    height: 300px;
+  }
+
+  @media (max-width: 480px) {
+    height: 250px;
+  }
+`;
+
+const CarouselTrack = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+`;
+
+const CarouselSlide = styled.div`
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const CarouselImage = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+`;
+
+const CarouselButton = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  ${(props) => props.$position}: 1rem;
+
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+
+  color: #374151;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    width: 2.5rem;
+    height: 2.5rem;
+    ${(props) => props.$position}: 0.5rem;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+`;
+
+const CarouselIndicators = styled.div`
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 2;
+`;
+
+const CarouselDot = styled.button`
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  background: ${(props) =>
+    props.$active ? "#2563eb" : "rgba(255, 255, 255, 0.6)"};
+  transform: ${(props) => (props.$active ? "scale(1.2)" : "scale(1)")};
+
+  &:hover {
+    background: ${(props) =>
+      props.$active ? "#1d4ed8" : "rgba(255, 255, 255, 0.8)"};
+    transform: scale(1.2);
+  }
+
+  @media (max-width: 768px) {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+`;
+
+const ImageCounter = styled.div`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  z-index: 2;
+
+  @media (max-width: 768px) {
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
   }
 `;

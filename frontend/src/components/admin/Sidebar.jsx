@@ -234,10 +234,7 @@ const Sidebar = ({ onResize }) => {
             </NavButton>
             <SubMenu isOpen={openSubMenus.noticias} collapsed={collapsed}>
               <SubMenuItem>
-                <SubMenuLink to="/admin/articulos">Artículos</SubMenuLink>
-              </SubMenuItem>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/comunicados">Comunicados</SubMenuLink>
+                <SubMenuLink to="/admin/noticias">Publicaciones</SubMenuLink>
               </SubMenuItem>
             </SubMenu>
           </NavItem>

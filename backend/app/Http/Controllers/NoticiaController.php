@@ -10,7 +10,22 @@ use Illuminate\Support\Str;
 
 class NoticiaController extends Controller
 {
+
     public function index()
+    {
+        $noticias = Noticia::with(['imagenes', 'videos', 'archivos'])
+            ->get();
+
+        $noticias->each(function ($noticia) {
+            $noticia->imagenes->each->append('url');
+            $noticia->videos->each->append('url');
+            $noticia->archivos->each->append('url');
+        });
+
+        return response()->json($noticias);
+    }
+
+    public function indexPublic()
     {
         $noticias = Noticia::with(['imagenes', 'videos', 'archivos'])
             ->where('es_publico', '1')
@@ -161,6 +176,7 @@ class NoticiaController extends Controller
             'titulo_noticia' => 'required|string|max:255',
             'contenido' => 'required|string',
             'autor' => 'nullable|string',
+            'categoria' => 'required|string',
             'es_publico' => 'boolean',
             'imagenes.*' => 'image|max:5120',
             'videos.*' => 'file|mimetypes:video/*|max:20480',
@@ -200,6 +216,7 @@ class NoticiaController extends Controller
             $noticia->update([
                 'titulo_noticia' => $request->titulo_noticia,
                 'contenido' => $request->contenido,
+                'categoria' => $request->categoria,
                 'es_publico' => $request->es_publico ?? true,
                 'autor' => $request->autor ?? $noticia->autor,
                 'slug' => $slug,
