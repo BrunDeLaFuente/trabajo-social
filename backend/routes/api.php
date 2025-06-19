@@ -18,6 +18,7 @@ use App\Http\Controllers\ContenidoController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\AsistenteController;
 use App\Http\Controllers\ExpositorController;
+use App\Http\Controllers\EventoController;
 
 
 // 🔒 Rutas PRIVADAS (requieren JWT)
@@ -98,6 +99,10 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::delete('/comunicadosEliminar/{id}', [NoticiaController::class, 'destroy']);
 
     // Eventos
+    Route::get('/eventos', [EventoController::class, 'index']);
+    Route::post('/eventosCrear', [EventoController::class, 'store']);
+    Route::match(['PUT', 'POST'], '/eventosActualizar/{id}', [EventoController::class, 'update']);
+    Route::delete('/eventosEliminar/{id}', [EventoController::class, 'destroy']);
 
     // Asistentes
     Route::get('/asistentes', [AsistenteController::class, 'index']);

@@ -257,9 +257,7 @@ const Sidebar = ({ onResize }) => {
             </NavButton>
             <SubMenu isOpen={openSubMenus.eventos} collapsed={collapsed}>
               <SubMenuItem>
-                <SubMenuLink to="/admin/eventos-sin-costo">
-                  Sin costo
-                </SubMenuLink>
+                <SubMenuLink to="/admin/eventos">Activiades</SubMenuLink>
               </SubMenuItem>
               <SubMenuItem>
                 <SubMenuLink to="/admin/eventos-con-costo">

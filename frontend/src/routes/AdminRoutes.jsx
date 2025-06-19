@@ -19,11 +19,12 @@ import MallaAdmin from "../pages/admin/Carrera/MallaAdmin";
 import NoticiasAdmin from "../pages/admin/Noticias/NoticiasAdmin";
 import NoticiaCrear from "../pages/admin/Noticias/NoticiaCrear";
 import NoticiaEditar from "../pages/admin/Noticias/NoticiaEditar";
-
-
+import EventosAdmin from "../pages/admin/Eventos/EventosAdmin";
 
 import UsuariosAdmin from "../pages/admin/Usuarios/UsuariosAdmin";
 import CambiarPassword from "../pages/admin/Usuarios/CambiarPassword";
+import EventoCrear from "../pages/admin/Eventos/EventoCrear";
+import EventoEditar from "../pages/admin/Eventos/EventoEditar";
 
 const AdminRoutes = () => {
   const { user, loading } = useContext(AuthContext);
@@ -64,8 +65,10 @@ const AdminRoutes = () => {
         <Route path="/noticias/agregar" element={<NoticiaCrear />} />
         <Route path="/noticias/editar/:id" element={<NoticiaEditar />} />
 
+        <Route path="/eventos" element={<EventosAdmin />} />
+        <Route path="/eventos/agregar" element={<EventoCrear />} />
+        <Route path="/eventos/editar/:id" element={<EventoEditar />} />
 
-        <Route path="/eventos" element={<h1>Eventos</h1>} />
         <Route path="/eventos-sin-costo" element={<h1>Eventos Sin Costo</h1>} />
         <Route path="/eventos-con-costo" element={<h1>Eventos Con Costo</h1>} />
         <Route

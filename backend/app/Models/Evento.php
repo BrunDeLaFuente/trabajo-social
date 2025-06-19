@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Evento extends Model
 {
+    protected $table = 'evento';
     protected $primaryKey = 'id_evento';
     protected $fillable = [
         'titulo_evento',
@@ -35,5 +36,19 @@ class Evento extends Model
     public function inscripciones()
     {
         return $this->hasMany(Inscripcion::class, 'id_evento');
+    }
+
+    public function getImagenEventoUrlAttribute()
+    {
+        return $this->imagen_evento
+            ? url('storage/' . $this->imagen_evento)
+            : null;
+    }
+
+    public function getQrPagoUrlAttribute()
+    {
+        return $this->qr_pago
+            ? url('storage/' . $this->qr_pago)
+            : null;
     }
 }

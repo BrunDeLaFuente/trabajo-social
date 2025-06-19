@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Enlace extends Model
 {
+    protected $table = 'enlace';
     protected $primaryKey = 'id_enlace';
     protected $fillable = ['id_evento', 'plataforma', 'url_enlace', 'password_enlace'];
 

@@ -2,47 +2,241 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Evento;
+use App\Models\Enlace;
+use App\Models\Expositor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Http\JsonResponse;
 
 class EventoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): JsonResponse
     {
-        //
+        $eventos = Evento::with(['enlaces', 'expositores'])
+            ->get()
+            ->each->append('imagen_evento_url')
+            ->each->append('qr_pago_url');
+
+        return response()->json($eventos);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        //
+        $request->validate([
+            'titulo_evento' => 'required|string|max:255',
+            'fecha_evento' => 'required|date',
+            'ubicacion' => 'required|string|max:255',
+            'modalidad' => 'required|in:Presencial,Virtual',
+            'es_pago' => 'boolean',
+            'costo' => 'nullable|numeric',
+            'es_publico' => 'boolean',
+            'formulario' => 'boolean',
+            'imagen_evento' => 'nullable|image|max:5120', // 5MB
+            'qr_pago' => 'nullable|image|max:5120',
+            'enlaces' => 'nullable|array',
+            'enlaces.*.plataforma' => 'required|in:Google Meet,Zoom',
+            'enlaces.*.url_enlace' => 'required|string|max:500',
+            'enlaces.*.password_enlace' => 'nullable|string|max:255',
+            'expositores' => 'nullable|array',
+            'expositores.*' => 'required|string|distinct',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // 1. Generar slug único
+            $slugBase = Str::slug($request->titulo_evento);
+            $slug = $slugBase;
+            $count = 1;
+            while (Evento::where('slug', $slug)->exists()) {
+                $slug = "{$slugBase}-{$count}";
+                $count++;
+            }
+
+            // 2. Crear evento base (imagen temporalmente vacía)
+            $evento = Evento::create([
+                'titulo_evento' => $request->titulo_evento,
+                'fecha_evento' => $request->fecha_evento,
+                'ubicacion' => $request->ubicacion,
+                'modalidad' => $request->modalidad,
+                'es_pago' => $request->boolean('es_pago'),
+                'costo' => $request->costo,
+                'es_publico' => $request->boolean('es_publico'),
+                'formulario' => $request->boolean('formulario'),
+                'slug' => $slug,
+                'imagen_evento' => '',
+                'qr_pago' => ''
+            ]);
+
+            // 3. Procesar imágenes si existen
+
+            if ($request->hasFile('imagen_evento')) {
+                $evento->imagen_evento = $request->file('imagen_evento')->store("eventos/{$evento->id_evento}/portada", 'public');
+            }
+
+            if ($request->hasFile('qr_pago')) {
+                $evento->qr_pago = $request->file('qr_pago')->store("eventos/{$evento->id_evento}/qr", 'public');
+            }
+
+            $evento->save();
+
+            if ($request->filled('expositores')) {
+                $idsExpositores = $this->procesarExpositores($request->expositores);
+                $evento->expositores()->sync($idsExpositores);
+            }
+
+            // 4. Crear enlaces si vienen
+            if ($request->has('enlaces')) {
+                foreach ($request->enlaces as $enlace) {
+                    $evento->enlaces()->create($enlace);
+                }
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Evento creado exitosamente', 'evento' => $evento->load('enlaces')]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Borrar archivos subidos en caso de error
+            if (isset($evento)) {
+                Storage::disk('public')->deleteDirectory("evento/{$evento->id_evento}");
+                $evento->delete();
+            }
+            return response()->json(['error' => 'Error al crear el evento', 'message' => $e->getMessage()], 500);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(Request $request, $id): JsonResponse
     {
-        //
+        $evento = Evento::findOrFail($id);
+
+        $validated = $request->validate([
+            'titulo_evento' => 'required|string|max:255',
+            'fecha_evento' => 'required|date',
+            'ubicacion' => 'required|string|max:255',
+            'modalidad' => 'required|in:Presencial,Virtual',
+            'es_pago' => 'boolean',
+            'costo' => 'nullable|numeric',
+            'es_publico' => 'boolean',
+            'formulario' => 'boolean',
+            'imagen_evento' => 'nullable|file|image|max:5120',
+            'qr_pago' => 'nullable|file|image|max:5120',
+            'quitar_imagen' => 'boolean',
+            'quitar_qr' => 'boolean',
+            'enlaces' => 'nullable|array',
+            'enlaces.*.id_enlace' => 'nullable|integer|exists:enlace,id_enlace',
+            'enlaces.*.plataforma' => 'required_with:enlaces|string|in:Google Meet,Zoom',
+            'enlaces.*.url_enlace' => 'required_with:enlaces|string|max:500',
+            'enlaces.*.password_enlace' => 'nullable|string|max:255',
+            'expositores' => 'nullable|array',
+            'expositores.*' => 'required|string|distinct',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            // Nuevo slug si cambia título
+            if ($evento->titulo_evento !== $validated['titulo_evento']) {
+                $slugBase = Str::slug($validated['titulo_evento']);
+                $slug = $slugBase;
+                $count = 1;
+                while (Evento::where('slug', $slug)->where('id_evento', '!=', $evento->id_evento)->exists()) {
+                    $slug = $slugBase . '-' . $count;
+                    $count++;
+                }
+                $evento->slug = $slug;
+            }
+
+            $evento->fill($validated);
+            $evento->save();
+
+            // Eliminar imagen actual si se solicita
+            $ruta = 'eventos/' . $evento->id_evento;
+
+            if ($request->boolean('quitar_imagen') && $evento->imagen_evento) {
+                Storage::deleteDirectory("public/eventos/{$evento->id_evento}/portada");
+                $evento->imagen_evento = null;
+            }
+            if ($request->boolean('quitar_qr') && $evento->qr_pago) {
+                Storage::deleteDirectory("public/eventos/{$evento->id_evento}/qr");
+                $evento->qr_pago = null;
+            }
+
+
+            // ✅ LIMPIAR carpetas raíz si quedaron vacías
+            if (is_null($evento->imagen_evento) && is_null($evento->qr_pago)) {
+                Storage::deleteDirectory("public/eventos/{$evento->id_evento}");
+            }
+
+            // Nuevas imágenes
+            if ($request->hasFile('imagen_evento')) {
+                $evento->imagen_evento = $request->file('imagen_evento')->store("eventos/{$evento->id_evento}/portada", 'public');
+            }
+            if ($request->hasFile('qr_pago')) {
+                $evento->qr_pago = $request->file('qr_pago')->store("eventos/{$evento->id_evento}/qr", 'public');
+            }
+
+            $evento->save();
+
+            if ($request->filled('expositores')) {
+                $idsExpositores = $this->procesarExpositores($request->expositores);
+                $evento->expositores()->sync($idsExpositores);
+            }
+
+            // Enlaces
+            if (is_array($request->enlaces)) {
+                $evento->enlaces()->delete(); // Limpieza completa
+                foreach ($request->enlaces as $enlace) {
+                    $evento->enlaces()->create([
+                        'plataforma' => $enlace['plataforma'],
+                        'url_enlace' => $enlace['url_enlace'],
+                        'password_enlace' => $enlace['password_enlace'] ?? null,
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Evento actualizado correctamente', 'data' => $evento]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error al actualizar el evento', 'message' => $e->getMessage()], 500);
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy($id): JsonResponse
     {
-        //
+        $evento = Evento::findOrFail($id);
+
+        DB::beginTransaction();
+        try {
+            // Elimina archivos asociados
+            Storage::deleteDirectory('public/eventos/' . $evento->id_evento);
+
+            $evento->delete();
+            DB::commit();
+            return response()->json(['message' => 'Evento eliminado correctamente']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error al eliminar el evento', 'message' => $e->getMessage()], 500);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    private function procesarExpositores(array $expositores): array
     {
-        //
+        $ids = [];
+
+        foreach ($expositores as $entrada) {
+            if (is_numeric($entrada)) {
+                $ids[] = (int) $entrada;
+            } elseif (is_string($entrada)) {
+                $expositor = Expositor::firstOrCreate([
+                    'nombre_expositor' => $entrada
+                ]);
+                $ids[] = $expositor->id_expositor;
+            }
+        }
+
+        return $ids;
     }
 }
