@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Evento;
-use App\Models\Enlace;
 use App\Models\Expositor;
+use App\Models\Inscripcion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
+use App\Mail\NotificarAsistenteSimple;
+use App\Mail\NotificarCertificado;
+use Illuminate\Support\Facades\Mail;
 
 class EventoController extends Controller
 {
@@ -238,5 +241,99 @@ class EventoController extends Controller
         }
 
         return $ids;
+    }
+
+    public function notificarAsistentes(Request $request, $id): JsonResponse
+    {
+        $request->validate([
+            'asunto' => 'required|string|max:255',
+            'mensaje' => 'required|string',
+            'con_certificado' => 'required|boolean',
+            'destinatarios' => 'required|array',
+            'destinatarios.*.id_inscripcion' => 'required|exists:inscripcion,id_inscripcion',
+            'destinatarios.*.certificado' => 'nullable|file|mimes:pdf|max:5120',
+        ]);
+
+        try {
+            $evento = Evento::findOrFail($id);
+
+            foreach ($request->destinatarios as $index => $data) {
+                $inscripcion = Inscripcion::with('asistente')->findOrFail($data['id_inscripcion']);
+
+                $nombre = $inscripcion->asistente->nombre_asistente;
+                $email = $inscripcion->email_inscripcion;
+
+                if (!$email) {
+                    continue;
+                }
+
+                $rutaCertificadoRel = null;
+                $rutaCertificadoAbs = null;
+
+                if ($request->con_certificado && $request->hasFile("destinatarios.$index.certificado")) {
+                    $archivo = $request->file("destinatarios.$index.certificado");
+
+                    $nombreArchivo = $archivo->hashName(); // genera nombre único
+                    $rutaCertificadoRel = "certificados/{$id}/{$inscripcion->id_inscripcion}/{$nombreArchivo}";
+                    $archivo->storeAs("certificados/{$id}/{$inscripcion->id_inscripcion}", $nombreArchivo, 'private');
+
+                    // Marcar como entregado
+                    $inscripcion->certificado_entregado = true;
+                    $inscripcion->save();
+
+                    // Ruta absoluta
+                    $rutaCertificadoAbs = storage_path('app/private/' . $rutaCertificadoRel);
+                }
+
+                if ($request->con_certificado && $rutaCertificadoAbs) {
+                    clearstatcache(); // limpiar cache de estado del archivo
+
+                    if (file_exists($rutaCertificadoAbs)) {
+                        Mail::to($email)->send(new NotificarCertificado(
+                            $nombre,
+                            $evento->titulo_evento,
+                            $evento->fecha_evento,
+                            $request->mensaje,
+                            $rutaCertificadoAbs
+                        ));
+
+                        // 1. Eliminar el archivo
+                        Storage::disk('private')->delete($rutaCertificadoRel);
+
+                        // 2. Eliminar carpeta del asistente si está vacía
+                        $rutaCarpetaAsistente = "certificados/{$id}/{$inscripcion->id_inscripcion}";
+                        if (empty(Storage::disk('private')->files($rutaCarpetaAsistente))) {
+                            Storage::disk('private')->deleteDirectory($rutaCarpetaAsistente);
+                        }
+
+                        // 3. Eliminar carpeta del evento si está vacía
+                        $rutaCarpetaEvento = "certificados/{$id}";
+                        if (empty(Storage::disk('private')->allFiles($rutaCarpetaEvento))) {
+                            Storage::disk('private')->deleteDirectory($rutaCarpetaEvento);
+                        }
+                    } else {
+
+
+                        return response()->json([
+                            'error' => 'Archivo no encontrado',
+                            'ruta' => $rutaCertificadoAbs
+                        ], 500);
+                    }
+                } else {
+                    Mail::to($email)->send(new NotificarAsistenteSimple(
+                        $nombre,
+                        $evento->titulo_evento,
+                        $request->mensaje
+                    ));
+                }
+            }
+
+            return response()->json(['message' => 'Correos enviados correctamente']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al enviar correos',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

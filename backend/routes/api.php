@@ -19,6 +19,7 @@ use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\AsistenteController;
 use App\Http\Controllers\ExpositorController;
 use App\Http\Controllers\EventoController;
+use App\Http\Controllers\InscripcionController;
 
 
 // 🔒 Rutas PRIVADAS (requieren JWT)
@@ -103,6 +104,15 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::post('/eventosCrear', [EventoController::class, 'store']);
     Route::match(['PUT', 'POST'], '/eventosActualizar/{id}', [EventoController::class, 'update']);
     Route::delete('/eventosEliminar/{id}', [EventoController::class, 'destroy']);
+
+    Route::post('eventos/{id}/notificar-asistentes', [EventoController::class, 'notificarAsistentes']);
+
+    Route::get('/eventos/{id}/detalles', [InscripcionController::class, 'getEventoConInscripciones']);
+    Route::post('/eventos/{id}/inscribir', [InscripcionController::class, 'store']);
+    Route::get('/inscripcion/comprobante/{id}', [InscripcionController::class, 'obtenerComprobante']);
+    Route::match(['PUT', 'POST'], '/inscripcionActualizar/{id}', [InscripcionController::class, 'update']);
+    Route::delete('/inscripcionesEliminar/{id}', [InscripcionController::class, 'destroy']);
+
 
     // Asistentes
     Route::get('/asistentes', [AsistenteController::class, 'index']);
