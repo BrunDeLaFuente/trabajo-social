@@ -514,7 +514,8 @@ const AsistentesAdmin = () => {
                   </InfoItem>
                   {evento.es_pago === 1 && (
                     <InfoItem>
-                      <DollarSign size={16} />Bs. {evento.costo}
+                      <DollarSign size={16} />
+                      Bs. {evento.costo}
                     </InfoItem>
                   )}
                 </EventInfo>
@@ -1691,7 +1692,7 @@ const Table = styled.table`
 `;
 
 const TableHeader = styled.thead`
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: rgb(55, 111, 231);
   color: white;
 `;
 

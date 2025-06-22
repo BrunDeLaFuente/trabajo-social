@@ -106,6 +106,7 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::delete('/eventosEliminar/{id}', [EventoController::class, 'destroy']);
 
     Route::post('eventos/{id}/notificar-asistentes', [EventoController::class, 'notificarAsistentes']);
+    Route::get('/eventos/descargar-pdf/{id}', [EventoController::class, 'descargarAsistentesPDF']);
 
     Route::get('/eventos/{id}/detalles', [InscripcionController::class, 'getEventoConInscripciones']);
     Route::post('/eventos/{id}/inscribir', [InscripcionController::class, 'store']);
@@ -165,4 +166,8 @@ Route::middleware([])->group(function () {
     // Noticias
     Route::get('/noticias', [NoticiaController::class, 'indexPublic']);
     Route::get('/noticias/{slug}', [NoticiaController::class, 'mostrarPorSlug']);
+
+    // Eventos
+    Route::get('/eventos/publicos', [EventoController::class, 'indexPublic']);
+    Route::get('/eventos/publicos/{slug}', [EventoController::class, 'getEventoPorSlug']);
 });

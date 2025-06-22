@@ -13,17 +13,19 @@ class NotificarAsistenteSimple extends Mailable
     public $nombre;
     public $evento;
     public $mensaje;
+    public $asunto;
 
-    public function __construct($nombre, $evento, $mensaje)
+    public function __construct($nombre, $evento, $asunto, $mensaje)
     {
         $this->nombre = $nombre;
         $this->evento = $evento;
+        $this->asunto = $asunto;
         $this->mensaje = $mensaje;
     }
 
     public function build()
     {
-        return $this->subject("Información sobre el evento: {$this->evento}")
+        return $this->subject($this->asunto)
             ->view('emails.notificacion_asistente_simple');
     }
 }

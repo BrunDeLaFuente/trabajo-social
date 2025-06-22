@@ -13,6 +13,8 @@ use Illuminate\Http\JsonResponse;
 use App\Mail\NotificarAsistenteSimple;
 use App\Mail\NotificarCertificado;
 use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class EventoController extends Controller
 {
@@ -24,6 +26,37 @@ class EventoController extends Controller
             ->each->append('qr_pago_url');
 
         return response()->json($eventos);
+    }
+
+    public function indexPublic(): JsonResponse
+    {
+        $eventos = Evento::with(['enlaces', 'expositores'])
+            ->where('es_publico', true)
+            ->get()
+            ->each->append('imagen_evento_url')
+            ->each->append('qr_pago_url');
+
+        return response()->json($eventos);
+    }
+
+    public function getEventoPorSlug(string $slug): JsonResponse
+    {
+        try {
+            $evento = Evento::where('slug', $slug)
+                ->where('es_publico', true)
+                ->firstOrFail()
+                ->append('imagen_evento_url')
+                ->append('qr_pago_url');
+
+            return response()->json([
+                'message' => 'Evento encontrado',
+                'evento' => $evento,
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Evento no encontrado o no es público'
+            ], 404);
+        }
     }
 
     public function store(Request $request): JsonResponse
@@ -293,6 +326,7 @@ class EventoController extends Controller
                             $nombre,
                             $evento->titulo_evento,
                             $evento->fecha_evento,
+                            $request->asunto,
                             $request->mensaje,
                             $rutaCertificadoAbs
                         ));
@@ -312,8 +346,6 @@ class EventoController extends Controller
                             Storage::disk('private')->deleteDirectory($rutaCarpetaEvento);
                         }
                     } else {
-
-
                         return response()->json([
                             'error' => 'Archivo no encontrado',
                             'ruta' => $rutaCertificadoAbs
@@ -323,6 +355,7 @@ class EventoController extends Controller
                     Mail::to($email)->send(new NotificarAsistenteSimple(
                         $nombre,
                         $evento->titulo_evento,
+                        $request->asunto,
                         $request->mensaje
                     ));
                 }
@@ -335,5 +368,20 @@ class EventoController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function descargarAsistentesPDF($id)
+    {
+        $evento = Evento::findOrFail($id);
+        $asistentes = Inscripcion::with('asistente')
+            ->where('id_evento', $id)
+            ->get();
+
+        $pdf = Pdf::loadView('pdf.asistentes_evento', [
+            'evento' => $evento,
+            'asistentes' => $asistentes
+        ])->setPaper('A4', 'portrait');
+
+        return $pdf->download("asistentes_{$evento->titulo_evento}.pdf");
     }
 }
