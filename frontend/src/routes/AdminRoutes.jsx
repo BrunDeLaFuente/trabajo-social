@@ -27,6 +27,7 @@ import EventoCrear from "../pages/admin/Eventos/EventoCrear";
 import EventoEditar from "../pages/admin/Eventos/EventoEditar";
 import AsistentesAdmin from "../pages/admin/Eventos/AsistentesAdmin";
 import NotificarAdmin from "../pages/admin/Eventos/NotificarAdmin";
+import DashboardEstadisticas from "../pages/admin/Eventos/DashboardEstadisticas";
 
 const AdminRoutes = () => {
   const { user, loading } = useContext(AuthContext);
@@ -75,10 +76,7 @@ const AdminRoutes = () => {
 
         <Route path="/eventos-sin-costo" element={<h1>Eventos Sin Costo</h1>} />
         <Route path="/eventos-con-costo" element={<h1>Eventos Con Costo</h1>} />
-        <Route
-          path="/eventos-dashboard"
-          element={<h1>Dashboard de Eventos</h1>}
-        />
+        <Route path="/eventos-dashboard" element={<DashboardEstadisticas />} />
       </Routes>
     </PrivateLayout>
   ) : (

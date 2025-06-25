@@ -9,6 +9,7 @@ const ScrollToTop = () => {
     const scrollRoutes = [
       "/pregrado/modalidades-titulacion",
       "/noticias/anuncios",
+      "/noticias/eventos",
     ];
 
     const shouldScroll = scrollRoutes.some((route) =>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Mail, Phone, Save, X, Plus, Trash, Edit } from "lucide-react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import api from "../../../utils/api";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import CajaMensaje from "../../../components/utils/CajaMensaje";
@@ -279,278 +279,296 @@ export default function Informacion() {
   }
 
   return (
-    <Container>
-      {/* Mensajes */}
-      {mensajes.map((mensaje) => (
-        <CajaMensaje
-          key={mensaje.id}
-          tipo={mensaje.tipo}
-          color={mensaje.color}
-          mensaje={mensaje.mensaje}
-          duracion={mensaje.duracion}
-          backgroundColor={mensaje.backgroundColor}
-          onClose={() => eliminarMensaje(mensaje.id)}
-        />
-      ))}
+    <Container2>
+      <Container>
+        {/* Mensajes */}
+        {mensajes.map((mensaje) => (
+          <CajaMensaje
+            key={mensaje.id}
+            tipo={mensaje.tipo}
+            color={mensaje.color}
+            mensaje={mensaje.mensaje}
+            duracion={mensaje.duracion}
+            backgroundColor={mensaje.backgroundColor}
+            onClose={() => eliminarMensaje(mensaje.id)}
+          />
+        ))}
 
-      <Title>Información de la carrera</Title>
+        <Title>Información de la carrera</Title>
 
-      {/* Información principal */}
-      <Grid>
-        <div>
-          <FormGroup>
-            <Label htmlFor="nombre_carrera">Nombre de la carrera</Label>
-            <Input
-              type="text"
-              id="nombre_carrera"
-              name="nombre_carrera"
-              value={carrera.nombre_carrera}
-              onChange={handleChange}
-            />
-          </FormGroup>
+        {/* Información principal */}
+        <Grid>
+          <div>
+            <FormGroup>
+              <Label htmlFor="nombre_carrera">Nombre de la carrera</Label>
+              <Input
+                type="text"
+                id="nombre_carrera"
+                name="nombre_carrera"
+                value={carrera.nombre_carrera}
+                onChange={handleChange}
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <Label htmlFor="facultad">Facultad</Label>
-            <Input
-              type="text"
-              id="facultad"
-              name="facultad"
-              value={carrera.facultad}
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <Label htmlFor="facultad">Facultad</Label>
+              <Input
+                type="text"
+                id="facultad"
+                name="facultad"
+                value={carrera.facultad}
+                onChange={handleChange}
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <Label htmlFor="duracion">Duración</Label>
-            <Input
-              type="text"
-              id="duracion"
-              name="duracion"
-              value={carrera.duracion}
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <Label htmlFor="duracion">Duración</Label>
+              <Input
+                type="text"
+                id="duracion"
+                name="duracion"
+                value={carrera.duracion}
+                onChange={handleChange}
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <Label htmlFor="ensenanza">Enseñanza</Label>
-            <Input
-              type="text"
-              id="ensenanza"
-              name="ensenanza"
-              value={carrera.ensenanza}
-              onChange={handleChange}
-            />
-          </FormGroup>
-        </div>
+            <FormGroup>
+              <Label htmlFor="ensenanza">Enseñanza</Label>
+              <Input
+                type="text"
+                id="ensenanza"
+                name="ensenanza"
+                value={carrera.ensenanza}
+                onChange={handleChange}
+              />
+            </FormGroup>
+          </div>
 
-        <div>
-          <FormGroup>
-            <Label htmlFor="idiomas">Idiomas</Label>
-            <Input
-              type="text"
-              id="idiomas"
-              name="idiomas"
-              value={carrera.idiomas}
-              onChange={handleChange}
-            />
-          </FormGroup>
+          <div>
+            <FormGroup>
+              <Label htmlFor="idiomas">Idiomas</Label>
+              <Input
+                type="text"
+                id="idiomas"
+                name="idiomas"
+                value={carrera.idiomas}
+                onChange={handleChange}
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <Label htmlFor="grado">Grado</Label>
-            <Input
-              type="text"
-              id="grado"
-              name="grado"
-              value={carrera.grado}
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <Label htmlFor="grado">Grado</Label>
+              <Input
+                type="text"
+                id="grado"
+                name="grado"
+                value={carrera.grado}
+                onChange={handleChange}
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <Label htmlFor="direccion">Dirección</Label>
-            <Input
-              type="text"
-              id="direccion"
-              name="direccion"
-              value={carrera.direccion}
-              onChange={handleChange}
-            />
-          </FormGroup>
-        </div>
-      </Grid>
+            <FormGroup>
+              <Label htmlFor="direccion">Dirección</Label>
+              <Input
+                type="text"
+                id="direccion"
+                name="direccion"
+                value={carrera.direccion}
+                onChange={handleChange}
+              />
+            </FormGroup>
+          </div>
+        </Grid>
 
-      {/* Sección de correos */}
-      <Section>
-        <SectionTitle>
-          <Mail size={20} /> Correos electrónicos
-        </SectionTitle>
+        {/* Sección de correos */}
+        <Section>
+          <SectionTitle>
+            <Mail size={20} /> Correos electrónicos
+          </SectionTitle>
 
-        <ItemList>
-          {carrera.correos.map((correo, index) => (
-            <ItemRow key={correo.id_carrera_correo}>
-              {editingEmail === index ? (
-                <ItemInput
-                  type="email"
-                  value={correo.correo_carrera}
-                  onChange={(e) => handleEmailChange(index, e.target.value)}
-                />
-              ) : (
-                <ItemContent>
-                  <Mail
-                    size={16}
-                    style={{
-                      display: "inline-block",
-                      marginRight: "0.5rem",
-                      verticalAlign: "middle",
-                    }}
-                  />
-                  {correo.correo_carrera}
-                </ItemContent>
-              )}
-
-              <ButtonGroup>
+          <ItemList>
+            {carrera.correos.map((correo, index) => (
+              <ItemRow key={correo.id_carrera_correo}>
                 {editingEmail === index ? (
-                  <IconButton
-                    onClick={() => setEditingEmail(null)}
-                    color="#22c55e"
-                    hoverColor="#16a34a"
-                    title="Guardar"
-                  >
-                    <Save size={18} />
-                  </IconButton>
-                ) : (
-                  <IconButton
-                    onClick={() => setEditingEmail(index)}
-                    color="#3b82f6"
-                    hoverColor="#2563eb"
-                    title="Editar"
-                  >
-                    <Edit size={18} />
-                  </IconButton>
-                )}
-                <IconButton
-                  onClick={() => deleteEmail(index)}
-                  color="#ef4444"
-                  hoverColor="#dc2626"
-                  title="Eliminar"
-                >
-                  <Trash size={18} />
-                </IconButton>
-              </ButtonGroup>
-            </ItemRow>
-          ))}
-        </ItemList>
-
-        <AddItemContainer>
-          <AddItemInput
-            type="email"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            placeholder="Agregar nuevo correo"
-          />
-          <AddButton onClick={addEmail}>
-            <Plus size={18} /> Agregar
-          </AddButton>
-        </AddItemContainer>
-      </Section>
-
-      {/* Sección de teléfonos */}
-      <Section>
-        <SectionTitle>
-          <Phone size={20} /> Teléfonos
-        </SectionTitle>
-
-        <ItemList>
-          {carrera.telefonos.map((telefono, index) => (
-            <ItemRow key={telefono.id_carrera_telefono}>
-              {editingPhone === index ? (
-                <ItemInput
-                  type="text"
-                  value={telefono.telefono}
-                  onChange={(e) => handlePhoneChange(index, e.target.value)}
-                />
-              ) : (
-                <ItemContent>
-                  <Phone
-                    size={16}
-                    style={{
-                      display: "inline-block",
-                      marginRight: "0.5rem",
-                      verticalAlign: "middle",
-                    }}
+                  <ItemInput
+                    type="email"
+                    value={correo.correo_carrera}
+                    onChange={(e) => handleEmailChange(index, e.target.value)}
                   />
-                  {telefono.telefono}
-                </ItemContent>
-              )}
-
-              <ButtonGroup>
-                {editingPhone === index ? (
-                  <IconButton
-                    onClick={() => setEditingPhone(null)}
-                    color="#22c55e"
-                    hoverColor="#16a34a"
-                    title="Guardar"
-                  >
-                    <Save size={18} />
-                  </IconButton>
                 ) : (
-                  <IconButton
-                    onClick={() => setEditingPhone(index)}
-                    color="#3b82f6"
-                    hoverColor="#2563eb"
-                    title="Editar"
-                  >
-                    <Edit size={18} />
-                  </IconButton>
+                  <ItemContent>
+                    <Mail
+                      size={16}
+                      style={{
+                        display: "inline-block",
+                        marginRight: "0.5rem",
+                        verticalAlign: "middle",
+                      }}
+                    />
+                    {correo.correo_carrera}
+                  </ItemContent>
                 )}
-                <IconButton
-                  onClick={() => deletePhone(index)}
-                  color="#ef4444"
-                  hoverColor="#dc2626"
-                  title="Eliminar"
-                >
-                  <Trash size={18} />
-                </IconButton>
-              </ButtonGroup>
-            </ItemRow>
-          ))}
-        </ItemList>
 
-        <AddItemContainer>
-          <AddItemInput
-            type="text"
-            value={newPhone}
-            onChange={(e) => setNewPhone(e.target.value)}
-            placeholder="Agregar nuevo teléfono"
-          />
-          <AddButton onClick={addPhone}>
-            <Plus size={18} /> Agregar
-          </AddButton>
-        </AddItemContainer>
-      </Section>
+                <ButtonGroup>
+                  {editingEmail === index ? (
+                    <IconButton
+                      onClick={() => setEditingEmail(null)}
+                      color="#22c55e"
+                      hoverColor="#16a34a"
+                      title="Guardar"
+                    >
+                      <Save size={18} />
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      onClick={() => setEditingEmail(index)}
+                      color="#3b82f6"
+                      hoverColor="#2563eb"
+                      title="Editar"
+                    >
+                      <Edit size={18} />
+                    </IconButton>
+                  )}
+                  <IconButton
+                    onClick={() => deleteEmail(index)}
+                    color="#ef4444"
+                    hoverColor="#dc2626"
+                    title="Eliminar"
+                  >
+                    <Trash size={18} />
+                  </IconButton>
+                </ButtonGroup>
+              </ItemRow>
+            ))}
+          </ItemList>
 
-      {/* Botones de acción */}
-      <ActionButtons>
-        <CancelButton onClick={handleCancel} disabled={saving}>
-          <X size={18} /> Cancelar
-        </CancelButton>
-        <SaveButton onClick={handleSave} disabled={saving}>
-          {saving ? (
-            <>
-              <SpinIcon>⟳</SpinIcon> Guardando...
-            </>
-          ) : (
-            <>
-              <Save size={18} /> Guardar cambios
-            </>
-          )}
-        </SaveButton>
-      </ActionButtons>
-    </Container>
+          <AddItemContainer>
+            <AddItemInput
+              type="email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              placeholder="Agregar nuevo correo"
+            />
+            <AddButton onClick={addEmail}>
+              <Plus size={18} /> Agregar
+            </AddButton>
+          </AddItemContainer>
+        </Section>
+
+        {/* Sección de teléfonos */}
+        <Section>
+          <SectionTitle>
+            <Phone size={20} /> Teléfonos
+          </SectionTitle>
+
+          <ItemList>
+            {carrera.telefonos.map((telefono, index) => (
+              <ItemRow key={telefono.id_carrera_telefono}>
+                {editingPhone === index ? (
+                  <ItemInput
+                    type="text"
+                    value={telefono.telefono}
+                    onChange={(e) => handlePhoneChange(index, e.target.value)}
+                  />
+                ) : (
+                  <ItemContent>
+                    <Phone
+                      size={16}
+                      style={{
+                        display: "inline-block",
+                        marginRight: "0.5rem",
+                        verticalAlign: "middle",
+                      }}
+                    />
+                    {telefono.telefono}
+                  </ItemContent>
+                )}
+
+                <ButtonGroup>
+                  {editingPhone === index ? (
+                    <IconButton
+                      onClick={() => setEditingPhone(null)}
+                      color="#22c55e"
+                      hoverColor="#16a34a"
+                      title="Guardar"
+                    >
+                      <Save size={18} />
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      onClick={() => setEditingPhone(index)}
+                      color="#3b82f6"
+                      hoverColor="#2563eb"
+                      title="Editar"
+                    >
+                      <Edit size={18} />
+                    </IconButton>
+                  )}
+                  <IconButton
+                    onClick={() => deletePhone(index)}
+                    color="#ef4444"
+                    hoverColor="#dc2626"
+                    title="Eliminar"
+                  >
+                    <Trash size={18} />
+                  </IconButton>
+                </ButtonGroup>
+              </ItemRow>
+            ))}
+          </ItemList>
+
+          <AddItemContainer>
+            <AddItemInput
+              type="text"
+              value={newPhone}
+              onChange={(e) => setNewPhone(e.target.value)}
+              placeholder="Agregar nuevo teléfono"
+            />
+            <AddButton onClick={addPhone}>
+              <Plus size={18} /> Agregar
+            </AddButton>
+          </AddItemContainer>
+        </Section>
+
+        {/* Botones de acción */}
+        <ActionButtons>
+          <CancelButton onClick={handleCancel} disabled={saving}>
+            <X size={18} /> Cancelar
+          </CancelButton>
+          <SaveButton onClick={handleSave} disabled={saving}>
+            {saving ? (
+              <>
+                <SpinIcon>⟳</SpinIcon> Guardando...
+              </>
+            ) : (
+              <>
+                <Save size={18} /> Guardar cambios
+              </>
+            )}
+          </SaveButton>
+        </ActionButtons>
+      </Container>
+    </Container2>
   );
 }
 
 // Styled Components
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const Container2 = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem 1rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem 0.5rem;
+  }
+`;
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -559,6 +577,7 @@ const Container = styled.div`
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow-x: hidden; /* Prevenir scroll horizontal */
+  animation: ${fadeIn} 0.6s ease-out;
 
   @media (max-width: 768px) {
     padding: 1rem;
@@ -792,12 +811,14 @@ const AddButton = styled.button`
 const ActionButtons = styled.div`
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e2e8f0;
 
-  @media (max-width: 480px) {
+  @media (max-width: 768px) {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
   }
 `;
 
@@ -805,50 +826,59 @@ const Button = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  padding: 0.875rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+    transform: none;
   }
 
   svg {
-    margin-right: 0.25rem;
+    margin-right: 0.5rem;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 768px) {
     width: 100%;
+    padding: 1rem;
   }
 `;
 
 const CancelButton = styled(Button)`
-  background-color: #e5e7eb;
-  color: #4b5563;
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  color: white;
 
   &:hover:not(:disabled) {
-    background-color: #d1d5db;
+    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
   }
 `;
 
 const SaveButton = styled(Button)`
-  background-color: #22c55e;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   color: white;
 
   &:hover:not(:disabled) {
-    background-color: #16a34a;
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   }
-`;
 
-const ErrorMessage = styled.div`
-  text-align: center;
-  color: #ef4444;
-  font-weight: 500;
-  margin: 2rem 0;
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
 `;
 
 const SpinIcon = styled.span`
@@ -864,4 +894,11 @@ const SpinIcon = styled.span`
       transform: rotate(360deg);
     }
   }
+`;
+
+const ErrorMessage = styled.div`
+  text-align: center;
+  color: #ef4444;
+  font-weight: 500;
+  margin: 2rem 0;
 `;

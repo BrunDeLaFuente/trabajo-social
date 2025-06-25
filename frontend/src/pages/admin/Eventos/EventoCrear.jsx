@@ -786,13 +786,6 @@ const EventoCrear = () => {
 
             {/* Botones de acción */}
             <ActionButtons>
-              <CancelButton
-                type="button"
-                onClick={() => navigate("/admin/eventos")}
-              >
-                <X size={20} />
-                Cancelar
-              </CancelButton>
               <SaveButton type="submit" disabled={loading}>
                 {loading ? (
                   <>
@@ -1258,77 +1251,62 @@ const AddEnlaceButton = styled.button`
 // Botones de acción
 const ActionButtons = styled.div`
   display: flex;
-  gap: 1rem;
   justify-content: flex-end;
-  margin-top: 2rem;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
   padding-top: 2rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 2px solid #e2e8f0;
 
   @media (max-width: 768px) {
     flex-direction: column;
+    gap: 1rem;
   }
 `;
 
-const SaveButton = styled.button`
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+const Button = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-  min-height: 56px;
-  min-width: 180px;
-  max-height: 56px;
-  white-space: nowrap;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
-  }
+  padding: 0.875rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.7;
     cursor: not-allowed;
     transform: none;
   }
 
-  &:active {
-    transform: none;
+  svg {
+    margin-right: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 1rem;
   }
 `;
 
-const CancelButton = styled.button`
-  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+const SaveButton = styled(Button)`
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
 
-  &:hover {
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   }
 
-  &:active {
-    transform: translateY(-1px);
+  &:active:not(:disabled) {
+    transform: translateY(0);
   }
 `;
+
 const SpinIcon = styled.span`
   display: inline-block;
   animation: spin 1s linear infinite;

@@ -39,6 +39,16 @@ class EventoController extends Controller
         return response()->json($eventos);
     }
 
+    public function indexDashboard(): JsonResponse
+    {
+        $eventos = Evento::with(['inscripciones'])
+            ->get()
+            ->each->append('imagen_evento_url')
+            ->each->append('qr_pago_url');
+
+        return response()->json($eventos);
+    }
+
     public function getEventoPorSlug(string $slug): JsonResponse
     {
         try {
@@ -383,5 +393,45 @@ class EventoController extends Controller
         ])->setPaper('A4', 'portrait');
 
         return $pdf->download("asistentes_{$evento->titulo_evento}.pdf");
+    }
+
+    public function dashboard(): JsonResponse
+    {
+        $eventos = Evento::with('inscripciones')->get();
+
+        $porEvento = $eventos->map(function ($evento) {
+            $total = $evento->inscripciones->count();
+            $participantes = $evento->inscripciones->filter(
+                fn($i) =>
+                $i->certificado_entregado === 1 ||
+                    ($i->entrada === 1 && $i->salida === 1)
+            )->count();
+
+            return [
+                'titulo_evento' => $evento->titulo_evento,
+                'total_inscripciones' => $total,
+                'porcentaje_certificados' => $total ? round(($participantes * 100) / $total, 2) : 0,
+            ];
+        });
+
+        $porModalidad = $eventos->groupBy('modalidad')->map(function ($grupo, $modalidad) {
+            $total = $grupo->flatMap->inscripciones->count();
+            $participantes = $grupo->flatMap->inscripciones->filter(
+                fn($i) =>
+                $i->certificado_entregado === 1 ||
+                    ($i->entrada === 1 && $i->salida === 1)
+            )->count();
+
+            return [
+                'modalidad' => $modalidad,
+                'total_inscripciones' => $total,
+                'porcentaje_participacion' => $total ? round(($participantes * 100) / $total, 2) : 0,
+            ];
+        })->values();
+
+        return response()->json([
+            'eventos' => $porEvento,
+            'modalidad' => $porModalidad,
+        ]);
     }
 }

@@ -182,257 +182,261 @@ export default function NoticiasAdmin() {
   }
 
   return (
-    <Container>
-      {/* Mensajes */}
-      {mensajes.map((mensaje) => (
-        <CajaMensaje
-          key={mensaje.id}
-          tipo={mensaje.tipo}
-          color={mensaje.color}
-          mensaje={mensaje.mensaje}
-          duracion={mensaje.duracion}
-          backgroundColor={mensaje.backgroundColor}
-          onClose={() => eliminarMensaje(mensaje.id)}
-        />
-      ))}
-
-      <Title>
-        <Newspaper size={24} /> Noticias
-      </Title>
-
-      <TopControls>
-        <FiltersContainer>
-          <SearchContainer>
-            <SearchInput
-              type="text"
-              placeholder="Buscar por título..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <SearchIcon>
-              <Search size={16} />
-            </SearchIcon>
-          </SearchContainer>
-
-          <CategoryFilter
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-          >
-            <option value="">Todas las categorías</option>
-            <option value="Articulo">Artículo</option>
-            <option value="Comunicado">Comunicado</option>
-          </CategoryFilter>
-
-          <DateFilter
-            type="date"
-            value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value)}
-            title="Filtrar por fecha de publicación"
+    <Container2>
+      <Container>
+        {/* Mensajes */}
+        {mensajes.map((mensaje) => (
+          <CajaMensaje
+            key={mensaje.id}
+            tipo={mensaje.tipo}
+            color={mensaje.color}
+            mensaje={mensaje.mensaje}
+            duracion={mensaje.duracion}
+            backgroundColor={mensaje.backgroundColor}
+            onClose={() => eliminarMensaje(mensaje.id)}
           />
-        </FiltersContainer>
+        ))}
 
-        <AddButton onClick={handleAddComunicado}>
-          <Plus size={16} /> Agregar noticia
-        </AddButton>
-      </TopControls>
+        <Title>
+          <Newspaper size={24} /> Noticias
+        </Title>
 
-      {/* Vista de escritorio */}
-      <DesktopView>
-        <TableContainer>
-          <Table>
-            <TableHeader>
-              <TableHeaderCell>
-                <Newspaper size={16} /> Título
-              </TableHeaderCell>
-              <TableHeaderCell>
-                <Calendar size={16} /> Fecha
-              </TableHeaderCell>
-              <TableHeaderCell>
-                <Tag size={16} /> Categoría
-              </TableHeaderCell>
-              <TableHeaderCell>
-                <Globe size={16} /> Estado
-              </TableHeaderCell>
-              <TableHeaderCell>Acciones</TableHeaderCell>
-            </TableHeader>
+        <TopControls>
+          <FiltersContainer>
+            <SearchContainer>
+              <SearchInput
+                type="text"
+                placeholder="Buscar por título..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <SearchIcon>
+                <Search size={16} />
+              </SearchIcon>
+            </SearchContainer>
 
-            <TableBody>
-              {getCurrentPageItems().length > 0 ? (
-                getCurrentPageItems().map((noticia) => (
-                  <TableRow key={noticia.id_noticia}>
-                    <TitleCell>{noticia.titulo_noticia}</TitleCell>
-                    <TableCell>
-                      {formatDate(noticia.fecha_publicacion_noticia)}
-                    </TableCell>
-                    <TableCell>
-                      <CategoryBadge categoria={noticia.categoria}>
-                        {noticia.categoria}
-                      </CategoryBadge>
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge isPublic={noticia.es_publico === 1}>
-                        {noticia.es_publico === 1 ? (
-                          <Globe size={12} />
-                        ) : (
-                          <GlobeLock size={12} />
-                        )}
-                        {noticia.es_publico === 1 ? "Público" : "Privado"}
-                      </StatusBadge>
-                    </TableCell>
-                    <TableCell>
-                      <ActionButtons>
-                        <ViewButton
-                          onClick={() => handleViewDetails(noticia.id_noticia)}
-                          title="Ver detalles"
-                        >
-                          <Eye size={16} />
-                        </ViewButton>
-                        <DeleteButton
-                          onClick={() => openDeleteModal(noticia)}
-                          title="Eliminar"
-                        >
-                          <Trash size={16} />
-                        </DeleteButton>
-                      </ActionButtons>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <NoResults>No se encontraron noticias</NoResults>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </DesktopView>
-
-      {/* Vista móvil */}
-      <MobileView>
-        {getCurrentPageItems().length > 0 ? (
-          getCurrentPageItems().map((noticia) => (
-            <MobileCard key={noticia.id_noticia}>
-              <MobileCardHeader>
-                <MobileCardTitle>{noticia.titulo_noticia}</MobileCardTitle>
-                <StatusBadge isPublic={noticia.es_publico === 1}>
-                  {noticia.es_publico === 1 ? (
-                    <Globe size={12} />
-                  ) : (
-                    <GlobeLock size={12} />
-                  )}
-                  {noticia.es_publico === 1 ? "Público" : "Privado"}
-                </StatusBadge>
-              </MobileCardHeader>
-              <MobileCardContent>
-                <MobileCardItem>
-                  <Calendar size={16} />
-                  {formatDate(noticia.fecha_publicacion_noticia)}
-                </MobileCardItem>
-                <MobileCardItem>
-                  <Tag size={16} />
-                  <CategoryBadge categoria={noticia.categoria}>
-                    {noticia.categoria}
-                  </CategoryBadge>
-                </MobileCardItem>
-              </MobileCardContent>
-              <MobileCardActions>
-                <ViewButton
-                  onClick={() => handleViewDetails(noticia.id_noticia)}
-                  title="Ver detalles"
-                >
-                  <Eye size={16} />
-                </ViewButton>
-                <DeleteButton
-                  onClick={() => openDeleteModal(noticia)}
-                  title="Eliminar"
-                >
-                  <Trash size={16} />
-                </DeleteButton>
-              </MobileCardActions>
-            </MobileCard>
-          ))
-        ) : (
-          <NoResults>No se encontraron noticias</NoResults>
-        )}
-      </MobileView>
-
-      {/* Paginación */}
-      {totalPages > 1 && (
-        <Pagination>
-          <PageButton
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            <ChevronLeft size={16} />
-          </PageButton>
-
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <PageButton
-              key={page}
-              active={page === currentPage}
-              onClick={() => handlePageChange(page)}
+            <CategoryFilter
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
             >
-              {page}
-            </PageButton>
-          ))}
+              <option value="">Todas las categorías</option>
+              <option value="Articulo">Artículo</option>
+              <option value="Comunicado">Comunicado</option>
+            </CategoryFilter>
 
-          <PageButton
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            <ChevronRight size={16} />
-          </PageButton>
-        </Pagination>
-      )}
+            <DateFilter
+              type="date"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              title="Filtrar por fecha de publicación"
+            />
+          </FiltersContainer>
 
-      {/* Modal de confirmación para eliminar */}
-      {isDeleteModalOpen && (
-        <ModalOverlay>
-          <ModalContent>
-            <ModalHeader>
-              <ModalTitle>Confirmar eliminación</ModalTitle>
-              <ModalCloseButton onClick={closeDeleteModal}>
-                <X size={20} />
-              </ModalCloseButton>
-            </ModalHeader>
-            <ModalBody>
-              <div className="flex items-center gap-3 mb-4">
-                <AlertTriangle size={24} className="text-red-500" />
-                <p>
-                  ¿Está seguro que desea eliminar la noticia{" "}
-                  <strong>{selectedNoticia?.titulo_noticia}</strong>?
-                </p>
-              </div>
-              <p className="text-gray-500 text-sm">
-                Esta acción no se puede deshacer y eliminará todas las imágenes,
-                videos y archivos asociados.
-              </p>
-            </ModalBody>
-            <ModalFooter>
-              <CancelButton onClick={closeDeleteModal}>
-                <X size={16} /> Cancelar
-              </CancelButton>
-              <ConfirmButton onClick={handleDelete} disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <SpinIcon>⟳</SpinIcon> Eliminando...
-                  </>
+          <AddButton onClick={handleAddComunicado}>
+            <Plus size={16} /> Agregar noticia
+          </AddButton>
+        </TopControls>
+
+        {/* Vista de escritorio */}
+        <DesktopView>
+          <TableContainer>
+            <Table>
+              <TableHeader>
+                <TableHeaderCell>
+                  <Newspaper size={16} /> Título
+                </TableHeaderCell>
+                <TableHeaderCell>
+                  <Calendar size={16} /> Fecha
+                </TableHeaderCell>
+                <TableHeaderCell>
+                  <Tag size={16} /> Categoría
+                </TableHeaderCell>
+                <TableHeaderCell>
+                  <Globe size={16} /> Estado
+                </TableHeaderCell>
+                <TableHeaderCell>Acciones</TableHeaderCell>
+              </TableHeader>
+
+              <TableBody>
+                {getCurrentPageItems().length > 0 ? (
+                  getCurrentPageItems().map((noticia) => (
+                    <TableRow key={noticia.id_noticia}>
+                      <TitleCell>{noticia.titulo_noticia}</TitleCell>
+                      <TableCell>
+                        {formatDate(noticia.fecha_publicacion_noticia)}
+                      </TableCell>
+                      <TableCell>
+                        <CategoryBadge categoria={noticia.categoria}>
+                          {noticia.categoria}
+                        </CategoryBadge>
+                      </TableCell>
+                      <TableCell>
+                        <StatusBadge isPublic={noticia.es_publico === 1}>
+                          {noticia.es_publico === 1 ? (
+                            <Globe size={12} />
+                          ) : (
+                            <GlobeLock size={12} />
+                          )}
+                          {noticia.es_publico === 1 ? "Público" : "Privado"}
+                        </StatusBadge>
+                      </TableCell>
+                      <TableCell>
+                        <ActionButtons>
+                          <ViewButton
+                            onClick={() =>
+                              handleViewDetails(noticia.id_noticia)
+                            }
+                            title="Ver detalles"
+                          >
+                            <Eye size={16} />
+                          </ViewButton>
+                          <DeleteButton
+                            onClick={() => openDeleteModal(noticia)}
+                            title="Eliminar"
+                          >
+                            <Trash size={16} />
+                          </DeleteButton>
+                        </ActionButtons>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 ) : (
-                  <>
-                    <Trash size={16} /> Eliminar
-                  </>
+                  <NoResults>No se encontraron noticias</NoResults>
                 )}
-              </ConfirmButton>
-            </ModalFooter>
-          </ModalContent>
-        </ModalOverlay>
-      )}
-    </Container>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DesktopView>
+
+        {/* Vista móvil */}
+        <MobileView>
+          {getCurrentPageItems().length > 0 ? (
+            getCurrentPageItems().map((noticia) => (
+              <MobileCard key={noticia.id_noticia}>
+                <MobileCardHeader>
+                  <MobileCardTitle>{noticia.titulo_noticia}</MobileCardTitle>
+                  <StatusBadge isPublic={noticia.es_publico === 1}>
+                    {noticia.es_publico === 1 ? (
+                      <Globe size={12} />
+                    ) : (
+                      <GlobeLock size={12} />
+                    )}
+                    {noticia.es_publico === 1 ? "Público" : "Privado"}
+                  </StatusBadge>
+                </MobileCardHeader>
+                <MobileCardContent>
+                  <MobileCardItem>
+                    <Calendar size={16} />
+                    {formatDate(noticia.fecha_publicacion_noticia)}
+                  </MobileCardItem>
+                  <MobileCardItem>
+                    <Tag size={16} />
+                    <CategoryBadge categoria={noticia.categoria}>
+                      {noticia.categoria}
+                    </CategoryBadge>
+                  </MobileCardItem>
+                </MobileCardContent>
+                <MobileCardActions>
+                  <ViewButton
+                    onClick={() => handleViewDetails(noticia.id_noticia)}
+                    title="Ver detalles"
+                  >
+                    <Eye size={16} />
+                  </ViewButton>
+                  <DeleteButton
+                    onClick={() => openDeleteModal(noticia)}
+                    title="Eliminar"
+                  >
+                    <Trash size={16} />
+                  </DeleteButton>
+                </MobileCardActions>
+              </MobileCard>
+            ))
+          ) : (
+            <NoResults>No se encontraron noticias</NoResults>
+          )}
+        </MobileView>
+
+        {/* Paginación */}
+        {totalPages > 1 && (
+          <Pagination>
+            <PageButton
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft size={16} />
+            </PageButton>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <PageButton
+                key={page}
+                active={page === currentPage}
+                onClick={() => handlePageChange(page)}
+              >
+                {page}
+              </PageButton>
+            ))}
+
+            <PageButton
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              <ChevronRight size={16} />
+            </PageButton>
+          </Pagination>
+        )}
+
+        {/* Modal de confirmación para eliminar */}
+        {isDeleteModalOpen && (
+          <ModalOverlay>
+            <ModalContent>
+              <ModalHeader>
+                <ModalTitle>Confirmar eliminación</ModalTitle>
+                <ModalCloseButton onClick={closeDeleteModal}>
+                  <X size={20} />
+                </ModalCloseButton>
+              </ModalHeader>
+              <ModalBody>
+                <div className="flex items-center gap-3 mb-4">
+                  <AlertTriangle size={24} className="text-red-500" />
+                  <p>
+                    ¿Está seguro que desea eliminar la noticia{" "}
+                    <strong>{selectedNoticia?.titulo_noticia}</strong>?
+                  </p>
+                </div>
+                <p className="text-gray-500 text-sm">
+                  Esta acción no se puede deshacer y eliminará todas las
+                  imágenes, videos y archivos asociados.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <CancelButton onClick={closeDeleteModal}>
+                  <X size={16} /> Cancelar
+                </CancelButton>
+                <ConfirmButton onClick={handleDelete} disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <SpinIcon>⟳</SpinIcon> Eliminando...
+                    </>
+                  ) : (
+                    <>
+                      <Trash size={16} /> Eliminar
+                    </>
+                  )}
+                </ConfirmButton>
+              </ModalFooter>
+            </ModalContent>
+          </ModalOverlay>
+        )}
+      </Container>
+    </Container2>
   );
 }
 
 // Animaciones
 const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
 const slideUp = keyframes`
@@ -441,6 +445,16 @@ const slideUp = keyframes`
 `;
 
 // Styled Components
+const Container2 = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem 1rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem 0.5rem;
+  }
+`;
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -448,7 +462,7 @@ const Container = styled.div`
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  animation: ${fadeIn} 0.3s ease-in-out;
+  animation: ${fadeIn} 0.6s ease-out;
   overflow-x: hidden;
 
   @media (max-width: 768px) {

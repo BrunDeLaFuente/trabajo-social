@@ -380,384 +380,397 @@ export default function UsuariosAdmin() {
   }
 
   return (
-    <Container>
-      {/* Mensajes */}
-      {mensajes.map((mensaje) => (
-        <CajaMensaje
-          key={mensaje.id}
-          tipo={mensaje.tipo}
-          color={mensaje.color}
-          mensaje={mensaje.mensaje}
-          duracion={mensaje.duracion}
-          backgroundColor={mensaje.backgroundColor}
-          onClose={() => eliminarMensaje(mensaje.id)}
-        />
-      ))}
-
-      <Title>
-        <Users size={24} /> Gestión de Usuarios
-      </Title>
-
-      <TopControls>
-        <SearchContainer>
-          <SearchInput
-            type="text"
-            placeholder="Buscar por nombre, correo o celular..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+    <Container2>
+      <Container>
+        {/* Mensajes */}
+        {mensajes.map((mensaje) => (
+          <CajaMensaje
+            key={mensaje.id}
+            tipo={mensaje.tipo}
+            color={mensaje.color}
+            mensaje={mensaje.mensaje}
+            duracion={mensaje.duracion}
+            backgroundColor={mensaje.backgroundColor}
+            onClose={() => eliminarMensaje(mensaje.id)}
           />
-          <SearchIcon>
-            <Search size={16} />
-          </SearchIcon>
-        </SearchContainer>
+        ))}
 
-        <AddButton onClick={openAddModal}>
-          <Plus size={16} /> Agregar Usuario
-        </AddButton>
-      </TopControls>
+        <Title>
+          <Users size={24} /> Gestión de Usuarios
+        </Title>
 
-      {/* Vista de escritorio */}
-      <DesktopView>
-        <TableContainer>
-          <Table>
-            <TableHeader>
-              <TableHeaderCell>Nombre</TableHeaderCell>
-              <TableHeaderCell>Correo</TableHeaderCell>
-              <TableHeaderCell>Celular</TableHeaderCell>
-              <TableHeaderCell>Acciones</TableHeaderCell>
-            </TableHeader>
+        <TopControls>
+          <SearchContainer>
+            <SearchInput
+              type="text"
+              placeholder="Buscar por nombre, correo o celular..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <SearchIcon>
+              <Search size={16} />
+            </SearchIcon>
+          </SearchContainer>
 
-            <TableBody>
-              {getCurrentPageItems().length > 0 ? (
-                getCurrentPageItems().map((usuario) => (
-                  <TableRow key={usuario.id}>
-                    <TableCell>
-                      <UserAvatar>
-                        <User size={16} />
-                      </UserAvatar>
-                      {usuario.name}
-                    </TableCell>
-                    <TableCell>
-                      <Mail size={16} />
-                      {usuario.email}
-                    </TableCell>
-                    <TableCell>
-                      <Phone size={16} />
-                      {usuario.celular_user || "No especificado"}
-                    </TableCell>
-                    <TableCell>
-                      <ActionButtons>
-                        <EditButton
-                          onClick={() => openEditModal(usuario)}
-                          title="Editar"
-                        >
-                          <Edit size={16} />
-                        </EditButton>
-                        <DeleteButton
-                          onClick={() => openDeleteModal(usuario)}
-                          title="Eliminar"
-                        >
-                          <Trash size={16} />
-                        </DeleteButton>
-                      </ActionButtons>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <NoResults>No se encontraron usuarios</NoResults>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </DesktopView>
+          <AddButton onClick={openAddModal}>
+            <Plus size={16} /> Agregar Usuario
+          </AddButton>
+        </TopControls>
 
-      {/* Vista móvil */}
-      <MobileView>
-        {getCurrentPageItems().length > 0 ? (
-          getCurrentPageItems().map((usuario) => (
-            <MobileCard key={usuario.id}>
-              <MobileCardHeader>
-                <MobileCardTitle>{usuario.name}</MobileCardTitle>
-                <UserAvatar>
-                  <User size={16} />
-                </UserAvatar>
-              </MobileCardHeader>
-              <MobileCardContent>
-                <MobileCardItem>
-                  <Mail size={16} />
-                  {usuario.email}
-                </MobileCardItem>
-                <MobileCardItem>
-                  <Phone size={16} />
-                  {usuario.celular_user || "No especificado"}
-                </MobileCardItem>
-              </MobileCardContent>
-              <MobileCardActions>
-                <EditButton
-                  onClick={() => openEditModal(usuario)}
-                  title="Editar"
-                >
-                  <Edit size={16} />
-                </EditButton>
-                <DeleteButton
-                  onClick={() => openDeleteModal(usuario)}
-                  title="Eliminar"
-                >
-                  <Trash size={16} />
-                </DeleteButton>
-              </MobileCardActions>
-            </MobileCard>
-          ))
-        ) : (
-          <NoResults>No se encontraron usuarios</NoResults>
-        )}
-      </MobileView>
+        {/* Vista de escritorio */}
+        <DesktopView>
+          <TableContainer>
+            <Table>
+              <TableHeader>
+                <TableHeaderCell>Nombre</TableHeaderCell>
+                <TableHeaderCell>Correo</TableHeaderCell>
+                <TableHeaderCell>Celular</TableHeaderCell>
+                <TableHeaderCell>Acciones</TableHeaderCell>
+              </TableHeader>
 
-      {/* Paginación */}
-      {totalPages > 1 && (
-        <Pagination>
-          <PageButton
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            <ChevronLeft size={16} />
-          </PageButton>
-
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <PageButton
-              key={page}
-              active={page === currentPage}
-              onClick={() => handlePageChange(page)}
-            >
-              {page}
-            </PageButton>
-          ))}
-
-          <PageButton
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            <ChevronRight size={16} />
-          </PageButton>
-        </Pagination>
-      )}
-
-      {/* Modal de confirmación para eliminar */}
-      {isDeleteModalOpen && (
-        <ModalOverlay>
-          <ModalContent>
-            <ModalHeader>
-              <ModalTitle>Confirmar eliminación</ModalTitle>
-              <ModalCloseButton onClick={closeDeleteModal}>
-                <X size={20} />
-              </ModalCloseButton>
-            </ModalHeader>
-            <ModalBody>
-              <div className="flex items-center gap-3 mb-4">
-                <AlertTriangle size={24} className="text-red-500" />
-                <p>
-                  ¿Está seguro que desea eliminar al usuario{" "}
-                  <strong>{selectedUsuario?.name}</strong>?
-                </p>
-              </div>
-              <p className="text-gray-500 text-sm">
-                Esta acción no se puede deshacer.
-              </p>
-            </ModalBody>
-            <ModalFooter>
-              <CancelButton onClick={closeDeleteModal}>
-                <X size={16} /> Cancelar
-              </CancelButton>
-              <ConfirmButton
-                danger
-                onClick={handleDelete}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <SpinIcon>⟳</SpinIcon> Eliminando...
-                  </>
+              <TableBody>
+                {getCurrentPageItems().length > 0 ? (
+                  getCurrentPageItems().map((usuario) => (
+                    <TableRow key={usuario.id}>
+                      <TableCell>
+                        <UserAvatar>
+                          <User size={16} />
+                        </UserAvatar>
+                        {usuario.name}
+                      </TableCell>
+                      <TableCell>
+                        <Mail size={16} />
+                        {usuario.email}
+                      </TableCell>
+                      <TableCell>
+                        <Phone size={16} />
+                        {usuario.celular_user || "No especificado"}
+                      </TableCell>
+                      <TableCell>
+                        <ActionButtons>
+                          <EditButton
+                            onClick={() => openEditModal(usuario)}
+                            title="Editar"
+                          >
+                            <Edit size={16} />
+                          </EditButton>
+                          <DeleteButton
+                            onClick={() => openDeleteModal(usuario)}
+                            title="Eliminar"
+                          >
+                            <Trash size={16} />
+                          </DeleteButton>
+                        </ActionButtons>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 ) : (
-                  <>
-                    <Trash size={16} /> Eliminar
-                  </>
+                  <NoResults>No se encontraron usuarios</NoResults>
                 )}
-              </ConfirmButton>
-            </ModalFooter>
-          </ModalContent>
-        </ModalOverlay>
-      )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DesktopView>
 
-      {/* Modal de formulario para agregar/editar */}
-      {isFormModalOpen && (
-        <ModalOverlay>
-          <ModalContent>
-            <ModalHeader>
-              <ModalTitle>
-                {selectedUsuario ? "Editar Usuario" : "Agregar Usuario"}
-              </ModalTitle>
-              <ModalCloseButton onClick={closeFormModal}>
-                <X size={20} />
-              </ModalCloseButton>
-            </ModalHeader>
-            <ModalBody>
-              <FormGroup>
-                <Label htmlFor="name">
-                  <User size={16} className="inline mr-2" /> Nombre *
-                </Label>
-                <Input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleFormChange}
-                  placeholder="Nombre completo"
-                  error={formErrors.name}
-                />
-                {formErrors.name && (
-                  <ErrorMessage>{formErrors.name}</ErrorMessage>
-                )}
-              </FormGroup>
+        {/* Vista móvil */}
+        <MobileView>
+          {getCurrentPageItems().length > 0 ? (
+            getCurrentPageItems().map((usuario) => (
+              <MobileCard key={usuario.id}>
+                <MobileCardHeader>
+                  <MobileCardTitle>{usuario.name}</MobileCardTitle>
+                  <UserAvatar>
+                    <User size={16} />
+                  </UserAvatar>
+                </MobileCardHeader>
+                <MobileCardContent>
+                  <MobileCardItem>
+                    <Mail size={16} />
+                    {usuario.email}
+                  </MobileCardItem>
+                  <MobileCardItem>
+                    <Phone size={16} />
+                    {usuario.celular_user || "No especificado"}
+                  </MobileCardItem>
+                </MobileCardContent>
+                <MobileCardActions>
+                  <EditButton
+                    onClick={() => openEditModal(usuario)}
+                    title="Editar"
+                  >
+                    <Edit size={16} />
+                  </EditButton>
+                  <DeleteButton
+                    onClick={() => openDeleteModal(usuario)}
+                    title="Eliminar"
+                  >
+                    <Trash size={16} />
+                  </DeleteButton>
+                </MobileCardActions>
+              </MobileCard>
+            ))
+          ) : (
+            <NoResults>No se encontraron usuarios</NoResults>
+          )}
+        </MobileView>
 
-              <FormGroup>
-                <Label htmlFor="email">
-                  <Mail size={16} className="inline mr-2" /> Correo Electrónico
-                  *
-                </Label>
-                <Input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleFormChange}
-                  placeholder="correo@ejemplo.com"
-                  error={formErrors.email}
-                />
-                {formErrors.email && (
-                  <ErrorMessage>{formErrors.email}</ErrorMessage>
-                )}
-              </FormGroup>
+        {/* Paginación */}
+        {totalPages > 1 && (
+          <Pagination>
+            <PageButton
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft size={16} />
+            </PageButton>
 
-              <FormGroup>
-                <Label htmlFor="celular_user">
-                  <Phone size={16} className="inline mr-2" /> Celular (opcional)
-                </Label>
-                <Input
-                  type="text"
-                  id="celular_user"
-                  name="celular_user"
-                  value={formData.celular_user}
-                  onChange={handleFormChange}
-                  placeholder="8 dígitos"
-                  error={formErrors.celular_user}
-                />
-                {formErrors.celular_user && (
-                  <ErrorMessage>{formErrors.celular_user}</ErrorMessage>
-                )}
-              </FormGroup>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <PageButton
+                key={page}
+                active={page === currentPage}
+                onClick={() => handlePageChange(page)}
+              >
+                {page}
+              </PageButton>
+            ))}
 
-              {/* Contraseña (solo al crear) */}
-              {!selectedUsuario && (
+            <PageButton
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              <ChevronRight size={16} />
+            </PageButton>
+          </Pagination>
+        )}
+
+        {/* Modal de confirmación para eliminar */}
+        {isDeleteModalOpen && (
+          <ModalOverlay>
+            <ModalContent>
+              <ModalHeader>
+                <ModalTitle>Confirmar eliminación</ModalTitle>
+                <ModalCloseButton onClick={closeDeleteModal}>
+                  <X size={20} />
+                </ModalCloseButton>
+              </ModalHeader>
+              <ModalBody>
+                <div className="flex items-center gap-3 mb-4">
+                  <AlertTriangle size={24} className="text-red-500" />
+                  <p>
+                    ¿Está seguro que desea eliminar al usuario{" "}
+                    <strong>{selectedUsuario?.name}</strong>?
+                  </p>
+                </div>
+                <p className="text-gray-500 text-sm">
+                  Esta acción no se puede deshacer.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <CancelButton onClick={closeDeleteModal}>
+                  <X size={16} /> Cancelar
+                </CancelButton>
+                <ConfirmButton
+                  danger
+                  onClick={handleDelete}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <SpinIcon>⟳</SpinIcon> Eliminando...
+                    </>
+                  ) : (
+                    <>
+                      <Trash size={16} /> Eliminar
+                    </>
+                  )}
+                </ConfirmButton>
+              </ModalFooter>
+            </ModalContent>
+          </ModalOverlay>
+        )}
+
+        {/* Modal de formulario para agregar/editar */}
+        {isFormModalOpen && (
+          <ModalOverlay>
+            <ModalContent>
+              <ModalHeader>
+                <ModalTitle>
+                  {selectedUsuario ? "Editar Usuario" : "Agregar Usuario"}
+                </ModalTitle>
+                <ModalCloseButton onClick={closeFormModal}>
+                  <X size={20} />
+                </ModalCloseButton>
+              </ModalHeader>
+              <ModalBody>
                 <FormGroup>
-                  <Label htmlFor="password">
-                    <User size={16} className="inline mr-2" /> Contraseña *
-                    (10-15 caracteres)
+                  <Label htmlFor="name">
+                    <User size={16} className="inline mr-2" /> Nombre *
                   </Label>
-                  <PasswordContainer>
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      id="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleFormChange}
-                      placeholder="10-15 caracteres (cualquier tipo)"
-                      error={formErrors.password}
-                    />
-                    <PasswordActions>
-                      <PasswordButton
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        title={
-                          showPassword
-                            ? "Ocultar contraseña"
-                            : "Mostrar contraseña"
-                        }
-                      >
-                        {showPassword ? (
-                          <EyeOff size={16} />
-                        ) : (
-                          <Eye size={16} />
-                        )}
-                      </PasswordButton>
-                      <GenerateButton
-                        type="button"
-                        onClick={generatePassword}
-                        title="Generar contraseña"
-                      >
-                        <RefreshCw size={16} />
-                      </GenerateButton>
-                    </PasswordActions>
-                  </PasswordContainer>
-                  {formErrors.password && (
-                    <ErrorMessage>{formErrors.password}</ErrorMessage>
+                  <Input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleFormChange}
+                    placeholder="Nombre completo"
+                    error={formErrors.name}
+                  />
+                  {formErrors.name && (
+                    <ErrorMessage>{formErrors.name}</ErrorMessage>
                   )}
                 </FormGroup>
-              )}
 
-              {/* Notificar (solo al crear) */}
-              {!selectedUsuario && (
                 <FormGroup>
-                  <CheckboxContainer>
-                    <Checkbox
-                      type="checkbox"
-                      id="notificar"
-                      name="notificar"
-                      checked={formData.notificar}
-                      onChange={handleCheckboxChange}
-                    />
-                    <CheckboxLabel htmlFor="notificar">
-                      Notificar por correo electrónico
-                    </CheckboxLabel>
-                  </CheckboxContainer>
+                  <Label htmlFor="email">
+                    <Mail size={16} className="inline mr-2" /> Correo
+                    Electrónico *
+                  </Label>
+                  <Input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleFormChange}
+                    placeholder="correo@ejemplo.com"
+                    error={formErrors.email}
+                  />
+                  {formErrors.email && (
+                    <ErrorMessage>{formErrors.email}</ErrorMessage>
+                  )}
                 </FormGroup>
-              )}
-            </ModalBody>
-            <ModalFooter>
-              <CancelButton onClick={closeFormModal}>
-                <X size={16} /> Cancelar
-              </CancelButton>
-              <SaveButton onClick={handleSave} disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <SpinIcon>⟳</SpinIcon> Guardando...
-                  </>
-                ) : (
-                  <>
-                    <Save size={16} />{" "}
-                    {selectedUsuario ? "Actualizar" : "Crear"}
-                  </>
+
+                <FormGroup>
+                  <Label htmlFor="celular_user">
+                    <Phone size={16} className="inline mr-2" /> Celular
+                    (opcional)
+                  </Label>
+                  <Input
+                    type="text"
+                    id="celular_user"
+                    name="celular_user"
+                    value={formData.celular_user}
+                    onChange={handleFormChange}
+                    placeholder="8 dígitos"
+                    error={formErrors.celular_user}
+                  />
+                  {formErrors.celular_user && (
+                    <ErrorMessage>{formErrors.celular_user}</ErrorMessage>
+                  )}
+                </FormGroup>
+
+                {/* Contraseña (solo al crear) */}
+                {!selectedUsuario && (
+                  <FormGroup>
+                    <Label htmlFor="password">
+                      <User size={16} className="inline mr-2" /> Contraseña *
+                      (10-15 caracteres)
+                    </Label>
+                    <PasswordContainer>
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        id="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleFormChange}
+                        placeholder="10-15 caracteres (cualquier tipo)"
+                        error={formErrors.password}
+                      />
+                      <PasswordActions>
+                        <PasswordButton
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          title={
+                            showPassword
+                              ? "Ocultar contraseña"
+                              : "Mostrar contraseña"
+                          }
+                        >
+                          {showPassword ? (
+                            <EyeOff size={16} />
+                          ) : (
+                            <Eye size={16} />
+                          )}
+                        </PasswordButton>
+                        <GenerateButton
+                          type="button"
+                          onClick={generatePassword}
+                          title="Generar contraseña"
+                        >
+                          <RefreshCw size={16} />
+                        </GenerateButton>
+                      </PasswordActions>
+                    </PasswordContainer>
+                    {formErrors.password && (
+                      <ErrorMessage>{formErrors.password}</ErrorMessage>
+                    )}
+                  </FormGroup>
                 )}
-              </SaveButton>
-            </ModalFooter>
-          </ModalContent>
-        </ModalOverlay>
-      )}
-    </Container>
+
+                {/* Notificar (solo al crear) */}
+                {!selectedUsuario && (
+                  <FormGroup>
+                    <CheckboxContainer>
+                      <Checkbox
+                        type="checkbox"
+                        id="notificar"
+                        name="notificar"
+                        checked={formData.notificar}
+                        onChange={handleCheckboxChange}
+                      />
+                      <CheckboxLabel htmlFor="notificar">
+                        Notificar por correo electrónico
+                      </CheckboxLabel>
+                    </CheckboxContainer>
+                  </FormGroup>
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <CancelButton onClick={closeFormModal}>
+                  <X size={16} /> Cancelar
+                </CancelButton>
+                <SaveButton onClick={handleSave} disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <SpinIcon>⟳</SpinIcon> Guardando...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={16} />{" "}
+                      {selectedUsuario ? "Actualizar" : "Crear"}
+                    </>
+                  )}
+                </SaveButton>
+              </ModalFooter>
+            </ModalContent>
+          </ModalOverlay>
+        )}
+      </Container>
+    </Container2>
   );
 }
 
 // Animaciones
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
-`;
 
 const slideUp = keyframes`
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 `;
 
-// Styled Components
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const Container2 = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem 1rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem 0.5rem;
+  }
+`;
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -765,7 +778,7 @@ const Container = styled.div`
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  animation: ${fadeIn} 0.3s ease-in-out;
+  animation: ${fadeIn} 0.6s ease-out;
   overflow-x: hidden;
 
   @media (max-width: 768px) {

@@ -20,6 +20,7 @@ import Trabajo from "../pages/public/Pregrado/Titulaciones/Trabajo";
 import Adscripcion from "../pages/public/Pregrado/Titulaciones/Adscripcion";
 import Examen from "../pages/public/Pregrado/Titulaciones/Examen";
 import Proyecto from "../pages/public/Pregrado/Titulaciones/Proyecto";
+import FormularioEvento from "../components/public/FormularioEvento";
 
 const PublicRoutes = () => {
   return (
@@ -80,7 +81,10 @@ const PublicRoutes = () => {
         {/* Rutas de Noticias */}
         <Route path="/noticias/anuncios" element={<Noticias />} />
         <Route path="/noticias/anuncios/:slug" element={<NoticiaDetalle />} />
-        <Route path="/noticias/talleres" element={<Talleres />} />
+
+        {/* Rutas de Eventos */}
+        <Route path="/noticias/eventos" element={<Talleres />} />
+        <Route path="/noticias/eventos/:slug" element={<FormularioEvento />} />
 
         {/* Ruta de Contacto */}
         <Route path="/contacto" element={<Contacto />} />

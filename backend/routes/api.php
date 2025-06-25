@@ -19,6 +19,7 @@ use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\AsistenteController;
 use App\Http\Controllers\ExpositorController;
 use App\Http\Controllers\EventoController;
+use App\Http\Controllers\InicioController;
 use App\Http\Controllers\InscripcionController;
 
 
@@ -101,6 +102,7 @@ Route::middleware(['jwt.auth'])->group(function () {
 
     // Eventos
     Route::get('/eventos', [EventoController::class, 'index']);
+    Route::get('/estadisticas/dashboard', [EventoController::class, 'dashboard']);
     Route::post('/eventosCrear', [EventoController::class, 'store']);
     Route::match(['PUT', 'POST'], '/eventosActualizar/{id}', [EventoController::class, 'update']);
     Route::delete('/eventosEliminar/{id}', [EventoController::class, 'destroy']);
@@ -109,7 +111,6 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::get('/eventos/descargar-pdf/{id}', [EventoController::class, 'descargarAsistentesPDF']);
 
     Route::get('/eventos/{id}/detalles', [InscripcionController::class, 'getEventoConInscripciones']);
-    Route::post('/eventos/{id}/inscribir', [InscripcionController::class, 'store']);
     Route::get('/inscripcion/comprobante/{id}', [InscripcionController::class, 'obtenerComprobante']);
     Route::match(['PUT', 'POST'], '/inscripcionActualizar/{id}', [InscripcionController::class, 'update']);
     Route::delete('/inscripcionesEliminar/{id}', [InscripcionController::class, 'destroy']);
@@ -126,6 +127,9 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::post('/expositoresCrear', [ExpositorController::class, 'store']);
     Route::match(['PUT', 'POST'], '/expositoresActualizar/{id}', [ExpositorController::class, 'update']);
     Route::delete('/expositoresEliminar/{id}', [ExpositorController::class, 'destroy']);
+
+    // Inicio
+    Route::get('/inicio', [InicioController::class, 'index']);
 });
 
 
@@ -170,4 +174,5 @@ Route::middleware([])->group(function () {
     // Eventos
     Route::get('/eventos/publicos', [EventoController::class, 'indexPublic']);
     Route::get('/eventos/publicos/{slug}', [EventoController::class, 'getEventoPorSlug']);
+    Route::post('/eventos/{id}/inscribir', [InscripcionController::class, 'store']);
 });

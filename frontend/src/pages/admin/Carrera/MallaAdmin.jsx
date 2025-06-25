@@ -737,367 +737,382 @@ export default function MallaAdmin() {
   }
 
   return (
-    <Container>
-      {/* Mensajes */}
-      {mensajes.map((mensaje) => (
-        <CajaMensaje
-          key={mensaje.id}
-          tipo={mensaje.tipo}
-          color={mensaje.color}
-          mensaje={mensaje.mensaje}
-          duracion={mensaje.duracion}
-          backgroundColor={mensaje.backgroundColor}
-          onClose={() => eliminarMensaje(mensaje.id)}
-        />
-      ))}
+    <Container2>
+      <Container>
+        {/* Mensajes */}
+        {mensajes.map((mensaje) => (
+          <CajaMensaje
+            key={mensaje.id}
+            tipo={mensaje.tipo}
+            color={mensaje.color}
+            mensaje={mensaje.mensaje}
+            duracion={mensaje.duracion}
+            backgroundColor={mensaje.backgroundColor}
+            onClose={() => eliminarMensaje(mensaje.id)}
+          />
+        ))}
 
-      <Title>
-        <BookOpen size={24} /> Malla Curricular
-      </Title>
+        <Title>
+          <BookOpen size={24} /> Malla Curricular
+        </Title>
 
-      {/* Sección de archivos */}
-      <Section>
-        <SectionTitle>
-          <File size={20} /> Archivos de la Malla
-        </SectionTitle>
+        {/* Sección de archivos */}
+        <Section>
+          <SectionTitle>
+            <File size={20} /> Archivos de la Malla
+          </SectionTitle>
 
-        <FilesGrid>
-          {/* Imagen */}
-          <FileCard>
-            <h3
-              style={{
-                margin: 0,
-                fontSize: "1rem",
-                fontWeight: "600",
-                color: "#374151",
-              }}
-            >
-              Imagen de la Malla
-            </h3>
-            <FilePreview>
-              {imagePreview && !fileChanges.quitar_imagen ? (
-                <img
-                  src={imagePreview || "/placeholder.svg"}
-                  alt="Malla curricular"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/placeholder.svg";
-                  }}
-                />
-              ) : (
-                <FileInfo>
-                  <ImageIcon size={40} />
-                  <span>Sin imagen</span>
-                </FileInfo>
-              )}
-            </FilePreview>
-            <FileActions>
-              {imagePreview && !fileChanges.quitar_imagen && (
-                <>
-                  <RemoveButton onClick={handleRemoveImage}>
-                    <XCircle size={16} /> Quitar
-                  </RemoveButton>
-
-                  {originalMalla?.imagen_url && (
-                    <ViewButton
-                      href={originalMalla.imagen_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink size={16} /> Ver
-                    </ViewButton>
-                  )}
-                </>
-              )}
-              <UploadButton htmlFor="imagen-upload">
-                <Upload size={16} /> {imagePreview ? "Cambiar" : "Subir"}
-                <input
-                  type="file"
-                  id="imagen-upload"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  ref={imageInputRef}
-                />
-              </UploadButton>
-            </FileActions>
-          </FileCard>
-
-          {/* PDF */}
-          <FileCard>
-            <h3
-              style={{
-                margin: 0,
-                fontSize: "1rem",
-                fontWeight: "600",
-                color: "#374151",
-              }}
-            >
-              Archivo PDF/Word/Excel
-            </h3>
-            <FilePreview>
-              {pdfPreview && !fileChanges.quitar_pdf ? (
-                <FileInfo>
-                  <FilePdf size={40} />
-                  <span>
-                    {typeof pdfPreview === "string" &&
-                    pdfPreview.includes("http")
-                      ? "Archivo actual"
-                      : pdfPreview}
-                  </span>
-                </FileInfo>
-              ) : (
-                <FileInfo>
-                  <File size={40} />
-                  <span>Sin archivo</span>
-                </FileInfo>
-              )}
-            </FilePreview>
-            <FileActions>
-              {pdfPreview && !fileChanges.quitar_pdf && (
-                <>
-                  <RemoveButton onClick={handleRemovePdf}>
-                    <XCircle size={16} /> Quitar
-                  </RemoveButton>
-                  {originalMalla?.archivo_pdf_url && (
-                    <ViewButton
-                      href={originalMalla.archivo_pdf_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink size={16} /> Ver
-                    </ViewButton>
-                  )}
-                </>
-              )}
-              <UploadButton htmlFor="pdf-upload">
-                <Upload size={16} /> {pdfPreview ? "Cambiar" : "Subir"}
-                <input
-                  type="file"
-                  id="pdf-upload"
-                  accept=".pdf,.doc,.docx,.xls,.xlsx"
-                  onChange={handlePdfChange}
-                  ref={pdfInputRef}
-                />
-              </UploadButton>
-            </FileActions>
-          </FileCard>
-        </FilesGrid>
-
-        <ActionButtons>
-          <CancelButton onClick={handleCancelFileChanges}>
-            <X size={16} /> Cancelar
-          </CancelButton>
-          <SaveButton onClick={handleSaveFileChanges} disabled={isSavingFiles}>
-            {isSavingFiles ? (
-              <>
-                <SpinIcon>⟳</SpinIcon> Guardando...
-              </>
-            ) : (
-              <>
-                <Save size={16} /> Guardar archivos
-              </>
-            )}
-          </SaveButton>
-        </ActionButtons>
-      </Section>
-
-      {/* Sección de contenido académico */}
-      <Section>
-        <SectionTitle>
-          <BookOpen size={20} /> Contenido Académico
-        </SectionTitle>
-
-        <TreeContainer>
-          <TreeHeader>
-            <ImportButton htmlFor="excel-import">
-              <FileSpreadsheet size={16} /> Importar Excel
-              <input
-                type="file"
-                id="excel-import"
-                accept=".xls,.xlsx"
-                onChange={handleExcelImport}
-                ref={excelInputRef}
-                disabled={isImportingExcel}
-              />
-            </ImportButton>
-
-            <AddButton onClick={() => openAddModal("semestre")}>
-              <Plus size={16} /> Agregar Semestre
-            </AddButton>
-          </TreeHeader>
-
-          {renderTree()}
-        </TreeContainer>
-      </Section>
-
-      {/* Modal de formulario */}
-      {isFormModalOpen && (
-        <ModalOverlay>
-          <ModalContent>
-            <ModalHeader>
-              <ModalTitle>
-                {selectedItem ? "Editar" : "Agregar"} {modalType}
-              </ModalTitle>
-              <ModalCloseButton onClick={closeModals}>
-                <X size={20} />
-              </ModalCloseButton>
-            </ModalHeader>
-            <ModalBody>
-              {modalType === "semestre" && (
-                <FormGroup>
-                  <Label htmlFor="numero">
-                    <Calendar size={16} className="inline mr-2" /> Número de
-                    semestre *
-                  </Label>
-                  <Input
-                    type="text"
-                    id="numero"
-                    name="numero"
-                    value={formData.numero || ""}
-                    onChange={handleFormChange}
-                    placeholder="Ej. Primer semestre"
-                  />
-                  {formErrors.numero && (
-                    <ErrorMessage>{formErrors.numero}</ErrorMessage>
-                  )}
-                </FormGroup>
-              )}
-
-              {modalType === "materia" && (
-                <>
-                  <FormGroup>
-                    <Label htmlFor="nombre_materia">
-                      <GraduationCap size={16} className="inline mr-2" /> Nombre
-                      de la materia *
-                    </Label>
-                    <Input
-                      type="text"
-                      id="nombre_materia"
-                      name="nombre_materia"
-                      value={formData.nombre_materia || ""}
-                      onChange={handleFormChange}
-                      placeholder="Ej. Cálculo I"
-                    />
-                    {formErrors.nombre_materia && (
-                      <ErrorMessage>{formErrors.nombre_materia}</ErrorMessage>
-                    )}
-                  </FormGroup>
-
-                  <FormGroup>
-                    <Label htmlFor="codigo_materia">
-                      <BookOpen size={16} className="inline mr-2" /> Código de
-                      la materia *
-                    </Label>
-                    <Input
-                      type="text"
-                      id="codigo_materia"
-                      name="codigo_materia"
-                      value={formData.codigo_materia || ""}
-                      onChange={handleFormChange}
-                      placeholder="Ej. TS103"
-                    />
-                    {formErrors.codigo_materia && (
-                      <ErrorMessage>{formErrors.codigo_materia}</ErrorMessage>
-                    )}
-                  </FormGroup>
-                </>
-              )}
-
-              {modalType === "contenido" && (
-                <FormGroup>
-                  <Label htmlFor="descripcion">
-                    <List size={16} className="inline mr-2" /> Descripción del
-                    contenido *
-                  </Label>
-                  <TextArea
-                    id="descripcion"
-                    name="descripcion"
-                    value={formData.descripcion || ""}
-                    onChange={handleFormChange}
-                    placeholder="Ej. Límites y continuidad"
-                  />
-                  {formErrors.descripcion && (
-                    <ErrorMessage>{formErrors.descripcion}</ErrorMessage>
-                  )}
-                </FormGroup>
-              )}
-            </ModalBody>
-            <ModalFooter>
-              <CancelButton onClick={closeModals}>
-                <X size={16} /> Cancelar
-              </CancelButton>
-              <SaveButton onClick={handleSave} disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <SpinIcon>⟳</SpinIcon> Guardando...
-                  </>
-                ) : (
-                  <>
-                    <Save size={16} /> Guardar
-                  </>
-                )}
-              </SaveButton>
-            </ModalFooter>
-          </ModalContent>
-        </ModalOverlay>
-      )}
-
-      {/* Modal de confirmación para eliminar */}
-      {isDeleteModalOpen && (
-        <ModalOverlay>
-          <ModalContent>
-            <ModalHeader>
-              <ModalTitle>Confirmar eliminación</ModalTitle>
-              <ModalCloseButton onClick={closeModals}>
-                <X size={20} />
-              </ModalCloseButton>
-            </ModalHeader>
-            <ModalBody>
-              <div className="flex items-center gap-3 mb-4">
-                <AlertTriangle size={24} className="text-red-500" />
-                <p>¿Está seguro que desea eliminar este {modalType}?</p>
-              </div>
-              <p className="text-gray-500 text-sm">
-                Esta acción no se puede deshacer y eliminará todos los elementos
-                relacionados.
-              </p>
-            </ModalBody>
-            <ModalFooter>
-              <CancelButton onClick={closeModals}>
-                <X size={16} /> Cancelar
-              </CancelButton>
-              <Button
-                onClick={handleDelete}
-                disabled={isSubmitting}
-                style={{ backgroundColor: "#ef4444", color: "white" }}
+          <FilesGrid>
+            {/* Imagen */}
+            <FileCard>
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: "1rem",
+                  fontWeight: "600",
+                  color: "#374151",
+                }}
               >
-                {isSubmitting ? (
-                  <>
-                    <SpinIcon>⟳</SpinIcon> Eliminando...
-                  </>
+                Imagen de la Malla
+              </h3>
+              <FilePreview>
+                {imagePreview && !fileChanges.quitar_imagen ? (
+                  <img
+                    src={imagePreview || "/placeholder.svg"}
+                    alt="Malla curricular"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/placeholder.svg";
+                    }}
+                  />
                 ) : (
+                  <FileInfo>
+                    <ImageIcon size={40} />
+                    <span>Sin imagen</span>
+                  </FileInfo>
+                )}
+              </FilePreview>
+              <FileActions>
+                {imagePreview && !fileChanges.quitar_imagen && (
                   <>
-                    <Trash size={16} /> Eliminar
+                    <RemoveButton onClick={handleRemoveImage}>
+                      <XCircle size={16} /> Quitar
+                    </RemoveButton>
+
+                    {originalMalla?.imagen_url && (
+                      <ViewButton
+                        href={originalMalla.imagen_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink size={16} /> Ver
+                      </ViewButton>
+                    )}
                   </>
                 )}
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </ModalOverlay>
-      )}
-    </Container>
+                <UploadButton htmlFor="imagen-upload">
+                  <Upload size={16} /> {imagePreview ? "Cambiar" : "Subir"}
+                  <input
+                    type="file"
+                    id="imagen-upload"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    ref={imageInputRef}
+                  />
+                </UploadButton>
+              </FileActions>
+            </FileCard>
+
+            {/* PDF */}
+            <FileCard>
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: "1rem",
+                  fontWeight: "600",
+                  color: "#374151",
+                }}
+              >
+                Archivo PDF/Word/Excel
+              </h3>
+              <FilePreview>
+                {pdfPreview && !fileChanges.quitar_pdf ? (
+                  <FileInfo>
+                    <FilePdf size={40} />
+                    <span>
+                      {typeof pdfPreview === "string" &&
+                      pdfPreview.includes("http")
+                        ? "Archivo actual"
+                        : pdfPreview}
+                    </span>
+                  </FileInfo>
+                ) : (
+                  <FileInfo>
+                    <File size={40} />
+                    <span>Sin archivo</span>
+                  </FileInfo>
+                )}
+              </FilePreview>
+              <FileActions>
+                {pdfPreview && !fileChanges.quitar_pdf && (
+                  <>
+                    <RemoveButton onClick={handleRemovePdf}>
+                      <XCircle size={16} /> Quitar
+                    </RemoveButton>
+                    {originalMalla?.archivo_pdf_url && (
+                      <ViewButton
+                        href={originalMalla.archivo_pdf_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink size={16} /> Ver
+                      </ViewButton>
+                    )}
+                  </>
+                )}
+                <UploadButton htmlFor="pdf-upload">
+                  <Upload size={16} /> {pdfPreview ? "Cambiar" : "Subir"}
+                  <input
+                    type="file"
+                    id="pdf-upload"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx"
+                    onChange={handlePdfChange}
+                    ref={pdfInputRef}
+                  />
+                </UploadButton>
+              </FileActions>
+            </FileCard>
+          </FilesGrid>
+
+          <ActionButtons>
+            <CancelButton onClick={handleCancelFileChanges}>
+              <X size={16} /> Cancelar
+            </CancelButton>
+            <SaveButton
+              onClick={handleSaveFileChanges}
+              disabled={isSavingFiles}
+            >
+              {isSavingFiles ? (
+                <>
+                  <SpinIcon>⟳</SpinIcon> Guardando...
+                </>
+              ) : (
+                <>
+                  <Save size={16} /> Guardar archivos
+                </>
+              )}
+            </SaveButton>
+          </ActionButtons>
+        </Section>
+
+        {/* Sección de contenido académico */}
+        <Section>
+          <SectionTitle>
+            <BookOpen size={20} /> Contenido Académico
+          </SectionTitle>
+
+          <TreeContainer>
+            <TreeHeader>
+              <ImportButton htmlFor="excel-import">
+                <FileSpreadsheet size={16} /> Importar Excel
+                <input
+                  type="file"
+                  id="excel-import"
+                  accept=".xls,.xlsx"
+                  onChange={handleExcelImport}
+                  ref={excelInputRef}
+                  disabled={isImportingExcel}
+                />
+              </ImportButton>
+
+              <AddButton onClick={() => openAddModal("semestre")}>
+                <Plus size={16} /> Agregar Semestre
+              </AddButton>
+            </TreeHeader>
+
+            {renderTree()}
+          </TreeContainer>
+        </Section>
+
+        {/* Modal de formulario */}
+        {isFormModalOpen && (
+          <ModalOverlay>
+            <ModalContent>
+              <ModalHeader>
+                <ModalTitle>
+                  {selectedItem ? "Editar" : "Agregar"} {modalType}
+                </ModalTitle>
+                <ModalCloseButton onClick={closeModals}>
+                  <X size={20} />
+                </ModalCloseButton>
+              </ModalHeader>
+              <ModalBody>
+                {modalType === "semestre" && (
+                  <FormGroup>
+                    <Label htmlFor="numero">
+                      <Calendar size={16} className="inline mr-2" /> Número de
+                      semestre *
+                    </Label>
+                    <Input
+                      type="text"
+                      id="numero"
+                      name="numero"
+                      value={formData.numero || ""}
+                      onChange={handleFormChange}
+                      placeholder="Ej. Primer semestre"
+                    />
+                    {formErrors.numero && (
+                      <ErrorMessage>{formErrors.numero}</ErrorMessage>
+                    )}
+                  </FormGroup>
+                )}
+
+                {modalType === "materia" && (
+                  <>
+                    <FormGroup>
+                      <Label htmlFor="nombre_materia">
+                        <GraduationCap size={16} className="inline mr-2" />{" "}
+                        Nombre de la materia *
+                      </Label>
+                      <Input
+                        type="text"
+                        id="nombre_materia"
+                        name="nombre_materia"
+                        value={formData.nombre_materia || ""}
+                        onChange={handleFormChange}
+                        placeholder="Ej. Cálculo I"
+                      />
+                      {formErrors.nombre_materia && (
+                        <ErrorMessage>{formErrors.nombre_materia}</ErrorMessage>
+                      )}
+                    </FormGroup>
+
+                    <FormGroup>
+                      <Label htmlFor="codigo_materia">
+                        <BookOpen size={16} className="inline mr-2" /> Código de
+                        la materia *
+                      </Label>
+                      <Input
+                        type="text"
+                        id="codigo_materia"
+                        name="codigo_materia"
+                        value={formData.codigo_materia || ""}
+                        onChange={handleFormChange}
+                        placeholder="Ej. TS103"
+                      />
+                      {formErrors.codigo_materia && (
+                        <ErrorMessage>{formErrors.codigo_materia}</ErrorMessage>
+                      )}
+                    </FormGroup>
+                  </>
+                )}
+
+                {modalType === "contenido" && (
+                  <FormGroup>
+                    <Label htmlFor="descripcion">
+                      <List size={16} className="inline mr-2" /> Descripción del
+                      contenido *
+                    </Label>
+                    <TextArea
+                      id="descripcion"
+                      name="descripcion"
+                      value={formData.descripcion || ""}
+                      onChange={handleFormChange}
+                      placeholder="Ej. Límites y continuidad"
+                    />
+                    {formErrors.descripcion && (
+                      <ErrorMessage>{formErrors.descripcion}</ErrorMessage>
+                    )}
+                  </FormGroup>
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <CancelButton onClick={closeModals}>
+                  <X size={16} /> Cancelar
+                </CancelButton>
+                <SaveButton onClick={handleSave} disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <SpinIcon>⟳</SpinIcon> Guardando...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={16} /> Guardar
+                    </>
+                  )}
+                </SaveButton>
+              </ModalFooter>
+            </ModalContent>
+          </ModalOverlay>
+        )}
+
+        {/* Modal de confirmación para eliminar */}
+        {isDeleteModalOpen && (
+          <ModalOverlay>
+            <ModalContent>
+              <ModalHeader>
+                <ModalTitle>Confirmar eliminación</ModalTitle>
+                <ModalCloseButton onClick={closeModals}>
+                  <X size={20} />
+                </ModalCloseButton>
+              </ModalHeader>
+              <ModalBody>
+                <div className="flex items-center gap-3 mb-4">
+                  <AlertTriangle size={24} className="text-red-500" />
+                  <p>¿Está seguro que desea eliminar este {modalType}?</p>
+                </div>
+                <p className="text-gray-500 text-sm">
+                  Esta acción no se puede deshacer y eliminará todos los
+                  elementos relacionados.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <CancelButton onClick={closeModals}>
+                  <X size={16} /> Cancelar
+                </CancelButton>
+                <Button
+                  onClick={handleDelete}
+                  disabled={isSubmitting}
+                  style={{ backgroundColor: "#ef4444", color: "white" }}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <SpinIcon>⟳</SpinIcon> Eliminando...
+                    </>
+                  ) : (
+                    <>
+                      <Trash size={16} /> Eliminar
+                    </>
+                  )}
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </ModalOverlay>
+        )}
+      </Container>
+    </Container2>
   );
 }
 
 // Animaciones
 const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
 const slideUp = keyframes`
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+`;
+
+const Container2 = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem 1rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem 0.5rem;
+  }
 `;
 
 // Styled Components
@@ -1108,7 +1123,7 @@ const Container = styled.div`
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  animation: ${fadeIn} 0.3s ease-in-out;
+  animation: ${fadeIn} 0.6s ease-out;
   overflow-x: hidden;
   width: 100%;
   box-sizing: border-box;

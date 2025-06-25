@@ -14,7 +14,11 @@ import {
   Collapse,
   Box,
 } from "@mui/material";
-import { Menu as MenuIcon, ExpandMore, ChevronRight } from "@mui/icons-material";
+import {
+  Menu as MenuIcon,
+  ExpandMore,
+  ChevronRight,
+} from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import logo from "../../assets/img/logo.jpeg";
@@ -34,31 +38,69 @@ const navigation = [
   {
     title: "Pregrado",
     items: [
-      { title: "Modalidades de Ingreso", path: "/pregrado/modalidades-ingreso" },
+      {
+        title: "Modalidades de Ingreso",
+        path: "/pregrado/modalidades-ingreso",
+      },
       { title: "Malla Curricular", path: "/pregrado/malla-curricular" },
-      { title: "Modalidades de Titulación", path: "/pregrado/modalidades-titulacion" },
+      {
+        title: "Modalidades de Titulación",
+        path: "/pregrado/modalidades-titulacion",
+      },
       { title: "Trámites", path: "/pregrado/tramites" },
     ],
   },
-  { title: "Postgrado", path: "https://posgrado.hum.umss.edu.bo/", isExternal: true },
-  { title: "Investigación", path: "https://iifhce.hum.umss.edu.bo/", isExternal: true },
+  {
+    title: "Postgrado",
+    path: "https://posgrado.hum.umss.edu.bo/",
+    isExternal: true,
+  },
+  {
+    title: "Investigación",
+    path: "https://iifhce.hum.umss.edu.bo/",
+    isExternal: true,
+  },
   {
     title: "Servicios Informáticos",
     items: [
       {
         title: "Facultativos",
         items: [
-          { title: "Servicios a Estudiantes", path: "https://www.hum.umss.edu.bo/estudiantes/", isExternal: true },
-          { title: "Servicios a Docentes", path: "https://www.hum.umss.edu.bo/docentes/", isExternal: true },
-          { title: "Plataforma Moodle", path: "https://moodle.hum.umss.edu.bo/login/index.php", isExternal: true },
+          {
+            title: "Servicios a Estudiantes",
+            path: "https://www.hum.umss.edu.bo/estudiantes/",
+            isExternal: true,
+          },
+          {
+            title: "Servicios a Docentes",
+            path: "https://www.hum.umss.edu.bo/docentes/",
+            isExternal: true,
+          },
+          {
+            title: "Plataforma Moodle",
+            path: "https://moodle.hum.umss.edu.bo/login/index.php",
+            isExternal: true,
+          },
         ],
       },
       {
         title: "Universitarios",
         items: [
-          { title: "Plataformas para Estudiantes", path: "https://www.umss.edu.bo/plataformas-educativas-estudiantes/", isExternal: true },
-          { title: "Plataformas para Docentes", path: "https://www.umss.edu.bo/plataformas-educativas-y-correos-para-funcionarios/", isExternal: true },
-          { title: "WebSis", path: "https://websis.umss.edu.bo/", isExternal: true },
+          {
+            title: "Plataformas para Estudiantes",
+            path: "https://www.umss.edu.bo/plataformas-educativas-estudiantes/",
+            isExternal: true,
+          },
+          {
+            title: "Plataformas para Docentes",
+            path: "https://www.umss.edu.bo/plataformas-educativas-y-correos-para-funcionarios/",
+            isExternal: true,
+          },
+          {
+            title: "WebSis",
+            path: "https://websis.umss.edu.bo/",
+            isExternal: true,
+          },
         ],
       },
     ],
@@ -67,7 +109,7 @@ const navigation = [
     title: "Noticias",
     items: [
       { title: "Anuncios", path: "/noticias/anuncios" },
-      { title: "Talleres", path: "/noticias/talleres" },
+      { title: "Eventos", path: "/noticias/eventos" },
     ],
   },
   { title: "Contacto", path: "/contacto" },
@@ -91,7 +133,12 @@ function DesktopNavItem({ item }) {
 
   if (!item.items) {
     return (
-      <Button component={Link} to={item.path} color="inherit" sx={{ fontSize: "0.885rem", textTransform: "capitalize" }}>
+      <Button
+        component={Link}
+        to={item.path}
+        color="inherit"
+        sx={{ fontSize: "0.885rem", textTransform: "capitalize" }}
+      >
         {capitalize(item.title)}
       </Button>
     );
@@ -99,7 +146,11 @@ function DesktopNavItem({ item }) {
 
   return (
     <Box onMouseEnter={handleOpen} onMouseLeave={handleClose}>
-      <Button color="inherit" sx={{ fontSize: "0.885rem", textTransform: "capitalize" }} endIcon={<ExpandMore />}>
+      <Button
+        color="inherit"
+        sx={{ fontSize: "0.885rem", textTransform: "capitalize" }}
+        endIcon={<ExpandMore />}
+      >
         {capitalize(item.title)}
       </Button>
       <Menu
@@ -108,15 +159,14 @@ function DesktopNavItem({ item }) {
         onClose={handleClose}
         slotProps={{
           list: {
-            onMouseLeave: handleClose
-          }
+            onMouseLeave: handleClose,
+          },
         }}
       >
         {item.items.map((subItem) => (
           <SubMenuItem key={subItem.title} item={subItem} />
         ))}
       </Menu>
-
     </Box>
   );
 }
@@ -135,7 +185,11 @@ function SubMenuItem({ item }) {
 
   if (!item.items) {
     return (
-      <MenuItem sx={{ fontSize: "0.775rem", textTransform: "capitalize" }} component={Link} to={item.path}>
+      <MenuItem
+        sx={{ fontSize: "0.775rem", textTransform: "capitalize" }}
+        component={Link}
+        to={item.path}
+      >
         {capitalize(item.title)}
       </MenuItem>
     );
@@ -152,8 +206,8 @@ function SubMenuItem({ item }) {
         onClose={handleCloseSubMenu}
         slotProps={{
           list: {
-            onMouseLeave: handleCloseSubMenu
-          }
+            onMouseLeave: handleCloseSubMenu,
+          },
         }}
       >
         {item.items.map((nestedItem) => (
@@ -168,7 +222,6 @@ function SubMenuItem({ item }) {
           </MenuItem>
         ))}
       </Menu>
-
     </Box>
   );
 }
@@ -180,13 +233,17 @@ function MobileNavItem({ item, onClose }) {
   return (
     <>
       <ListItem disablePadding>
-        <ListItemButton onClick={item.items ? handleClick : () => onClose()} component={item.path ? Link : "div"} to={item.path}>
+        <ListItemButton
+          onClick={item.items ? handleClick : () => onClose()}
+          component={item.path ? Link : "div"}
+          to={item.path}
+        >
           <ListItemText
             primary={capitalize(item.title)}
             slotProps={{
               primary: {
-                sx: { textTransform: "capitalize" }
-              }
+                sx: { textTransform: "capitalize" },
+              },
             }}
           />
           {item.items && (open ? <ExpandMore /> : <ChevronRight />)}
@@ -215,7 +272,12 @@ export default function Navbar() {
     <>
       <StyledAppBar position="sticky">
         <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={handleDrawerToggle} sx={{ display: { md: "none" } }}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={handleDrawerToggle}
+            sx={{ display: { md: "none" } }}
+          >
             <MenuIcon />
           </IconButton>
           <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
@@ -233,7 +295,11 @@ export default function Navbar() {
       <Drawer anchor="left" open={mobileOpen} onClose={handleDrawerToggle}>
         <List sx={{ width: 250 }}>
           {navigation.map((item) => (
-            <MobileNavItem key={item.title} item={item} onClose={() => setMobileOpen(false)} />
+            <MobileNavItem
+              key={item.title}
+              item={item}
+              onClose={() => setMobileOpen(false)}
+            />
           ))}
         </List>
       </Drawer>
@@ -244,7 +310,7 @@ export default function Navbar() {
 const StyledAppBar = styled(AppBar)`
   background-blend-mode: multiply;
   background-image: url(${banner}) !important;
-  background-color: hsl(208, 96.60%, 45.50%) !important;
+  background-color: hsl(208, 96.6%, 45.5%) !important;
   transition: background-color 0.3s ease-in-out;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 `;

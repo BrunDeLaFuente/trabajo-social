@@ -1,196 +1,304 @@
-import styled from "styled-components"
-import { Card, CardContent, CardMedia, Typography, Button, Chip, Box, Link } from "@mui/material"
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import styled, { keyframes } from "styled-components";
 import {
-  LocationOn,
-  CalendarToday,
-  Person,
-  MonetizationOn,
-  MoneyOff,
-  Videocam,
-  MeetingRoom,
-  Link as LinkIcon,
-} from "@mui/icons-material"
+  Calendar,
+  MapPin,
+  Users,
+  DollarSign,
+  Star,
+  ArrowRight,
+  Wifi,
+} from "lucide-react";
+import api from "../../../utils/api";
 import HeroSection from "../../../components/public/HeroSection";
-import tallerGratisImg from "../../../assets/img/taller-gratis.png";
-import tallerVirtualImg from "../../../assets/img/taller-virtual.webp";
-import tallerPagoImg from "../../../assets/img/taller-pago.png";
 
-const talleresData = [
-  {
-    id: 1,
-    titulo: "Taller de FODA para plan de mejoras",
-    fecha: "15/01/2025",
-    ubicacion: "Auditorio Principal",
-    modalidad: "presencial",
-    es_pago: false,
-    costo: null,
-    imagen: tallerGratisImg,
-    expositores: ["Juan Pérez", "Maria Ritaz"],
-  },
-  {
-    id: 2,
-    titulo: "Taller de estrategias de implementación de mejora",
-    fecha: "20/01/2025",
-    ubicacion: "Sala de Capacitación",
-    modalidad: "virtual",
-    es_pago: false,
-    costo: null,
-    imagen: tallerVirtualImg,
-    expositores: ["Marcelo"],
-    enlaces: [
-      { plataforma: "Google Meet", url: "https://meet.google.com/example", password: "" },
-      { plataforma: "Zoom", url: "https://zoom.us/example", password: "123f" },
-    ],
-  },
-  {
-    id: 3,
-    titulo: "Taller básico de análisis de datos cualitativos",
-    fecha: "25/01/2025",
-    ubicacion: "Aula 3, Edificio B",
-    modalidad: "presencial",
-    es_pago: true,
-    costo: "50 Bs.",
-    imagen: tallerPagoImg,
-    expositores: ["Luis Fernández"],
-  },
-]
+const Eventos = () => {
+  const [eventos, setEventos] = useState([]);
+  const navigate = useNavigate();
 
-const talleresGratis = talleresData.filter((taller) => !taller.es_pago)
-const talleresPago = talleresData.filter((taller) => taller.es_pago)
+  useEffect(() => {
+    fetchEventos();
+  }, []);
 
-const Talleres = () => {
+  const fetchEventos = async () => {
+    try {
+      const response = await api.get("/eventos/publicos");
+      setEventos(response.data);
+    } catch (error) {
+      console.error("Error al cargar eventos:", error);
+    }
+  };
 
-  const renderTallerCard = (taller) => (
-    <StyledCard key={taller.id}>
-      <CardMedia component="img" height="300" image={taller.imagen} alt={taller.titulo} />
-      <CardContentStyled>
-        <Typography gutterBottom variant="h5" component="div" fontWeight="bold">
-          {taller.titulo}
-        </Typography>
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
-        <InfoContainer>
-          <CalendarToday fontSize="small" color="primary" />
-          <Typography variant="body2" color="text.secondary">
-            {taller.fecha}
-          </Typography>
-        </InfoContainer>
+  const handleRegister = (slug) => {
+    navigate(`/noticias/eventos/${slug}`);
+  };
 
-        <InfoContainer>
-          <LocationOn fontSize="small" color="primary" />
-          <Typography variant="body2" color="text.secondary">
-            {taller.ubicacion}
-          </Typography>
-        </InfoContainer>
+  const eventosGratuitos = eventos.filter(
+    (evento) => evento.es_pago === 0 && evento.formulario === 1
+  );
+  const eventosPagados = eventos.filter(
+    (evento) => evento.es_pago === 1 && evento.formulario === 1
+  );
 
-        <InfoContainer>
-          {taller.modalidad === "virtual" ? (
-            <Videocam fontSize="small" color="primary" />
-          ) : (
-            <MeetingRoom fontSize="small" color="primary" />
-          )}
-          <Chip
-            label={taller.modalidad === "virtual" ? "Virtual" : "Presencial"}
-            size="small"
-            color={taller.modalidad === "virtual" ? "info" : "success"}
+  const renderEventCard = (evento, index, isPaid = false) => (
+    <EventCard
+      key={evento.id_evento}
+      delay={index * 0.1}
+      className={isPaid ? "paid" : ""}
+    >
+      <ImageContainer>
+        {evento.imagen_evento_url ? (
+          <EventImage
+            src={evento.imagen_evento_url || "/placeholder.svg"}
+            alt={evento.titulo_evento}
           />
-        </InfoContainer>
+        ) : (
+          <PlaceholderImage>
+            <Calendar />
+          </PlaceholderImage>
+        )}
+        <PriceTag free={!isPaid}>
+          {isPaid ? `$${evento.costo}` : "GRATIS"}
+        </PriceTag>
+      </ImageContainer>
 
-        <InfoContainer>
-          {taller.es_pago ? (
-            <MonetizationOn fontSize="small" color="primary" />
+      <CardContent>
+        <EventTitle>{evento.titulo_evento}</EventTitle>
+
+        <EventInfo>
+          <InfoItem>
+            <Calendar />
+            <span>{formatDate(evento.fecha_evento)}</span>
+          </InfoItem>
+
+          {evento.modalidad === "Presencial" ? (
+            <InfoItem>
+              <MapPin />
+              <span>{evento.ubicacion}</span>
+            </InfoItem>
           ) : (
-            <MoneyOff fontSize="small" color="primary" />
+            <>
+              {evento.enlaces && evento.enlaces.length > 0 && (
+                <>
+                  {evento.enlaces.map((enlace, index) => (
+                    <InfoItem key={enlace.id_enlace}>
+                      <Wifi />
+                      <div>
+                        <div style={{ fontWeight: "600", color: "#374151" }}>
+                          {enlace.plataforma}:
+                          <a
+                            href={enlace.url_enlace}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              color: "#f97316",
+                              textDecoration: "none",
+                              marginLeft: "0.25rem",
+                              fontWeight: "500",
+                            }}
+                            onMouseOver={(e) =>
+                              (e.target.style.textDecoration = "underline")
+                            }
+                            onMouseOut={(e) =>
+                              (e.target.style.textDecoration = "none")
+                            }
+                          >
+                            Unirse
+                          </a>
+                        </div>
+                        {enlace.password_enlace && (
+                          <div
+                            style={{
+                              fontSize: "0.75rem",
+                              color: "#6b7280",
+                              marginTop: "0.25rem",
+                            }}
+                          >
+                            Contraseña:{" "}
+                            <span style={{ fontWeight: "600" }}>
+                              {enlace.password_enlace}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </InfoItem>
+                  ))}
+                </>
+              )}
+            </>
           )}
-          <Chip
-            label={taller.es_pago ? `Costo: ${taller.costo}` : "Gratuito"}
-            size="small"
-            color={taller.es_pago ? "warning" : "success"}
-          />
-        </InfoContainer>
 
-        <ExpositorContainer>
-          <Person fontSize="small" color="primary" style={{ marginRight: "8px" }} />
-          <Typography variant="body2" color="text.secondary">
-            Expositores: {taller.expositores.join(", ")}
-          </Typography>
-        </ExpositorContainer>
+          {isPaid && (
+            <InfoItem>
+              <DollarSign />
+              <span>Costo: Bs.{evento.costo}</span>
+            </InfoItem>
+          )}
+        </EventInfo>
 
-        {taller.modalidad === "virtual" && taller.enlaces && (
-          <VirtualLinksContainer>
-            <Typography variant="body2" fontWeight="bold">
-              Enlaces:
-            </Typography>
-            {taller.enlaces.map((enlace, index) => (
-              <InfoContainer key={index}>
-                <LinkIcon fontSize="small" color="primary" />
-                <Link href={enlace.url} target="_blank" rel="noopener">
-                  {enlace.plataforma}
-                </Link>
-                {enlace.password && (
-                  <Typography variant="caption" color="text.secondary">
-                    (Contraseña: {enlace.password})
-                  </Typography>
-                )}
-              </InfoContainer>
-            ))}
-          </VirtualLinksContainer>
+        {evento.expositores && evento.expositores.length > 0 && (
+          <ExpositorsContainer>
+            <ExpositorsTitle>
+              <Users />
+              Expositores:
+            </ExpositorsTitle>
+            <ExpositorsList>
+              {evento.expositores.map((expositor) => (
+                <ExpositorTag key={expositor.id_expositor}>
+                  {expositor.nombre_expositor}
+                </ExpositorTag>
+              ))}
+            </ExpositorsList>
+          </ExpositorsContainer>
         )}
 
-        {taller.es_pago && (
-          <ButtonContainer>
-            <Button variant="contained" color="primary" fullWidth startIcon={<MonetizationOn />}>
-              Inscribirse
-            </Button>
-          </ButtonContainer>
-        )}
-      </CardContentStyled>
-    </StyledCard>
-  )
+        <RegisterButton
+          className={isPaid ? "paid" : "free"}
+          onClick={() => handleRegister(evento.slug)}
+        >
+          INSCRIBIRSE
+          <ArrowRight />
+        </RegisterButton>
+      </CardContent>
+    </EventCard>
+  );
 
   return (
-    <Box sx={{
-      minHeight: "100vh",
-      width: "100%",
-      display: "flex",
-      flexDirection: "column",
-      padding: 0,
-      margin: 0,
-      overflow: "auto",
-    }}>
+    <Container>
+      {/* Eventos Gratuitos */}
       <HeroSection title="Eventos" />
+      <Section className="free-events">
+        <SectionTitle>
+          <Title>EVENTOS GRATUITOS</Title>
+          <TitleLine />
+        </SectionTitle>
+        <SectionContainer>
+          {eventosGratuitos.length > 0 ? (
+            <EventsGrid>
+              {eventosGratuitos.map((evento, index) =>
+                renderEventCard(evento, index, false)
+              )}
+            </EventsGrid>
+          ) : (
+            <EmptyState>
+              <Star />
+              <h3>No hay eventos gratuitos disponibles</h3>
+              <p>Mantente atento a nuestras próximas actividades</p>
+            </EmptyState>
+          )}
+        </SectionContainer>
+      </Section>
 
-      <FreeWorkshopsSection>
-        <TitleContainer>
-          <SectionTitle>EVENTOS GRATUITOS</SectionTitle>
-          <Underline />
-        </TitleContainer>
-        <Box sx={{ padding: "0 16px", width: "100%", maxWidth: "1400px", margin: "0 auto" }}>
-          <GridContainer>{talleresGratis.map(renderTallerCard)}</GridContainer>
-        </Box>
-      </FreeWorkshopsSection>
-
-      <PaidWorkshopsSection>
-        <TitleContainer>
-          <SectionTitle>EVENTOS CON COSTO</SectionTitle>
-          <Underline />
-        </TitleContainer>
-        <Box sx={{ padding: "0 16px", width: "100%", maxWidth: "1400px", margin: "0 auto" }}>
-          <GridContainer>{talleresPago.map(renderTallerCard)}</GridContainer>
-        </Box>
-      </PaidWorkshopsSection>
-    </Box>
-  )
+      {/* Eventos con Costo */}
+      <Section className="paid-events">
+        <SectionTitle>
+          <Title>EVENTOS CON COSTO</Title>
+          <TitleLine />
+        </SectionTitle>
+        <SectionContainer>
+          {eventosPagados.length > 0 ? (
+            <EventsGrid>
+              {eventosPagados.map((evento, index) =>
+                renderEventCard(evento, index, true)
+              )}
+            </EventsGrid>
+          ) : (
+            <EmptyState>
+              <DollarSign />
+              <h3>No hay eventos con costo disponibles</h3>
+              <p>Revisa nuestros eventos gratuitos mientras tanto</p>
+            </EmptyState>
+          )}
+        </SectionContainer>
+      </Section>
+    </Container>
+  );
 };
 
-export default Talleres;
+export default Eventos;
 
-const TitleContainer = styled.div`
+// Animaciones
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const pulse = keyframes`
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+`;
+
+const float = keyframes`
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+`;
+
+// Styled Components
+const Container = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+`;
+
+const Section = styled.section`
+  padding: 4rem 0;
+
+  &.free-events {
+    background: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  &.paid-events {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  }
+
+  @media (max-width: 768px) {
+    padding: 2rem 0;
+  }
+`;
+
+const SectionContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  @media (max-width: 640px) {
+    padding: 0.5rem;
+  }
+`;
+
+const SectionTitle = styled.div`
   text-align: left;
   padding-left: 5%;
   margin-bottom: 40px;
 `;
 
-const SectionTitle = styled.h2`
+const Title = styled.h2`
   font-size: 1.8rem;
   color: #003366;
   font-weight: bold;
@@ -200,7 +308,7 @@ const SectionTitle = styled.h2`
   }
 `;
 
-const Underline = styled.div`
+const TitleLine = styled.div`
   width: 130px;
   height: 3px;
   background-color: #ff6600;
@@ -211,71 +319,279 @@ const Underline = styled.div`
   }
 `;
 
-const SectionContainer = styled.div`
-  padding: 2rem 0;
+const EventsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(350px, 400px));
+  gap: 2rem;
+  justify-content: start;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, minmax(350px, 400px));
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 350px));
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+`;
+
+const EventCard = styled.div`
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  animation: ${fadeInUp} 0.6s ease-out;
+  animation-delay: ${(props) => props.delay || 0}s;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  &.paid {
+    border: 2px solid #f59e0b;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+    }
+  }
+`;
+
+const ImageContainer = styled.div`
+  position: relative;
   width: 100%;
-  flex: 1;
-`
+  height: 200px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
 
-const FreeWorkshopsSection = styled(SectionContainer)`
-  background-color:rgb(255, 255, 255);
-`
+  @media (max-width: 480px) {
+    height: 180px;
+  }
+`;
 
-const PaidWorkshopsSection = styled(SectionContainer)`
-  background-color: #f5f7fa;
-`
+const EventImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 
-const StyledCard = styled(Card)`
+  ${EventCard}:hover & {
+    transform: scale(1.1);
+  }
+`;
+
+const PlaceholderImage = styled.div`
+  width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  color: #64748b;
+  font-size: 1.5rem;
+  animation: ${pulse} 2s infinite;
+`;
+
+const PriceTag = styled.div`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: ${(props) =>
+    props.free
+      ? "linear-gradient(135deg, #10b981, #059669)"
+      : "linear-gradient(135deg, #f59e0b, #d97706)"};
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  animation: ${float} 3s ease-in-out infinite;
+`;
+
+const CardContent = styled.div`
+  padding: 1.5rem;
+
+  @media (max-width: 480px) {
+    padding: 1rem;
   }
-`
+`;
 
-const CardContentStyled = styled(CardContent)`
-  flex-grow: 1;
+const EventTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+
+  @media (max-width: 480px) {
+    font-size: 1.25rem;
+  }
+`;
+
+const EventInfo = styled.div`
   display: flex;
   flex-direction: column;
-`
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+`;
 
-const ExpositorContainer = styled.div`
+const InfoItem = styled.div`
   display: flex;
   align-items: center;
-  margin-top: 0.5rem;
-  flex-wrap: wrap;
-`
+  gap: 0.75rem;
+  color: #64748b;
+  font-size: 0.875rem;
 
-const InfoContainer = styled.div`
+  svg {
+    width: 16px;
+    height: 16px;
+    color: #f97316;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover svg {
+    transform: scale(1.2);
+  }
+`;
+
+const ExpositorsContainer = styled.div`
+  margin-bottom: 1.5rem;
+`;
+
+const ExpositorsTitle = styled.h4`
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
-  margin: 0.5rem 0;
   gap: 0.5rem;
-`
+`;
 
-const ButtonContainer = styled.div`
-  margin-top: auto;
-  padding-top: 1rem;
-`
+const ExpositorsList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
 
-const VirtualLinksContainer = styled.div`
-  margin-top: 1rem;
-`
+const ExpositorTag = styled.span`
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  color: #475569;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
 
-const GridContainer = styled(Box)`
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 24px;
-  
-  @media (min-width: 600px) {
-    grid-template-columns: repeat(2, 1fr);
+  &:hover {
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    transform: translateY(-1px);
   }
-  
-  @media (min-width: 900px) {
-    grid-template-columns: repeat(3, 1fr);
+`;
+
+const RegisterButton = styled.button`
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+
+  &.free {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+
+    &:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+    }
   }
-`
+
+  &.paid {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+
+    &:hover {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4);
+    }
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s ease;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  svg {
+    transition: transform 0.2s ease;
+  }
+
+  &:hover svg {
+    transform: translateX(4px);
+  }
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #64748b;
+
+  svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+    color: #cbd5e1;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #374151;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+`;
