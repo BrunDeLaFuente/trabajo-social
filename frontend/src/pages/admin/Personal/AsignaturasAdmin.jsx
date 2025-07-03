@@ -290,253 +290,251 @@ export default function AsignaturasAdmin() {
   }
 
   return (
-    <Container2>
-      <Container>
-        {/* Mensajes */}
-        {mensajes.map((mensaje) => (
-          <CajaMensaje
-            key={mensaje.id}
-            tipo={mensaje.tipo}
-            color={mensaje.color}
-            mensaje={mensaje.mensaje}
-            duracion={mensaje.duracion}
-            backgroundColor={mensaje.backgroundColor}
-            onClose={() => eliminarMensaje(mensaje.id)}
+    <Container>
+      {/* Mensajes */}
+      {mensajes.map((mensaje) => (
+        <CajaMensaje
+          key={mensaje.id}
+          tipo={mensaje.tipo}
+          color={mensaje.color}
+          mensaje={mensaje.mensaje}
+          duracion={mensaje.duracion}
+          backgroundColor={mensaje.backgroundColor}
+          onClose={() => eliminarMensaje(mensaje.id)}
+        />
+      ))}
+
+      <Title>
+        <Book size={24} /> Asignaturas de Docentes
+      </Title>
+
+      <TopControls>
+        <SearchContainer>
+          <SearchInput
+            type="text"
+            placeholder="Buscar asignatura..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-        ))}
+          <SearchIcon>
+            <Search size={16} />
+          </SearchIcon>
+        </SearchContainer>
 
-        <Title>
-          <Book size={24} /> Asignaturas de Docentes
-        </Title>
+        <ButtonsContainer>
+          <BackButton onClick={handleBack}>
+            <ArrowLeft size={16} /> Volver
+          </BackButton>
+          <AddButton onClick={openAddModal}>
+            <Plus size={16} /> Agregar asignatura
+          </AddButton>
+        </ButtonsContainer>
+      </TopControls>
 
-        <TopControls>
-          <SearchContainer>
-            <SearchInput
-              type="text"
-              placeholder="Buscar asignatura..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <SearchIcon>
-              <Search size={16} />
-            </SearchIcon>
-          </SearchContainer>
+      {/* Vista de escritorio */}
+      <DesktopView>
+        <TableContainer>
+          <Table>
+            <TableHeader>
+              <TableHeaderCell>Nombre de la asignatura</TableHeaderCell>
+              <TableHeaderCell>Acciones</TableHeaderCell>
+            </TableHeader>
 
-          <ButtonsContainer>
-            <BackButton onClick={handleBack}>
-              <ArrowLeft size={16} /> Volver
-            </BackButton>
-            <AddButton onClick={openAddModal}>
-              <Plus size={16} /> Agregar asignatura
-            </AddButton>
-          </ButtonsContainer>
-        </TopControls>
+            <TableBody>
+              {getCurrentPageItems().length > 0 ? (
+                getCurrentPageItems().map((asignatura) => (
+                  <TableRow key={asignatura.id_asignatura}>
+                    <TableCell>
+                      <Book size={16} />
+                      {asignatura.nombre_asignatura}
+                    </TableCell>
+                    <TableCell>
+                      <ActionButtons>
+                        <EditButton
+                          onClick={() => openEditModal(asignatura)}
+                          title="Editar"
+                        >
+                          <Edit size={16} />
+                        </EditButton>
+                        <DeleteButton
+                          onClick={() => openDeleteModal(asignatura)}
+                          title="Eliminar"
+                        >
+                          <Trash size={16} />
+                        </DeleteButton>
+                      </ActionButtons>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <NoResults>No se encontraron asignaturas</NoResults>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </DesktopView>
 
-        {/* Vista de escritorio */}
-        <DesktopView>
-          <TableContainer>
-            <Table>
-              <TableHeader>
-                <TableHeaderCell>Nombre de la asignatura</TableHeaderCell>
-                <TableHeaderCell>Acciones</TableHeaderCell>
-              </TableHeader>
-
-              <TableBody>
-                {getCurrentPageItems().length > 0 ? (
-                  getCurrentPageItems().map((asignatura) => (
-                    <TableRow key={asignatura.id_asignatura}>
-                      <TableCell>
-                        <Book size={16} />
-                        {asignatura.nombre_asignatura}
-                      </TableCell>
-                      <TableCell>
-                        <ActionButtons>
-                          <EditButton
-                            onClick={() => openEditModal(asignatura)}
-                            title="Editar"
-                          >
-                            <Edit size={16} />
-                          </EditButton>
-                          <DeleteButton
-                            onClick={() => openDeleteModal(asignatura)}
-                            title="Eliminar"
-                          >
-                            <Trash size={16} />
-                          </DeleteButton>
-                        </ActionButtons>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <NoResults>No se encontraron asignaturas</NoResults>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DesktopView>
-
-        {/* Vista móvil */}
-        <MobileView>
-          {getCurrentPageItems().length > 0 ? (
-            getCurrentPageItems().map((asignatura) => (
-              <MobileCard key={asignatura.id_asignatura}>
-                <MobileCardHeader>
-                  <MobileCardTitle>
-                    <Book size={16} />
-                    {asignatura.nombre_asignatura}
-                  </MobileCardTitle>
-                </MobileCardHeader>
-                <MobileCardActions>
-                  <EditButton
-                    onClick={() => openEditModal(asignatura)}
-                    title="Editar"
-                  >
-                    <Edit size={16} />
-                  </EditButton>
-                  <DeleteButton
-                    onClick={() => openDeleteModal(asignatura)}
-                    title="Eliminar"
-                  >
-                    <Trash size={16} />
-                  </DeleteButton>
-                </MobileCardActions>
-              </MobileCard>
-            ))
-          ) : (
-            <NoResults>No se encontraron asignaturas</NoResults>
-          )}
-        </MobileView>
-
-        {/* Paginación */}
-        {totalPages > 1 && (
-          <Pagination>
-            <PageButton
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft size={16} />
-            </PageButton>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <PageButton
-                key={page}
-                active={page === currentPage}
-                onClick={() => handlePageChange(page)}
-              >
-                {page}
-              </PageButton>
-            ))}
-
-            <PageButton
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight size={16} />
-            </PageButton>
-          </Pagination>
-        )}
-
-        {/* Modal de confirmación para eliminar */}
-        {isDeleteModalOpen && (
-          <ModalOverlay>
-            <ModalContent>
-              <ModalHeader>
-                <ModalTitle>Confirmar eliminación</ModalTitle>
-                <ModalCloseButton onClick={closeDeleteModal}>
-                  <X size={20} />
-                </ModalCloseButton>
-              </ModalHeader>
-              <ModalBody>
-                <div className="flex items-center gap-3 mb-4">
-                  <AlertTriangle size={24} className="text-red-500" />
-                  <p>
-                    ¿Está seguro que desea eliminar la asignatura{" "}
-                    <strong>{selectedAsignatura?.nombre_asignatura}</strong>?
-                  </p>
-                </div>
-                <p className="text-gray-500 text-sm">
-                  Esta acción no se puede deshacer. Si hay docentes asignados a
-                  esta asignatura, se eliminará la relación.
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <CancelButton onClick={closeDeleteModal}>
-                  <X size={16} /> Cancelar
-                </CancelButton>
-                <ConfirmButton
-                  danger
-                  onClick={handleDelete}
-                  disabled={isSubmitting}
+      {/* Vista móvil */}
+      <MobileView>
+        {getCurrentPageItems().length > 0 ? (
+          getCurrentPageItems().map((asignatura) => (
+            <MobileCard key={asignatura.id_asignatura}>
+              <MobileCardHeader>
+                <MobileCardTitle>
+                  <Book size={16} />
+                  {asignatura.nombre_asignatura}
+                </MobileCardTitle>
+              </MobileCardHeader>
+              <MobileCardActions>
+                <EditButton
+                  onClick={() => openEditModal(asignatura)}
+                  title="Editar"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <SpinIcon>⟳</SpinIcon> Eliminando...
-                    </>
-                  ) : (
-                    <>
-                      <Trash size={16} /> Eliminar
-                    </>
-                  )}
-                </ConfirmButton>
-              </ModalFooter>
-            </ModalContent>
-          </ModalOverlay>
+                  <Edit size={16} />
+                </EditButton>
+                <DeleteButton
+                  onClick={() => openDeleteModal(asignatura)}
+                  title="Eliminar"
+                >
+                  <Trash size={16} />
+                </DeleteButton>
+              </MobileCardActions>
+            </MobileCard>
+          ))
+        ) : (
+          <NoResults>No se encontraron asignaturas</NoResults>
         )}
+      </MobileView>
 
-        {/* Modal de formulario para agregar/editar */}
-        {isFormModalOpen && (
-          <ModalOverlay>
-            <ModalContent>
-              <ModalHeader>
-                <ModalTitle>
-                  {selectedAsignatura
-                    ? "Editar asignatura"
-                    : "Agregar asignatura"}
-                </ModalTitle>
-                <ModalCloseButton onClick={closeFormModal}>
-                  <X size={20} />
-                </ModalCloseButton>
-              </ModalHeader>
-              <ModalBody>
-                <FormGroup>
-                  <Label htmlFor="nombre_asignatura">
-                    <Book size={16} className="inline mr-2" /> Nombre de la
-                    asignatura *
-                  </Label>
-                  <Input
-                    type="text"
-                    id="nombre_asignatura"
-                    name="nombre_asignatura"
-                    value={formData.nombre_asignatura}
-                    onChange={handleFormChange}
-                    placeholder="Ej. Programación Orientada a Objetos"
-                  />
-                  {formErrors.nombre_asignatura && (
-                    <ErrorMessage>{formErrors.nombre_asignatura}</ErrorMessage>
-                  )}
-                </FormGroup>
-              </ModalBody>
-              <ModalFooter>
-                <CancelButton onClick={closeFormModal}>
-                  <X size={16} /> Cancelar
-                </CancelButton>
-                <SaveButton onClick={handleSave} disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <SpinIcon>⟳</SpinIcon> Guardando...
-                    </>
-                  ) : (
-                    <>
-                      <Save size={16} /> Guardar
-                    </>
-                  )}
-                </SaveButton>
-              </ModalFooter>
-            </ModalContent>
-          </ModalOverlay>
-        )}
-      </Container>
-    </Container2>
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <Pagination>
+          <PageButton
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft size={16} />
+          </PageButton>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <PageButton
+              key={page}
+              active={page === currentPage}
+              onClick={() => handlePageChange(page)}
+            >
+              {page}
+            </PageButton>
+          ))}
+
+          <PageButton
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <ChevronRight size={16} />
+          </PageButton>
+        </Pagination>
+      )}
+
+      {/* Modal de confirmación para eliminar */}
+      {isDeleteModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>
+              <ModalTitle>Confirmar eliminación</ModalTitle>
+              <ModalCloseButton onClick={closeDeleteModal}>
+                <X size={20} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <div className="flex items-center gap-3 mb-4">
+                <AlertTriangle size={24} className="text-red-500" />
+                <p>
+                  ¿Está seguro que desea eliminar la asignatura{" "}
+                  <strong>{selectedAsignatura?.nombre_asignatura}</strong>?
+                </p>
+              </div>
+              <p className="text-gray-500 text-sm">
+                Esta acción no se puede deshacer. Si hay docentes asignados a
+                esta asignatura, se eliminará la relación.
+              </p>
+            </ModalBody>
+            <ModalFooter>
+              <CancelButton onClick={closeDeleteModal}>
+                <X size={16} /> Cancelar
+              </CancelButton>
+              <ConfirmButton
+                danger
+                onClick={handleDelete}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <SpinIcon>⟳</SpinIcon> Eliminando...
+                  </>
+                ) : (
+                  <>
+                    <Trash size={16} /> Eliminar
+                  </>
+                )}
+              </ConfirmButton>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+
+      {/* Modal de formulario para agregar/editar */}
+      {isFormModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>
+              <ModalTitle>
+                {selectedAsignatura
+                  ? "Editar asignatura"
+                  : "Agregar asignatura"}
+              </ModalTitle>
+              <ModalCloseButton onClick={closeFormModal}>
+                <X size={20} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <FormGroup>
+                <Label htmlFor="nombre_asignatura">
+                  <Book size={16} className="inline mr-2" /> Nombre de la
+                  asignatura *
+                </Label>
+                <Input
+                  type="text"
+                  id="nombre_asignatura"
+                  name="nombre_asignatura"
+                  value={formData.nombre_asignatura}
+                  onChange={handleFormChange}
+                  placeholder="Ej. Programación Orientada a Objetos"
+                />
+                {formErrors.nombre_asignatura && (
+                  <ErrorMessage>{formErrors.nombre_asignatura}</ErrorMessage>
+                )}
+              </FormGroup>
+            </ModalBody>
+            <ModalFooter>
+              <CancelButton onClick={closeFormModal}>
+                <X size={16} /> Cancelar
+              </CancelButton>
+              <SaveButton onClick={handleSave} disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <SpinIcon>⟳</SpinIcon> Guardando...
+                  </>
+                ) : (
+                  <>
+                    <Save size={16} /> Guardar
+                  </>
+                )}
+              </SaveButton>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+    </Container>
   );
 }
 
@@ -549,17 +547,6 @@ const fadeIn = keyframes`
 const slideUp = keyframes`
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
-`;
-
-// Styled Components
-const Container2 = styled.div`
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem 1rem;
-
-  @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
-  }
 `;
 
 const Container = styled.div`

@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
-import backgroundImage from "../../assets/img/portada.png";
+import backgroundImage1 from "../../assets/img/portada.png";
+import backgroundImage2 from "../../assets/img/portada2.jpg";
 import platformIcon from "../../assets/img/educacion-en-linea.png";
 import moodleIcon from "../../assets/img/moodle.png";
 import servicesIcon from "../../assets/img/elearning.png";
@@ -8,9 +10,23 @@ import CareerSection from "../../components/public/CareerSection";
 import NoticiasSection from "../../components/public/NoticiasSection";
 
 const HomePage = () => {
+  const backgrounds = [backgroundImage1, backgroundImage2];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % backgrounds.length);
+    }, 10000); // cambia cada 10 segundos
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const activeBg = backgrounds[index];
+  const isFirstBg = activeBg === backgroundImage1;
+
   return (
     <Container>
-      <HeroSection>
+      <HeroSection isFirst={isFirstBg} background={activeBg}>
         <Overlay />
         <TextOverlay>
           <Title>Carrera de Trabajo Social</Title>
@@ -26,11 +42,17 @@ const HomePage = () => {
       </HeroSection>
 
       <LinksSection>
-        <LinkCard href="https://www.umss.edu.bo/plataformas-educativas-estudiantes/" target="_blank">
+        <LinkCard
+          href="https://www.umss.edu.bo/plataformas-educativas-estudiantes/"
+          target="_blank"
+        >
           <Icon src={platformIcon} alt="Plataformas Educativas" />
           <Text>Plataformas Educativas</Text>
         </LinkCard>
-        <LinkCard href="https://moodle.hum.umss.edu.bo/login/index.php" target="_blank">
+        <LinkCard
+          href="https://moodle.hum.umss.edu.bo/login/index.php"
+          target="_blank"
+        >
           <Icon src={moodleIcon} alt="Moodle Facultativo" />
           <Text>Moodle Facultativo</Text>
         </LinkCard>
@@ -38,14 +60,17 @@ const HomePage = () => {
           <Icon src={servicesIcon} alt="Servicios Facultativos" />
           <Text>Servicios Facultativos</Text>
         </LinkCard>
-        <LinkCard href="https://websis.umss.edu.bo/presentacion.asp" target="_blank">
+        <LinkCard
+          href="https://websis.umss.edu.bo/presentacion.asp"
+          target="_blank"
+        >
           <Icon src={websisIcon} alt="WebSISS" />
           <Text>WebSISS</Text>
         </LinkCard>
       </LinksSection>
+
       <CareerSection />
       <NoticiasSection />
-
     </Container>
   );
 };
@@ -56,6 +81,11 @@ export default HomePage;
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
+`;
+
+const fadeBg = keyframes`
+  from { opacity: 0.5; }
+  to { opacity: 1; }
 `;
 
 const Container = styled.div`
@@ -71,10 +101,14 @@ const HeroSection = styled.div`
   justify-content: center;
   overflow: hidden;
   background-blend-mode: multiply;
-  background-image: linear-gradient(1deg, rgba(34, 138, 230, 0.75) 0%, rgba(136, 196, 221, 0.72) 100%), url(${backgroundImage});
+  background-image: ${(props) =>
+    props.isFirst
+      ? `linear-gradient(1deg, rgba(34, 138, 230, 0.75) 0%, rgba(136, 196, 221, 0.72) 100%), url(${props.background})`
+      : `url(${props.background})`};
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  animation: ${fadeBg} 1.5s ease-in-out;
 
   @media (max-width: 768px) {
     height: 400px;
@@ -99,31 +133,38 @@ const TextOverlay = styled.div`
 const Title = styled.h1`
   font-size: 3rem;
   font-weight: bold;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
 `;
 
 const Subtitle = styled.p`
   font-size: 1.5rem;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const LinksSection = styled.div`
   display: flex;
   justify-content: center;
   gap: 20px;
-  padding: 20px 20px; /* Ajuste del padding */
+  padding: 20px 20px;
   flex-wrap: wrap;
   position: relative;
   margin-bottom: 20px;
-  z-index: 2; /* Asegura que los enlaces estén sobre la onda */
+  z-index: 2;
 
-  /* En pantallas grandes, acercamos los enlaces a la onda */
   @media (min-width: 768px) {
-    margin-top: -20px; /* Menos negativo para evitar ocultarlos */
+    margin-top: -20px;
   }
 `;
 
 const WaveSvg = styled.svg`
   position: absolute;
-  bottom: -5px; /* Ajuste fino para evitar que tape los enlaces */
+  bottom: -5px;
   left: 0;
   width: 100%;
   z-index: 1;

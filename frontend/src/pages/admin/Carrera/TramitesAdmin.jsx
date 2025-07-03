@@ -441,379 +441,373 @@ export default function TramitesAdmin() {
   }
 
   return (
-    <Container2>
-      <Container>
-        {/* Mensajes */}
-        {mensajes.map((mensaje) => (
-          <CajaMensaje
-            key={mensaje.id}
-            tipo={mensaje.tipo}
-            color={mensaje.color}
-            mensaje={mensaje.mensaje}
-            duracion={mensaje.duracion}
-            backgroundColor={mensaje.backgroundColor}
-            onClose={() => eliminarMensaje(mensaje.id)}
+    <Container>
+      {/* Mensajes */}
+      {mensajes.map((mensaje) => (
+        <CajaMensaje
+          key={mensaje.id}
+          tipo={mensaje.tipo}
+          color={mensaje.color}
+          mensaje={mensaje.mensaje}
+          duracion={mensaje.duracion}
+          backgroundColor={mensaje.backgroundColor}
+          onClose={() => eliminarMensaje(mensaje.id)}
+        />
+      ))}
+
+      <Title>
+        <FileText size={24} /> Trámites de la carrera
+      </Title>
+
+      <TopControls>
+        <SearchContainer>
+          <SearchInput
+            type="text"
+            placeholder="Buscar por título o descripción..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-        ))}
+          <SearchIcon>
+            <Search size={16} />
+          </SearchIcon>
+        </SearchContainer>
 
-        <Title>
-          <FileText size={24} /> Trámites de la carrera
-        </Title>
+        <AddButton onClick={openAddModal}>
+          <Plus size={16} /> Agregar trámite
+        </AddButton>
+      </TopControls>
 
-        <TopControls>
-          <SearchContainer>
-            <SearchInput
-              type="text"
-              placeholder="Buscar por título o descripción..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <SearchIcon>
-              <Search size={16} />
-            </SearchIcon>
-          </SearchContainer>
+      {/* Vista de escritorio */}
+      <DesktopView>
+        <TableContainer>
+          <Table>
+            <TableHeader>
+              <TableHeaderCell>Título</TableHeaderCell>
+              <TableHeaderCell>Descripción</TableHeaderCell>
+              <TableHeaderCell>Planilla</TableHeaderCell>
+              <TableHeaderCell>Acciones</TableHeaderCell>
+            </TableHeader>
 
-          <AddButton onClick={openAddModal}>
-            <Plus size={16} /> Agregar trámite
-          </AddButton>
-        </TopControls>
-
-        {/* Vista de escritorio */}
-        <DesktopView>
-          <TableContainer>
-            <Table>
-              <TableHeader>
-                <TableHeaderCell>Título</TableHeaderCell>
-                <TableHeaderCell>Descripción</TableHeaderCell>
-                <TableHeaderCell>Planilla</TableHeaderCell>
-                <TableHeaderCell>Acciones</TableHeaderCell>
-              </TableHeader>
-
-              <TableBody>
-                {getCurrentPageItems().length > 0 ? (
-                  getCurrentPageItems().map((tramite) => (
-                    <TableRow key={tramite.id_tramite}>
-                      <TableCell allowWrap={true}>
-                        <FileText size={16} style={{ flexShrink: 0 }} />
-                        <span>{tramite.titulo_tramite}</span>
-                      </TableCell>
-                      <DescriptionCell>
-                        {tramite.descripcion_tramite || "Sin descripción"}
-                      </DescriptionCell>
-                      <FileCell
-                        hasFile={tramite.planilla_download_url}
-                        onClick={() =>
-                          handleFileClick(tramite.planilla_download_url)
-                        }
-                      >
-                        {tramite.planilla_download_url ? (
-                          <>
-                            {getFileIcon(tramite.planilla_download_url)}
-                            <span>Ver planilla</span>
-                            <ExternalLink size={14} />
-                          </>
-                        ) : (
-                          <>
-                            <File size={16} />
-                            <span>Sin planilla</span>
-                          </>
-                        )}
-                      </FileCell>
-                      <TableCell>
-                        <ActionButtons>
-                          <EditButton
-                            onClick={() => openEditModal(tramite)}
-                            title="Editar"
-                          >
-                            <Edit size={16} />
-                          </EditButton>
-                          <DeleteButton
-                            onClick={() => openDeleteModal(tramite)}
-                            title="Eliminar"
-                          >
-                            <Trash size={16} />
-                          </DeleteButton>
-                        </ActionButtons>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <NoResults>No se encontraron trámites</NoResults>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DesktopView>
-
-        {/* Vista móvil */}
-        <MobileView>
-          {getCurrentPageItems().length > 0 ? (
-            getCurrentPageItems().map((tramite) => (
-              <MobileCard key={tramite.id_tramite}>
-                <MobileCardHeader>
-                  <MobileCardTitle>
-                    <FileText size={16} />
-                    {tramite.titulo_tramite}
-                  </MobileCardTitle>
-                </MobileCardHeader>
-                <MobileCardContent>
-                  <MobileCardDescription>
-                    {tramite.descripcion_tramite || "Sin descripción"}
-                  </MobileCardDescription>
-                  <MobileCardFile
-                    hasFile={tramite.planilla_download_url}
-                    onClick={() =>
-                      handleFileClick(tramite.planilla_download_url)
-                    }
-                  >
-                    {tramite.planilla_download_url ? (
-                      <>
-                        {getFileIcon(tramite.planilla_download_url)}
-                        <span>Ver planilla</span>
-                        <ExternalLink size={14} />
-                      </>
-                    ) : (
-                      <>
-                        <File size={16} />
-                        <span>Sin planilla</span>
-                      </>
-                    )}
-                  </MobileCardFile>
-                </MobileCardContent>
-                <MobileCardActions>
-                  <EditButton
-                    onClick={() => openEditModal(tramite)}
-                    title="Editar"
-                  >
-                    <Edit size={16} />
-                  </EditButton>
-                  <DeleteButton
-                    onClick={() => openDeleteModal(tramite)}
-                    title="Eliminar"
-                  >
-                    <Trash size={16} />
-                  </DeleteButton>
-                </MobileCardActions>
-              </MobileCard>
-            ))
-          ) : (
-            <NoResults>No se encontraron trámites</NoResults>
-          )}
-        </MobileView>
-
-        {/* Paginación */}
-        {totalPages > 1 && (
-          <Pagination>
-            <PageButton
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft size={16} />
-            </PageButton>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <PageButton
-                key={page}
-                active={page === currentPage}
-                onClick={() => handlePageChange(page)}
-              >
-                {page}
-              </PageButton>
-            ))}
-
-            <PageButton
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight size={16} />
-            </PageButton>
-          </Pagination>
-        )}
-
-        {/* Modal de confirmación para eliminar */}
-        {isDeleteModalOpen && (
-          <ModalOverlay>
-            <ModalContent>
-              <ModalHeader>
-                <ModalTitle>Confirmar eliminación</ModalTitle>
-                <ModalCloseButton onClick={closeDeleteModal}>
-                  <X size={20} />
-                </ModalCloseButton>
-              </ModalHeader>
-              <ModalBody>
-                <div className="flex items-center gap-3 mb-4">
-                  <AlertTriangle size={24} className="text-red-500" />
-                  <p>
-                    ¿Está seguro que desea eliminar el trámite{" "}
-                    <strong>{selectedTramite?.titulo_tramite}</strong>?
-                  </p>
-                </div>
-                <p className="text-gray-500 text-sm">
-                  Esta acción no se puede deshacer.
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <CancelButton onClick={closeDeleteModal}>
-                  <X size={16} /> Cancelar
-                </CancelButton>
-                <ConfirmButton
-                  danger
-                  onClick={handleDelete}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <SpinIcon>⟳</SpinIcon> Eliminando...
-                    </>
-                  ) : (
-                    <>
-                      <Trash size={16} /> Eliminar
-                    </>
-                  )}
-                </ConfirmButton>
-              </ModalFooter>
-            </ModalContent>
-          </ModalOverlay>
-        )}
-
-        {/* Modal de formulario para agregar/editar */}
-        {isFormModalOpen && (
-          <ModalOverlay>
-            <ModalContent>
-              <ModalHeader>
-                <ModalTitle>
-                  {selectedTramite ? "Editar trámite" : "Agregar trámite"}
-                </ModalTitle>
-                <ModalCloseButton onClick={closeFormModal}>
-                  <X size={20} />
-                </ModalCloseButton>
-              </ModalHeader>
-              <ModalBody>
-                <FormGroup>
-                  <Label htmlFor="titulo_tramite">
-                    <FileText size={16} className="inline mr-2" /> Título del
-                    trámite *
-                  </Label>
-                  <Input
-                    type="text"
-                    id="titulo_tramite"
-                    name="titulo_tramite"
-                    value={formData.titulo_tramite}
-                    onChange={handleFormChange}
-                    placeholder="Ej. Solicitud de Titulación"
-                  />
-                  {formErrors.titulo_tramite && (
-                    <ErrorMessage>{formErrors.titulo_tramite}</ErrorMessage>
-                  )}
-                </FormGroup>
-
-                <FormGroup>
-                  <Label htmlFor="descripcion_tramite">
-                    <FileText size={16} className="inline mr-2" /> Descripción
-                  </Label>
-                  <TextArea
-                    id="descripcion_tramite"
-                    name="descripcion_tramite"
-                    value={formData.descripcion_tramite}
-                    onChange={handleFormChange}
-                    placeholder="Descripción detallada del trámite..."
-                  />
-                  {formErrors.descripcion_tramite && (
-                    <ErrorMessage>
-                      {formErrors.descripcion_tramite}
-                    </ErrorMessage>
-                  )}
-                </FormGroup>
-
-                <FormGroup>
-                  <Label htmlFor="planilla">
-                    <File size={16} className="inline mr-2" /> Planilla (PDF,
-                    Word, Excel, TXT o imagen)
-                  </Label>
-                  <FilePreviewContainer>
-                    <FilePreview>
-                      {filePreview && !formData.quitar_planilla ? (
-                        <FileInfo>
-                          {getFileIcon(filePreview)}
-                          <span>
-                            {formData.planilla
-                              ? formData.planilla.name
-                              : "Planilla actual"}
-                          </span>
-                        </FileInfo>
-                      ) : (
-                        <FileInfo>
-                          <File size={20} />
-                          <span>Sin planilla</span>
-                        </FileInfo>
-                      )}
-                    </FilePreview>
-
-                    <FileActions>
-                      {filePreview && !formData.quitar_planilla ? (
+            <TableBody>
+              {getCurrentPageItems().length > 0 ? (
+                getCurrentPageItems().map((tramite) => (
+                  <TableRow key={tramite.id_tramite}>
+                    <TableCell allowWrap={true}>
+                      <FileText size={16} style={{ flexShrink: 0 }} />
+                      <span>{tramite.titulo_tramite}</span>
+                    </TableCell>
+                    <DescriptionCell>
+                      {tramite.descripcion_tramite || "Sin descripción"}
+                    </DescriptionCell>
+                    <FileCell
+                      hasFile={tramite.planilla_download_url}
+                      onClick={() =>
+                        handleFileClick(tramite.planilla_download_url)
+                      }
+                    >
+                      {tramite.planilla_download_url ? (
                         <>
-                          <RemoveFileButton onClick={handleRemoveFile}>
-                            <XCircle size={16} /> Quitar planilla
-                          </RemoveFileButton>
-
-                          {selectedTramite &&
-                            selectedTramite.planilla_download_url && (
-                              <ViewFileButton
-                                href={selectedTramite.planilla_download_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <ExternalLink size={16} /> Ver planilla
-                              </ViewFileButton>
-                            )}
+                          {getFileIcon(tramite.planilla_download_url)}
+                          <span>Ver planilla</span>
+                          <ExternalLink size={14} />
                         </>
-                      ) : formData.quitar_planilla &&
-                        selectedTramite?.planilla_url ? (
-                        <Button onClick={handleCancelRemoveFile}>
-                          <Upload size={16} /> Restaurar planilla
-                        </Button>
-                      ) : null}
+                      ) : (
+                        <>
+                          <File size={16} />
+                          <span>Sin planilla</span>
+                        </>
+                      )}
+                    </FileCell>
+                    <TableCell>
+                      <ActionButtons>
+                        <EditButton
+                          onClick={() => openEditModal(tramite)}
+                          title="Editar"
+                        >
+                          <Edit size={16} />
+                        </EditButton>
+                        <DeleteButton
+                          onClick={() => openDeleteModal(tramite)}
+                          title="Eliminar"
+                        >
+                          <Trash size={16} />
+                        </DeleteButton>
+                      </ActionButtons>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <NoResults>No se encontraron trámites</NoResults>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </DesktopView>
 
-                      <UploadButton htmlFor="planilla">
-                        <Upload size={16} />{" "}
-                        {filePreview ? "Cambiar planilla" : "Subir planilla"}
-                        <input
-                          type="file"
-                          id="planilla"
-                          name="planilla"
-                          accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif,.webp"
-                          onChange={handleFileChange}
-                          ref={fileInputRef}
-                        />
-                      </UploadButton>
-                    </FileActions>
-                  </FilePreviewContainer>
-                  {formErrors.planilla && (
-                    <ErrorMessage>{formErrors.planilla}</ErrorMessage>
-                  )}
-                </FormGroup>
-              </ModalBody>
-              <ModalFooter>
-                <CancelButton onClick={closeFormModal}>
-                  <X size={16} /> Cancelar
-                </CancelButton>
-                <SaveButton onClick={handleSave} disabled={isSubmitting}>
-                  {isSubmitting ? (
+      {/* Vista móvil */}
+      <MobileView>
+        {getCurrentPageItems().length > 0 ? (
+          getCurrentPageItems().map((tramite) => (
+            <MobileCard key={tramite.id_tramite}>
+              <MobileCardHeader>
+                <MobileCardTitle>
+                  <FileText size={16} />
+                  {tramite.titulo_tramite}
+                </MobileCardTitle>
+              </MobileCardHeader>
+              <MobileCardContent>
+                <MobileCardDescription>
+                  {tramite.descripcion_tramite || "Sin descripción"}
+                </MobileCardDescription>
+                <MobileCardFile
+                  hasFile={tramite.planilla_download_url}
+                  onClick={() => handleFileClick(tramite.planilla_download_url)}
+                >
+                  {tramite.planilla_download_url ? (
                     <>
-                      <SpinIcon>⟳</SpinIcon> Guardando...
+                      {getFileIcon(tramite.planilla_download_url)}
+                      <span>Ver planilla</span>
+                      <ExternalLink size={14} />
                     </>
                   ) : (
                     <>
-                      <Save size={16} /> Guardar
+                      <File size={16} />
+                      <span>Sin planilla</span>
                     </>
                   )}
-                </SaveButton>
-              </ModalFooter>
-            </ModalContent>
-          </ModalOverlay>
+                </MobileCardFile>
+              </MobileCardContent>
+              <MobileCardActions>
+                <EditButton
+                  onClick={() => openEditModal(tramite)}
+                  title="Editar"
+                >
+                  <Edit size={16} />
+                </EditButton>
+                <DeleteButton
+                  onClick={() => openDeleteModal(tramite)}
+                  title="Eliminar"
+                >
+                  <Trash size={16} />
+                </DeleteButton>
+              </MobileCardActions>
+            </MobileCard>
+          ))
+        ) : (
+          <NoResults>No se encontraron trámites</NoResults>
         )}
-      </Container>
-    </Container2>
+      </MobileView>
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <Pagination>
+          <PageButton
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft size={16} />
+          </PageButton>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <PageButton
+              key={page}
+              active={page === currentPage}
+              onClick={() => handlePageChange(page)}
+            >
+              {page}
+            </PageButton>
+          ))}
+
+          <PageButton
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <ChevronRight size={16} />
+          </PageButton>
+        </Pagination>
+      )}
+
+      {/* Modal de confirmación para eliminar */}
+      {isDeleteModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>
+              <ModalTitle>Confirmar eliminación</ModalTitle>
+              <ModalCloseButton onClick={closeDeleteModal}>
+                <X size={20} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <div className="flex items-center gap-3 mb-4">
+                <AlertTriangle size={24} className="text-red-500" />
+                <p>
+                  ¿Está seguro que desea eliminar el trámite{" "}
+                  <strong>{selectedTramite?.titulo_tramite}</strong>?
+                </p>
+              </div>
+              <p className="text-gray-500 text-sm">
+                Esta acción no se puede deshacer.
+              </p>
+            </ModalBody>
+            <ModalFooter>
+              <CancelButton onClick={closeDeleteModal}>
+                <X size={16} /> Cancelar
+              </CancelButton>
+              <ConfirmButton
+                danger
+                onClick={handleDelete}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <SpinIcon>⟳</SpinIcon> Eliminando...
+                  </>
+                ) : (
+                  <>
+                    <Trash size={16} /> Eliminar
+                  </>
+                )}
+              </ConfirmButton>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+
+      {/* Modal de formulario para agregar/editar */}
+      {isFormModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>
+              <ModalTitle>
+                {selectedTramite ? "Editar trámite" : "Agregar trámite"}
+              </ModalTitle>
+              <ModalCloseButton onClick={closeFormModal}>
+                <X size={20} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <FormGroup>
+                <Label htmlFor="titulo_tramite">
+                  <FileText size={16} className="inline mr-2" /> Título del
+                  trámite *
+                </Label>
+                <Input
+                  type="text"
+                  id="titulo_tramite"
+                  name="titulo_tramite"
+                  value={formData.titulo_tramite}
+                  onChange={handleFormChange}
+                  placeholder="Ej. Solicitud de Titulación"
+                />
+                {formErrors.titulo_tramite && (
+                  <ErrorMessage>{formErrors.titulo_tramite}</ErrorMessage>
+                )}
+              </FormGroup>
+
+              <FormGroup>
+                <Label htmlFor="descripcion_tramite">
+                  <FileText size={16} className="inline mr-2" /> Descripción
+                </Label>
+                <TextArea
+                  id="descripcion_tramite"
+                  name="descripcion_tramite"
+                  value={formData.descripcion_tramite}
+                  onChange={handleFormChange}
+                  placeholder="Descripción detallada del trámite..."
+                />
+                {formErrors.descripcion_tramite && (
+                  <ErrorMessage>{formErrors.descripcion_tramite}</ErrorMessage>
+                )}
+              </FormGroup>
+
+              <FormGroup>
+                <Label htmlFor="planilla">
+                  <File size={16} className="inline mr-2" /> Planilla (PDF,
+                  Word, Excel, TXT o imagen)
+                </Label>
+                <FilePreviewContainer>
+                  <FilePreview>
+                    {filePreview && !formData.quitar_planilla ? (
+                      <FileInfo>
+                        {getFileIcon(filePreview)}
+                        <span>
+                          {formData.planilla
+                            ? formData.planilla.name
+                            : "Planilla actual"}
+                        </span>
+                      </FileInfo>
+                    ) : (
+                      <FileInfo>
+                        <File size={20} />
+                        <span>Sin planilla</span>
+                      </FileInfo>
+                    )}
+                  </FilePreview>
+
+                  <FileActions>
+                    {filePreview && !formData.quitar_planilla ? (
+                      <>
+                        <RemoveFileButton onClick={handleRemoveFile}>
+                          <XCircle size={16} /> Quitar planilla
+                        </RemoveFileButton>
+
+                        {selectedTramite &&
+                          selectedTramite.planilla_download_url && (
+                            <ViewFileButton
+                              href={selectedTramite.planilla_download_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <ExternalLink size={16} /> Ver planilla
+                            </ViewFileButton>
+                          )}
+                      </>
+                    ) : formData.quitar_planilla &&
+                      selectedTramite?.planilla_url ? (
+                      <Button onClick={handleCancelRemoveFile}>
+                        <Upload size={16} /> Restaurar planilla
+                      </Button>
+                    ) : null}
+
+                    <UploadButton htmlFor="planilla">
+                      <Upload size={16} />{" "}
+                      {filePreview ? "Cambiar planilla" : "Subir planilla"}
+                      <input
+                        type="file"
+                        id="planilla"
+                        name="planilla"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif,.webp"
+                        onChange={handleFileChange}
+                        ref={fileInputRef}
+                      />
+                    </UploadButton>
+                  </FileActions>
+                </FilePreviewContainer>
+                {formErrors.planilla && (
+                  <ErrorMessage>{formErrors.planilla}</ErrorMessage>
+                )}
+              </FormGroup>
+            </ModalBody>
+            <ModalFooter>
+              <CancelButton onClick={closeFormModal}>
+                <X size={16} /> Cancelar
+              </CancelButton>
+              <SaveButton onClick={handleSave} disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <SpinIcon>⟳</SpinIcon> Guardando...
+                  </>
+                ) : (
+                  <>
+                    <Save size={16} /> Guardar
+                  </>
+                )}
+              </SaveButton>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+    </Container>
   );
 }
 
@@ -841,16 +835,6 @@ const TableCell = styled.div`
   word-break: ${(props) => (props.allowWrap ? "break-word" : "normal")};
   overflow-wrap: ${(props) => (props.allowWrap ? "break-word" : "normal")};
   line-height: ${(props) => (props.allowWrap ? "1.3" : "inherit")};
-`;
-
-const Container2 = styled.div`
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem 1rem;
-
-  @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
-  }
 `;
 
 const Container = styled.div`

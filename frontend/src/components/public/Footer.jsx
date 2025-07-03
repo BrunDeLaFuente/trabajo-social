@@ -6,7 +6,7 @@ import {
   FaTelegramPlane,
   FaYoutube,
 } from "react-icons/fa";
-import footerBackground from "../../assets/img/portada.png";
+import footerBackground2 from "../../assets/img/portada2.jpg";
 import logo from "../../assets/img/logo-footer.png";
 import logoBordeado from "../../assets/img/logo.jpeg";
 import banner from "../../assets/img/banner.png";
@@ -125,7 +125,7 @@ const FooterContainer = styled.footer`
 
 const TopSection = styled.div`
   position: relative;
-  background: url(${footerBackground}) no-repeat center center/cover;
+  background: url(${footerBackground2}) no-repeat center center/cover;
   padding: 50px 5%;
   display: flex;
   flex-direction: column;

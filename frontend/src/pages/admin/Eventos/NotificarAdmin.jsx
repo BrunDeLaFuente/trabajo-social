@@ -886,7 +886,6 @@ export default NotificarAdmin;
 // Styled Components
 const Container = styled.div`
   min-height: 100vh;
-  background-color: #f9fafb;
   padding: 0.5rem;
 
   @media (min-width: 640px) {

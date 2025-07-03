@@ -1,524 +1,554 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
-import Logout from "./Logout";
-import logo from "../../assets/img/logo-ts.png";
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import React, { useState, useContext } from "react";
+import { useLocation, Link } from "react-router-dom";
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  Avatar,
+  Typography,
+  Box,
+  IconButton,
+  Tooltip,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import {
   Home,
-  Users,
-  Briefcase,
-  BookOpen,
-  Calendar,
-  FileText,
-  LogOut,
-  ChevronDown,
-  ChevronUp,
+  People,
+  Work,
+  School,
+  Article,
+  Event,
+  ExpandLess,
+  ExpandMore,
   Menu,
-  X,
-} from "lucide-react";
+  Close,
+  Key,
+  Info,
+  Share,
+  Assignment,
+  SupervisorAccount,
+  Groups,
+  AdminPanelSettings,
+  Newspaper,
+  CalendarMonth,
+  BarChart,
+  ExitToApp,
+  LocalLibrary,
+  PeopleAlt,
+  RecordVoiceOver,
+} from "@mui/icons-material";
+import { AuthContext } from "../../context/AuthContext";
+import Logout from "./Logout";
+import logo from "../../assets/img/logo-ts.png";
 
-// Sidebar width constants
-const SIDEBAR_EXPANDED_WIDTH = 250;
-const SIDEBAR_COLLAPSED_WIDTH = 70;
-const SIDEBAR_MOBILE_WIDTH = 0;
+const DRAWER_WIDTH = 280;
+const DRAWER_WIDTH_COLLAPSED = 70;
+
+const menuItems = [
+  {
+    title: "Inicio",
+    url: "/admin",
+    icon: Home,
+    color: "#2196F3",
+  },
+  {
+    title: "Usuarios",
+    icon: People,
+    color: "#9C27B0",
+    items: [
+      {
+        title: "Usuarios",
+        url: "/admin/usuarios",
+        icon: Groups,
+        adminOnly: true,
+      },
+      {
+        title: "Cambiar contraseña",
+        url: "/admin/cambiar-contrasena",
+        icon: Key,
+      },
+    ],
+  },
+  {
+    title: "Carrera",
+    icon: School,
+    color: "#4CAF50",
+    items: [
+      {
+        title: "Información",
+        url: "/admin/informacion-carrera",
+        icon: Info,
+      },
+      {
+        title: "Malla curricular",
+        url: "/admin/malla-curricular",
+        icon: Assignment,
+      },
+      {
+        title: "Redes sociales",
+        url: "/admin/redes-sociales",
+        icon: Share,
+      },
+      {
+        title: "Trámites",
+        url: "/admin/tramites",
+        icon: Assignment,
+      },
+    ],
+  },
+  {
+    title: "Personal",
+    icon: Work,
+    color: "#FF9800",
+    items: [
+      {
+        title: "Docentes",
+        url: "/admin/docentes",
+        icon: SupervisorAccount,
+      },
+      {
+        title: "Administrativos",
+        url: "/admin/administrativos",
+        icon: Groups,
+      },
+      {
+        title: "Autoridades",
+        url: "/admin/autoridades",
+        icon: AdminPanelSettings,
+      },
+    ],
+  },
+  {
+    title: "Noticias",
+    icon: Article,
+    color: "#F44336",
+    items: [
+      {
+        title: "Publicaciones",
+        url: "/admin/noticias",
+        icon: Newspaper,
+      },
+      {
+        title: "Biblioteca",
+        url: "/admin/biblioteca",
+        icon: LocalLibrary,
+      },
+    ],
+  },
+  {
+    title: "Eventos",
+    icon: Event,
+    color: "#673AB7",
+    items: [
+      {
+        title: "Actividades",
+        url: "/admin/eventos",
+        icon: CalendarMonth,
+      },
+      {
+        title: "Asistentes",
+        url: "/admin/asistentes",
+        icon: PeopleAlt,
+      },
+      {
+        title: "Expositores",
+        url: "/admin/expositores",
+        icon: RecordVoiceOver,
+      },
+      {
+        title: "Dashboard",
+        url: "/admin/eventos-dashboard",
+        icon: BarChart,
+      },
+    ],
+  },
+];
 
 const Sidebar = ({ onResize }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [openSubMenus, setOpenSubMenus] = useState({});
-
   const { user } = useContext(AuthContext);
-  const username = user?.name || "Admin User";
+  const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  // Toggle sidebar on mobile
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+  const username = user?.name || "Admin User";
+  const userEmail = user?.email || "admin@example.com";
+
+  // Toggle mobile drawer
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
   };
 
-  // Toggle sidebar collapse on desktop
-  const toggleCollapse = () => {
+  // Toggle collapse on desktop
+  const handleCollapseToggle = () => {
     setCollapsed(!collapsed);
   };
 
   // Toggle submenu
   const toggleSubMenu = (menuName) => {
-    setOpenSubMenus({
-      ...openSubMenus,
-      [menuName]: !openSubMenus[menuName],
-    });
+    setOpenSubMenus((prev) => ({
+      ...prev,
+      [menuName]: !prev[menuName],
+    }));
   };
 
-  // Handle window resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setCollapsed(false);
-        if (window.innerWidth < 576) {
-          setIsOpen(false);
-        }
-      } else {
-        setIsOpen(true);
-      }
-    };
+  // Check if route is active
+  const isActiveRoute = (url) => {
+    return location.pathname === url;
+  };
 
-    window.addEventListener("resize", handleResize);
-    handleResize(); // Initialize on mount
+  // Check if group has active child
+  const hasActiveChild = (items) => {
+    return items?.some((item) => isActiveRoute(item.url));
+  };
 
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Notify parent component about sidebar width changes
-  useEffect(() => {
-    let currentWidth = SIDEBAR_MOBILE_WIDTH;
-
-    if (isOpen) {
-      currentWidth = collapsed
-        ? SIDEBAR_COLLAPSED_WIDTH
-        : SIDEBAR_EXPANDED_WIDTH;
-    }
-
-    if (window.innerWidth < 768) {
-      currentWidth = 0; // On mobile, content takes full width
-    }
-
+  // Notify parent about width changes
+  React.useEffect(() => {
+    const currentWidth = isMobile
+      ? 0
+      : collapsed
+      ? DRAWER_WIDTH_COLLAPSED
+      : DRAWER_WIDTH;
     if (onResize) {
       onResize(currentWidth);
     }
-  }, [isOpen, collapsed, onResize]);
+  }, [collapsed, isMobile, onResize]);
+
+  const drawerContent = (
+    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      {/* Header */}
+      <Box
+        sx={{
+          p: 2,
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          borderBottom: "1px solid",
+          borderColor: "divider",
+          minHeight: 80,
+          position: "relative",
+        }}
+      >
+        {/* Botón de cerrar móvil - movido dentro del header */}
+        {isMobile && (
+          <IconButton
+            onClick={handleDrawerToggle}
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              zIndex: 1,
+              backgroundColor: "rgba(0,0,0,0.1)",
+              "&:hover": {
+                backgroundColor: "rgba(0,0,0,0.2)",
+              },
+            }}
+          >
+            <Close />
+          </IconButton>
+        )}
+
+        <Avatar
+          src={logo}
+          sx={{
+            width: collapsed ? 32 : 48,
+            height: collapsed ? 32 : 48,
+            transition: "all 0.3s ease",
+          }}
+        />
+        {!collapsed && (
+          <Box sx={{ minWidth: 0, flex: 1, pr: isMobile ? 5 : 0 }}>
+            <Typography variant="subtitle1" fontWeight="bold" noWrap>
+              {username}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" noWrap>
+              {userEmail}
+            </Typography>
+          </Box>
+        )}
+      </Box>
+
+      {/* Navigation */}
+      <Box sx={{ flex: 1, overflow: "auto" }}>
+        <List sx={{ pt: 1 }}>
+          {menuItems.map((item) => {
+            if (item.items) {
+              // Menu with submenu
+              const isOpen = openSubMenus[item.title];
+              const hasActive = hasActiveChild(item.items);
+
+              return (
+                <React.Fragment key={item.title}>
+                  <ListItem disablePadding>
+                    <ListItemButton
+                      onClick={() => toggleSubMenu(item.title)}
+                      sx={{
+                        minHeight: 48,
+                        px: 2.5,
+                        backgroundColor: hasActive
+                          ? "action.selected"
+                          : "transparent",
+                        "&:hover": {
+                          backgroundColor: "action.hover",
+                        },
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: collapsed ? 0 : 3,
+                          justifyContent: "center",
+                          color: item.color,
+                        }}
+                      >
+                        <item.icon />
+                      </ListItemIcon>
+                      {!collapsed && (
+                        <>
+                          <ListItemText
+                            primary={item.title}
+                            sx={{ opacity: 1 }}
+                          />
+                          {isOpen ? <ExpandLess /> : <ExpandMore />}
+                        </>
+                      )}
+                    </ListItemButton>
+                  </ListItem>
+
+                  {!collapsed && (
+                    <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                      <List component="div" disablePadding>
+                        {item.items.map((subItem) => {
+                          if (subItem.adminOnly && !user?.is_admin) {
+                            return null;
+                          }
+
+                          const isActive = isActiveRoute(subItem.url);
+
+                          return (
+                            <ListItem key={subItem.title} disablePadding>
+                              <ListItemButton
+                                component={Link}
+                                to={subItem.url}
+                                sx={{
+                                  pl: 4,
+                                  minHeight: 40,
+                                  backgroundColor: isActive
+                                    ? "primary.main"
+                                    : "transparent",
+                                  color: isActive
+                                    ? "primary.contrastText"
+                                    : "text.primary",
+                                  "&:hover": {
+                                    backgroundColor: isActive
+                                      ? "primary.dark"
+                                      : "action.hover",
+                                  },
+                                }}
+                              >
+                                <ListItemIcon
+                                  sx={{
+                                    minWidth: 0,
+                                    mr: 2,
+                                    justifyContent: "center",
+                                    color: "inherit",
+                                  }}
+                                >
+                                  <subItem.icon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary={subItem.title}
+                                  primaryTypographyProps={{
+                                    fontSize: "0.875rem",
+                                  }}
+                                />
+                              </ListItemButton>
+                            </ListItem>
+                          );
+                        })}
+                      </List>
+                    </Collapse>
+                  )}
+                </React.Fragment>
+              );
+            } else {
+              // Simple menu item
+              const isActive = isActiveRoute(item.url);
+
+              return (
+                <ListItem key={item.title} disablePadding>
+                  <Tooltip
+                    title={collapsed ? item.title : ""}
+                    placement="right"
+                  >
+                    <ListItemButton
+                      component={Link}
+                      to={item.url}
+                      sx={{
+                        minHeight: 48,
+                        px: 2.5,
+                        backgroundColor: isActive
+                          ? "primary.main"
+                          : "transparent",
+                        color: isActive
+                          ? "primary.contrastText"
+                          : "text.primary",
+                        "&:hover": {
+                          backgroundColor: isActive
+                            ? "primary.dark"
+                            : "action.hover",
+                        },
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: collapsed ? 0 : 3,
+                          justifyContent: "center",
+                          color: isActive ? "inherit" : item.color,
+                        }}
+                      >
+                        <item.icon />
+                      </ListItemIcon>
+                      {!collapsed && (
+                        <ListItemText
+                          primary={item.title}
+                          sx={{ opacity: 1 }}
+                        />
+                      )}
+                    </ListItemButton>
+                  </Tooltip>
+                </ListItem>
+              );
+            }
+          })}
+        </List>
+      </Box>
+
+      {/* Footer */}
+      <Box sx={{ borderTop: "1px solid", borderColor: "divider" }}>
+        <ListItem disablePadding>
+          <ListItemButton
+            sx={{
+              minHeight: 48,
+              px: 2.5,
+              "&:hover": {
+                backgroundColor: "error.light",
+                color: "error.contrastText",
+              },
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: collapsed ? 0 : 3,
+                justifyContent: "center",
+                color: "error.main",
+              }}
+            >
+              <ExitToApp />
+            </ListItemIcon>
+            {!collapsed && (
+              <>
+                <ListItemText primary="Cerrar sesión" />
+                <Logout />
+              </>
+            )}
+          </ListItemButton>
+        </ListItem>
+      </Box>
+    </Box>
+  );
 
   return (
     <>
-      <ToggleButton isOpen={isOpen} onClick={toggleSidebar}>
-        {isOpen ? <X size={20} /> : <Menu size={20} />}
-      </ToggleButton>
-
-      {window.innerWidth >= 768 && (
-        <CollapseButton onClick={toggleCollapse}>
-          {collapsed ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
-        </CollapseButton>
+      {/* Mobile Toggle Button - Solo se muestra cuando el menú está cerrado */}
+      {isMobile && !mobileOpen && (
+        <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          edge="start"
+          onClick={handleDrawerToggle}
+          sx={{
+            position: "fixed",
+            top: 16,
+            left: 16,
+            zIndex: 1300,
+            backgroundColor: "primary.main",
+            color: "primary.contrastText",
+            "&:hover": {
+              backgroundColor: "primary.dark",
+            },
+          }}
+        >
+          <Menu />
+        </IconButton>
       )}
 
-      <Overlay isOpen={isOpen} onClick={toggleSidebar} />
-      <SidebarContainer isOpen={isOpen} collapsed={collapsed}>
-        <SidebarHeader>
-          <ProfileImage>
-            <img src={logo} alt="Profile" />
-          </ProfileImage>
-          {!collapsed && <Username>{username}</Username>}
-        </SidebarHeader>
-        <NavMenu>
-          {/* Inicio */}
-          <NavItem>
-            <NavLink to="/admin" collapsed={collapsed}>
-              <Home size={20} />
-              <span>Inicio</span>
-            </NavLink>
-          </NavItem>
+      {/* Desktop Collapse Button */}
+      {!isMobile && (
+        <IconButton
+          onClick={handleCollapseToggle}
+          sx={{
+            position: "fixed",
+            top: 16,
+            right: 16,
+            zIndex: 1200,
+            backgroundColor: "primary.main",
+            color: "primary.contrastText",
+            "&:hover": {
+              backgroundColor: "primary.dark",
+            },
+          }}
+        >
+          {collapsed ? <ExpandMore /> : <ExpandLess />}
+        </IconButton>
+      )}
 
-          {/* Usuarios - Now with dropdown */}
-          <NavItem>
-            <NavButton
-              collapsed={collapsed}
-              onClick={() => toggleSubMenu("usuarios")}
-            >
-              <Users size={20} />
-              <span>Usuarios</span>
-              <div className="chevron">
-                {openSubMenus.usuarios ? (
-                  <ChevronUp size={16} />
-                ) : (
-                  <ChevronDown size={16} />
-                )}
-              </div>
-            </NavButton>
-            <SubMenu isOpen={openSubMenus.usuarios} collapsed={collapsed}>
-              {user?.is_admin && (
-                <SubMenuItem>
-                  <SubMenuLink to="/admin/usuarios">Usuarios</SubMenuLink>
-                </SubMenuItem>
-              )}
-              <SubMenuItem>
-                <SubMenuLink to="/admin/cambiar-contrasena">
-                  Cambiar contraseña
-                </SubMenuLink>
-              </SubMenuItem>
-            </SubMenu>
-          </NavItem>
+      {/* Mobile Drawer */}
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true,
+        }}
+        sx={{
+          display: { xs: "block", md: "none" },
+          "& .MuiDrawer-paper": {
+            boxSizing: "border-box",
+            width: DRAWER_WIDTH,
+          },
+        }}
+      >
+        {drawerContent}
+      </Drawer>
 
-          {/* Carrera */}
-          <NavItem>
-            <NavButton
-              collapsed={collapsed}
-              onClick={() => toggleSubMenu("carrera")}
-            >
-              <BookOpen size={20} />
-              <span>Carrera</span>
-              <div className="chevron">
-                {openSubMenus.carrera ? (
-                  <ChevronUp size={16} />
-                ) : (
-                  <ChevronDown size={16} />
-                )}
-              </div>
-            </NavButton>
-            <SubMenu isOpen={openSubMenus.carrera} collapsed={collapsed}>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/informacion-carrera">
-                  Información
-                </SubMenuLink>
-              </SubMenuItem>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/malla-curricular">
-                  Malla curricular
-                </SubMenuLink>
-              </SubMenuItem>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/redes-sociales">
-                  Redes sociales
-                </SubMenuLink>
-              </SubMenuItem>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/tramites">Trámites</SubMenuLink>
-              </SubMenuItem>
-            </SubMenu>
-          </NavItem>
-
-          {/* Personal */}
-          <NavItem>
-            <NavButton
-              collapsed={collapsed}
-              onClick={() => toggleSubMenu("personal")}
-            >
-              <Briefcase size={20} />
-              <span>Personal</span>
-              <div className="chevron">
-                {openSubMenus.personal ? (
-                  <ChevronUp size={16} />
-                ) : (
-                  <ChevronDown size={16} />
-                )}
-              </div>
-            </NavButton>
-            <SubMenu isOpen={openSubMenus.personal} collapsed={collapsed}>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/docentes">Docentes</SubMenuLink>
-              </SubMenuItem>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/administrativos">
-                  Administrativos
-                </SubMenuLink>
-              </SubMenuItem>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/autoridades">Autoridades</SubMenuLink>
-              </SubMenuItem>
-            </SubMenu>
-          </NavItem>
-
-          {/* Noticias */}
-          <NavItem>
-            <NavButton
-              collapsed={collapsed}
-              onClick={() => toggleSubMenu("noticias")}
-            >
-              <FileText size={20} />
-              <span>Noticias</span>
-              <div className="chevron">
-                {openSubMenus.noticias ? (
-                  <ChevronUp size={16} />
-                ) : (
-                  <ChevronDown size={16} />
-                )}
-              </div>
-            </NavButton>
-            <SubMenu isOpen={openSubMenus.noticias} collapsed={collapsed}>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/noticias">Publicaciones</SubMenuLink>
-              </SubMenuItem>
-            </SubMenu>
-          </NavItem>
-
-          {/* Eventos */}
-          <NavItem>
-            <NavButton
-              collapsed={collapsed}
-              onClick={() => toggleSubMenu("eventos")}
-            >
-              <Calendar size={20} />
-              <span>Eventos</span>
-              <div className="chevron">
-                {openSubMenus.eventos ? (
-                  <ChevronUp size={16} />
-                ) : (
-                  <ChevronDown size={16} />
-                )}
-              </div>
-            </NavButton>
-            <SubMenu isOpen={openSubMenus.eventos} collapsed={collapsed}>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/eventos">Activiades</SubMenuLink>
-              </SubMenuItem>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/eventos-con-costo">
-                  Con costo
-                </SubMenuLink>
-              </SubMenuItem>
-              <SubMenuItem>
-                <SubMenuLink to="/admin/eventos-dashboard">
-                  Dashboard
-                </SubMenuLink>
-              </SubMenuItem>
-            </SubMenu>
-          </NavItem>
-
-          {/* Salir - Updated to properly use the Logout component */}
-          <NavItem>
-            <LogoutButton collapsed={collapsed}>
-              <LogOut size={20} />
-              <span>Salir</span>
-              <Logout />
-            </LogoutButton>
-          </NavItem>
-        </NavMenu>
-      </SidebarContainer>
+      {/* Desktop Drawer */}
+      <Drawer
+        variant="permanent"
+        sx={{
+          display: { xs: "none", md: "block" },
+          "& .MuiDrawer-paper": {
+            boxSizing: "border-box",
+            width: collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH,
+            transition: "width 0.3s ease",
+            overflowX: "hidden",
+          },
+        }}
+        open
+      >
+        {drawerContent}
+      </Drawer>
     </>
   );
 };
 
 export default Sidebar;
-
-// Styled Components
-const SidebarContainer = styled.div`
-  background-color: #2c3e50;
-  color: white;
-  width: ${({ isOpen, collapsed }) => {
-    if (!isOpen) return "0px";
-    return collapsed
-      ? `${SIDEBAR_COLLAPSED_WIDTH}px`
-      : `${SIDEBAR_EXPANDED_WIDTH}px`;
-  }};
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  transition: width 0.3s ease;
-  overflow-y: auto;
-  z-index: 1000;
-
-  @media (min-width: 768px) {
-    width: ${({ isOpen, collapsed }) => {
-      if (!isOpen) return "0px";
-      return collapsed
-        ? `${SIDEBAR_COLLAPSED_WIDTH}px`
-        : `${SIDEBAR_EXPANDED_WIDTH}px`;
-    }};
-  }
-`;
-
-const SidebarHeader = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-`;
-
-const ProfileImage = styled.div`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: #34495e;
-  margin-bottom: 10px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-`;
-
-const Username = styled.h3`
-  font-size: 16px;
-  margin: 0;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 90%;
-`;
-
-const NavMenu = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-`;
-
-const NavItem = styled.li`
-  width: 100%;
-`;
-
-const NavLink = styled(Link)`
-  display: flex;
-  align-items: center;
-  padding: 12px 15px;
-  color: white;
-  text-decoration: none;
-  transition: background-color 0.2s;
-  position: relative;
-
-  &:hover {
-    background-color: #34495e;
-  }
-
-  &.active {
-    background-color: #3498db;
-  }
-
-  svg {
-    margin-right: ${({ collapsed }) => (collapsed ? "0" : "10px")};
-  }
-
-  span {
-    display: ${({ collapsed }) => (collapsed ? "none" : "block")};
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-`;
-
-const NavButton = styled.button`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 12px 15px;
-  color: white;
-  background: none;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  position: relative;
-
-  &:hover {
-    background-color: #34495e;
-  }
-
-  svg {
-    margin-right: ${({ collapsed }) => (collapsed ? "0" : "10px")};
-  }
-
-  span {
-    display: ${({ collapsed }) => (collapsed ? "none" : "block")};
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .chevron {
-    position: absolute;
-    right: 15px;
-    display: ${({ collapsed }) => (collapsed ? "none" : "block")};
-  }
-`;
-
-const LogoutButton = styled(NavButton)`
-  margin-top: auto;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-
-  &:hover {
-    background-color: #c0392b;
-  }
-`;
-
-const SubMenu = styled.ul`
-  list-style: none;
-  padding-left: ${({ collapsed }) => (collapsed ? "0" : "20px")};
-  background-color: #34495e;
-  max-height: ${({ isOpen }) => (isOpen ? "500px" : "0")};
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-`;
-
-const SubMenuItem = styled.li`
-  width: 100%;
-`;
-
-const SubMenuLink = styled(Link)`
-  display: block;
-  padding: 10px 15px;
-  color: white;
-  text-decoration: none;
-  transition: background-color 0.2s;
-  font-size: 14px;
-
-  &:hover {
-    background-color: #2c3e50;
-  }
-
-  &.active {
-    background-color: #2980b9;
-  }
-`;
-
-const ToggleButton = styled.button`
-  position: fixed;
-  top: 10px;
-  left: ${({ isOpen }) => (isOpen ? "250px" : "10px")};
-  z-index: 1001;
-  background-color: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: left 0.3s ease;
-
-  @media (min-width: 768px) {
-    display: none;
-  }
-`;
-
-const CollapseButton = styled.button`
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  z-index: 1001;
-  background-color: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-
-  @media (min-width: 768px) {
-    display: flex;
-  }
-`;
-
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-  display: ${({ isOpen }) => (isOpen ? "block" : "none")};
-
-  @media (min-width: 768px) {
-    display: none;
-  }
-`;

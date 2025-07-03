@@ -667,329 +667,467 @@ export default function DocentesAdmin() {
   }
 
   return (
-    <Container2>
-      <Container>
-        {/* Mensajes */}
-        {mensajes.map((mensaje) => (
-          <CajaMensaje
-            key={mensaje.id}
-            tipo={mensaje.tipo}
-            color={mensaje.color}
-            mensaje={mensaje.mensaje}
-            duracion={mensaje.duracion}
-            backgroundColor={mensaje.backgroundColor}
-            onClose={() => eliminarMensaje(mensaje.id)}
-          />
-        ))}
+    <Container>
+      {/* Mensajes */}
+      {mensajes.map((mensaje) => (
+        <CajaMensaje
+          key={mensaje.id}
+          tipo={mensaje.tipo}
+          color={mensaje.color}
+          mensaje={mensaje.mensaje}
+          duracion={mensaje.duracion}
+          backgroundColor={mensaje.backgroundColor}
+          onClose={() => eliminarMensaje(mensaje.id)}
+        />
+      ))}
 
-        <Title>
-          <User size={24} /> Docentes de la carrera
-        </Title>
+      <Title>
+        <User size={24} /> Docentes de la carrera
+      </Title>
 
-        {/* Modificar la sección de TopControls para actualizar los botones */}
-        <TopControls>
-          <SearchFilterContainer>
-            <SearchContainer>
-              <SearchInput
-                type="text"
-                placeholder="Buscar por nombre, cargo, correo o asignatura..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <SearchIcon>
-                <Search size={16} />
-              </SearchIcon>
-            </SearchContainer>
-          </SearchFilterContainer>
+      {/* Modificar la sección de TopControls para actualizar los botones */}
+      <TopControls>
+        <SearchFilterContainer>
+          <SearchContainer>
+            <SearchInput
+              type="text"
+              placeholder="Buscar por nombre, cargo, correo o asignatura..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <SearchIcon>
+              <Search size={16} />
+            </SearchIcon>
+          </SearchContainer>
+        </SearchFilterContainer>
 
-          <ButtonsContainer>
-            <AddButton onClick={openAddModal}>
-              <Plus size={16} /> Agregar
-            </AddButton>
+        <ButtonsContainer>
+          <AddButton onClick={openAddModal}>
+            <Plus size={16} /> Agregar
+          </AddButton>
 
-            <AsignaturasButton
-              onClick={() => navigate("/admin/docentes/asignaturas")}
-            >
-              <Settings size={16} /> Asignaturas
-            </AsignaturasButton>
+          <AsignaturasButton
+            onClick={() => navigate("/admin/docentes/asignaturas")}
+          >
+            <Settings size={16} /> Asignaturas
+          </AsignaturasButton>
 
-            <UploadButton htmlFor="excel-upload">
-              <FileSpreadsheet size={16} /> Importar
-              <input
-                type="file"
-                id="excel-upload"
-                accept=".xls,.xlsx,.ods"
-                onChange={handleExcelUpload}
-                ref={excelInputRef}
-              />
-            </UploadButton>
-          </ButtonsContainer>
-        </TopControls>
+          <UploadButton htmlFor="excel-upload">
+            <FileSpreadsheet size={16} /> Importar
+            <input
+              type="file"
+              id="excel-upload"
+              accept=".xls,.xlsx,.ods"
+              onChange={handleExcelUpload}
+              ref={excelInputRef}
+            />
+          </UploadButton>
+        </ButtonsContainer>
+      </TopControls>
 
-        {/* Vista de escritorio */}
-        <DesktopView>
-          <TableContainer>
-            <Table>
-              <TableHeader>
-                <TableHeaderCell>Nombre</TableHeaderCell>
-                <TableHeaderCell>Correo</TableHeaderCell>
-                <TableHeaderCell>Asignaturas</TableHeaderCell>
-                <TableHeaderCell>Acciones</TableHeaderCell>
-              </TableHeader>
+      {/* Vista de escritorio */}
+      <DesktopView>
+        <TableContainer>
+          <Table>
+            <TableHeader>
+              <TableHeaderCell>Nombre</TableHeaderCell>
+              <TableHeaderCell>Correo</TableHeaderCell>
+              <TableHeaderCell>Asignaturas</TableHeaderCell>
+              <TableHeaderCell>Acciones</TableHeaderCell>
+            </TableHeader>
 
-              <TableBody>
-                {getCurrentPageItems().length > 0 ? (
-                  getCurrentPageItems().map((docente) => (
-                    <TableRow key={docente.id_persona}>
-                      <TableCell>
-                        <ProfileImage>
-                          {docente.imagen_persona_url ? (
-                            <img
-                              src={
-                                docente.imagen_persona_url || "/placeholder.svg"
-                              }
-                              alt={docente.nombre_persona}
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "/placeholder.svg";
-                              }}
-                            />
-                          ) : (
-                            <User size={16} />
-                          )}
-                        </ProfileImage>
-                        {docente.nombre_persona}
-                      </TableCell>
-                      <TableCell>
-                        {docente.correos.length > 0
-                          ? docente.correos[0].email_persona
-                          : "Sin correo"}
-                        {docente.correos.length > 1 && (
-                          <span
-                            title={docente.correos
-                              .map((c) => c.email_persona)
-                              .join(", ")}
-                          >
-                            {` (+${docente.correos.length - 1} más)`}
-                          </span>
+            <TableBody>
+              {getCurrentPageItems().length > 0 ? (
+                getCurrentPageItems().map((docente) => (
+                  <TableRow key={docente.id_persona}>
+                    <TableCell>
+                      <ProfileImage>
+                        {docente.imagen_persona_url ? (
+                          <img
+                            src={
+                              docente.imagen_persona_url || "/placeholder.svg"
+                            }
+                            alt={docente.nombre_persona}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "/placeholder.svg";
+                            }}
+                          />
+                        ) : (
+                          <User size={16} />
                         )}
-                      </TableCell>
-                      <TableCell>
-                        {docente.asignaturas.length > 0
-                          ? docente.asignaturas[0].nombre_asignatura
-                          : "Sin asignaturas"}
-                        {docente.asignaturas.length > 1 && (
-                          <span
-                            title={docente.asignaturas
-                              .map((a) => a.nombre_asignatura)
-                              .join(", ")}
-                          >
-                            {` (+${docente.asignaturas.length - 1} más)`}
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <ActionButtons>
-                          <ViewButton
-                            onClick={() => openDetailModal(docente)}
-                            title="Ver detalles"
-                          >
-                            <Eye size={16} />
-                          </ViewButton>
-                          <EditButton
-                            onClick={() => openEditModal(docente)}
-                            title="Editar"
-                          >
-                            <Edit size={16} />
-                          </EditButton>
-                          <DeleteButton
-                            onClick={() => openDeleteModal(docente)}
-                            title="Eliminar"
-                          >
-                            <Trash size={16} />
-                          </DeleteButton>
-                        </ActionButtons>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <NoResults>No se encontraron docentes</NoResults>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DesktopView>
+                      </ProfileImage>
+                      {docente.nombre_persona}
+                    </TableCell>
+                    <TableCell>
+                      {docente.correos.length > 0
+                        ? docente.correos[0].email_persona
+                        : "Sin correo"}
+                      {docente.correos.length > 1 && (
+                        <span
+                          title={docente.correos
+                            .map((c) => c.email_persona)
+                            .join(", ")}
+                        >
+                          {` (+${docente.correos.length - 1} más)`}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {docente.asignaturas.length > 0
+                        ? docente.asignaturas[0].nombre_asignatura
+                        : "Sin asignaturas"}
+                      {docente.asignaturas.length > 1 && (
+                        <span
+                          title={docente.asignaturas
+                            .map((a) => a.nombre_asignatura)
+                            .join(", ")}
+                        >
+                          {` (+${docente.asignaturas.length - 1} más)`}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <ActionButtons>
+                        <ViewButton
+                          onClick={() => openDetailModal(docente)}
+                          title="Ver detalles"
+                        >
+                          <Eye size={16} />
+                        </ViewButton>
+                        <EditButton
+                          onClick={() => openEditModal(docente)}
+                          title="Editar"
+                        >
+                          <Edit size={16} />
+                        </EditButton>
+                        <DeleteButton
+                          onClick={() => openDeleteModal(docente)}
+                          title="Eliminar"
+                        >
+                          <Trash size={16} />
+                        </DeleteButton>
+                      </ActionButtons>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <NoResults>No se encontraron docentes</NoResults>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </DesktopView>
 
-        {/* Vista móvil */}
-        <MobileView>
-          {getCurrentPageItems().length > 0 ? (
-            getCurrentPageItems().map((docente) => (
-              <MobileCard key={docente.id_persona}>
-                <MobileCardHeader>
-                  <MobileCardTitle>{docente.nombre_persona}</MobileCardTitle>
-                  <ProfileImage>
-                    {docente.imagen_persona_url ? (
-                      <img
-                        src={docente.imagen_persona_url || "/placeholder.svg"}
-                        alt={docente.nombre_persona}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "/placeholder.svg";
-                        }}
-                      />
-                    ) : (
-                      <User size={16} />
-                    )}
-                  </ProfileImage>
-                </MobileCardHeader>
-                <MobileCardContent>
-                  <MobileCardItem>
-                    {docente.correos.length > 0
-                      ? docente.correos[0].email_persona
-                      : "Sin correo"}
-                    {docente.correos.length > 1 && (
-                      <span
-                        style={{ fontStyle: "italic", marginLeft: "0.25rem" }}
-                      >
-                        {`(+${docente.correos.length - 1} más)`}
-                      </span>
-                    )}
-                  </MobileCardItem>
-                  <MobileCardItem>
-                    {docente.asignaturas.length > 0
-                      ? docente.asignaturas[0].nombre_asignatura
-                      : "Sin asignaturas"}
-                    {docente.asignaturas.length > 1 && (
-                      <span
-                        style={{ fontStyle: "italic", marginLeft: "0.25rem" }}
-                      >
-                        {`(+${docente.asignaturas.length - 1} más)`}
-                      </span>
-                    )}
-                  </MobileCardItem>
-                </MobileCardContent>
-                <MobileCardActions>
-                  <ViewButton
-                    onClick={() => openDetailModal(docente)}
-                    title="Ver detalles"
-                  >
-                    <Eye size={16} />
-                  </ViewButton>
-                  <EditButton
-                    onClick={() => openEditModal(docente)}
-                    title="Editar"
-                  >
-                    <Edit size={16} />
-                  </EditButton>
-                  <DeleteButton
-                    onClick={() => openDeleteModal(docente)}
-                    title="Eliminar"
-                  >
-                    <Trash size={16} />
-                  </DeleteButton>
-                </MobileCardActions>
-              </MobileCard>
-            ))
-          ) : (
-            <NoResults>No se encontraron docentes</NoResults>
-          )}
-        </MobileView>
-
-        {/* Paginación */}
-        {totalPages > 1 && (
-          <Pagination>
-            <PageButton
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft size={16} />
-            </PageButton>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <PageButton
-                key={page}
-                active={page === currentPage}
-                onClick={() => handlePageChange(page)}
-              >
-                {page}
-              </PageButton>
-            ))}
-
-            <PageButton
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight size={16} />
-            </PageButton>
-          </Pagination>
-        )}
-
-        {/* Modal de confirmación para eliminar */}
-        {isDeleteModalOpen && (
-          <ModalOverlay>
-            <ModalContent>
-              <ModalHeader>
-                <ModalTitle>Confirmar eliminación</ModalTitle>
-                <ModalCloseButton onClick={closeDeleteModal}>
-                  <X size={20} />
-                </ModalCloseButton>
-              </ModalHeader>
-              <ModalBody>
-                <div className="flex items-center gap-3 mb-4">
-                  <AlertTriangle size={24} className="text-red-500" />
-                  <p>
-                    ¿Está seguro que desea eliminar a{" "}
-                    <strong>{selectedDocente?.nombre_persona}</strong>?
-                  </p>
-                </div>
-                <p className="text-gray-500 text-sm">
-                  Esta acción no se puede deshacer.
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <CancelButton onClick={closeDeleteModal}>
-                  <X size={16} /> Cancelar
-                </CancelButton>
-                <ConfirmButton
-                  danger
-                  onClick={handleDelete}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <SpinIcon>⟳</SpinIcon> Eliminando...
-                    </>
+      {/* Vista móvil */}
+      <MobileView>
+        {getCurrentPageItems().length > 0 ? (
+          getCurrentPageItems().map((docente) => (
+            <MobileCard key={docente.id_persona}>
+              <MobileCardHeader>
+                <MobileCardTitle>{docente.nombre_persona}</MobileCardTitle>
+                <ProfileImage>
+                  {docente.imagen_persona_url ? (
+                    <img
+                      src={docente.imagen_persona_url || "/placeholder.svg"}
+                      alt={docente.nombre_persona}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/placeholder.svg";
+                      }}
+                    />
                   ) : (
-                    <>
-                      <Trash size={16} /> Eliminar
-                    </>
+                    <User size={16} />
                   )}
-                </ConfirmButton>
-              </ModalFooter>
-            </ModalContent>
-          </ModalOverlay>
+                </ProfileImage>
+              </MobileCardHeader>
+              <MobileCardContent>
+                <MobileCardItem>
+                  {docente.correos.length > 0
+                    ? docente.correos[0].email_persona
+                    : "Sin correo"}
+                  {docente.correos.length > 1 && (
+                    <span
+                      style={{ fontStyle: "italic", marginLeft: "0.25rem" }}
+                    >
+                      {`(+${docente.correos.length - 1} más)`}
+                    </span>
+                  )}
+                </MobileCardItem>
+                <MobileCardItem>
+                  {docente.asignaturas.length > 0
+                    ? docente.asignaturas[0].nombre_asignatura
+                    : "Sin asignaturas"}
+                  {docente.asignaturas.length > 1 && (
+                    <span
+                      style={{ fontStyle: "italic", marginLeft: "0.25rem" }}
+                    >
+                      {`(+${docente.asignaturas.length - 1} más)`}
+                    </span>
+                  )}
+                </MobileCardItem>
+              </MobileCardContent>
+              <MobileCardActions>
+                <ViewButton
+                  onClick={() => openDetailModal(docente)}
+                  title="Ver detalles"
+                >
+                  <Eye size={16} />
+                </ViewButton>
+                <EditButton
+                  onClick={() => openEditModal(docente)}
+                  title="Editar"
+                >
+                  <Edit size={16} />
+                </EditButton>
+                <DeleteButton
+                  onClick={() => openDeleteModal(docente)}
+                  title="Eliminar"
+                >
+                  <Trash size={16} />
+                </DeleteButton>
+              </MobileCardActions>
+            </MobileCard>
+          ))
+        ) : (
+          <NoResults>No se encontraron docentes</NoResults>
         )}
+      </MobileView>
 
-        {/* Modal de detalles */}
-        {isDetailModalOpen && selectedDocente && (
-          <ModalOverlay>
-            <ModalContent>
-              <ModalHeader>
-                <ModalTitle>Detalles del docente</ModalTitle>
-                <ModalCloseButton onClick={closeDetailModal}>
-                  <X size={20} />
-                </ModalCloseButton>
-              </ModalHeader>
-              <ModalBody>
-                <DetailImageContainer>
-                  <DetailImage>
-                    {selectedDocente.imagen_persona_url ? (
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <Pagination>
+          <PageButton
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft size={16} />
+          </PageButton>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <PageButton
+              key={page}
+              active={page === currentPage}
+              onClick={() => handlePageChange(page)}
+            >
+              {page}
+            </PageButton>
+          ))}
+
+          <PageButton
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <ChevronRight size={16} />
+          </PageButton>
+        </Pagination>
+      )}
+
+      {/* Modal de confirmación para eliminar */}
+      {isDeleteModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>
+              <ModalTitle>Confirmar eliminación</ModalTitle>
+              <ModalCloseButton onClick={closeDeleteModal}>
+                <X size={20} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <div className="flex items-center gap-3 mb-4">
+                <AlertTriangle size={24} className="text-red-500" />
+                <p>
+                  ¿Está seguro que desea eliminar a{" "}
+                  <strong>{selectedDocente?.nombre_persona}</strong>?
+                </p>
+              </div>
+              <p className="text-gray-500 text-sm">
+                Esta acción no se puede deshacer.
+              </p>
+            </ModalBody>
+            <ModalFooter>
+              <CancelButton onClick={closeDeleteModal}>
+                <X size={16} /> Cancelar
+              </CancelButton>
+              <ConfirmButton
+                danger
+                onClick={handleDelete}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <SpinIcon>⟳</SpinIcon> Eliminando...
+                  </>
+                ) : (
+                  <>
+                    <Trash size={16} /> Eliminar
+                  </>
+                )}
+              </ConfirmButton>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+
+      {/* Modal de detalles */}
+      {isDetailModalOpen && selectedDocente && (
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>
+              <ModalTitle>Detalles del docente</ModalTitle>
+              <ModalCloseButton onClick={closeDetailModal}>
+                <X size={20} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <DetailImageContainer>
+                <DetailImage>
+                  {selectedDocente.imagen_persona_url ? (
+                    <img
+                      src={
+                        selectedDocente.imagen_persona_url || "/placeholder.svg"
+                      }
+                      alt={selectedDocente.nombre_persona}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/placeholder.svg";
+                      }}
+                    />
+                  ) : (
+                    <User size={40} />
+                  )}
+                </DetailImage>
+              </DetailImageContainer>
+
+              <DetailSection>
+                <DetailTitle>
+                  <User size={18} /> Información personal
+                </DetailTitle>
+                <DetailContent>
+                  <DetailItem>
+                    <DetailLabel>Nombre:</DetailLabel>
+                    <DetailValue>{selectedDocente.nombre_persona}</DetailValue>
+                  </DetailItem>
+                  <DetailItem>
+                    <DetailLabel>Cargo:</DetailLabel>
+                    <DetailValue>{selectedDocente.cargo}</DetailValue>
+                  </DetailItem>
+                </DetailContent>
+              </DetailSection>
+
+              <DetailSection>
+                <DetailTitle>
+                  <Mail size={18} /> Correos electrónicos
+                </DetailTitle>
+                <DetailContent>
+                  {selectedDocente.correos.length > 0 ? (
+                    <DetailList>
+                      {selectedDocente.correos.map((correo) => (
+                        <li key={correo.id_persona_correo}>
+                          {correo.email_persona}
+                        </li>
+                      ))}
+                    </DetailList>
+                  ) : (
+                    <p>No hay correos registrados.</p>
+                  )}
+                </DetailContent>
+              </DetailSection>
+
+              <DetailSection>
+                <DetailTitle>
+                  <Book size={18} /> Asignaturas
+                </DetailTitle>
+                <DetailContent>
+                  {selectedDocente.asignaturas.length > 0 ? (
+                    <DetailList>
+                      {selectedDocente.asignaturas.map((asignatura) => (
+                        <li key={asignatura.id_asignatura}>
+                          {asignatura.nombre_asignatura}
+                        </li>
+                      ))}
+                    </DetailList>
+                  ) : (
+                    <p>No hay asignaturas asignadas.</p>
+                  )}
+                </DetailContent>
+              </DetailSection>
+            </ModalBody>
+            <ModalFooter>
+              <CancelButton onClick={closeDetailModal}>
+                <X size={16} /> Cerrar
+              </CancelButton>
+              <ConfirmButton
+                onClick={() => {
+                  closeDetailModal();
+                  openEditModal(selectedDocente);
+                }}
+              >
+                <Edit size={16} /> Editar
+              </ConfirmButton>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+
+      {/* Modal de formulario para agregar/editar */}
+      {isFormModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>
+              <ModalTitle>
+                {selectedDocente ? "Editar docente" : "Agregar docente"}
+              </ModalTitle>
+              <ModalCloseButton onClick={closeFormModal}>
+                <X size={20} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <FormGroup>
+                <Label htmlFor="nombre_persona">
+                  <User size={16} className="inline mr-2" /> Nombre completo *
+                </Label>
+                <Input
+                  type="text"
+                  id="nombre_persona"
+                  name="nombre_persona"
+                  value={formData.nombre_persona}
+                  onChange={handleFormChange}
+                  placeholder="Ej. Dr. Juan Pérez"
+                />
+                {formErrors.nombre_persona && (
+                  <ErrorMessage>{formErrors.nombre_persona}</ErrorMessage>
+                )}
+              </FormGroup>
+
+              <FormGroup>
+                <Label htmlFor="cargo">
+                  <Briefcase size={16} className="inline mr-2" /> Cargo
+                </Label>
+                <Input
+                  type="text"
+                  id="cargo"
+                  name="cargo"
+                  value={formData.cargo}
+                  onChange={handleFormChange}
+                  placeholder="Ej. Docente Titular"
+                />
+                {formErrors.cargo && (
+                  <ErrorMessage>{formErrors.cargo}</ErrorMessage>
+                )}
+              </FormGroup>
+
+              <FormGroup>
+                <Label htmlFor="imagen_persona">
+                  <ImageIcon size={16} className="inline mr-2" /> Imagen de
+                  perfil
+                </Label>
+                <ImagePreviewContainer>
+                  <ImagePreview>
+                    {imagePreview && !formData.quitar_imagen ? (
                       <img
-                        src={
-                          selectedDocente.imagen_persona_url ||
-                          "/placeholder.svg"
-                        }
-                        alt={selectedDocente.nombre_persona}
+                        src={imagePreview || "/placeholder.svg"}
+                        alt="Vista previa"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = "/placeholder.svg";
@@ -998,366 +1136,269 @@ export default function DocentesAdmin() {
                     ) : (
                       <User size={40} />
                     )}
-                  </DetailImage>
-                </DetailImageContainer>
+                  </ImagePreview>
 
-                <DetailSection>
-                  <DetailTitle>
-                    <User size={18} /> Información personal
-                  </DetailTitle>
-                  <DetailContent>
-                    <DetailItem>
-                      <DetailLabel>Nombre:</DetailLabel>
-                      <DetailValue>
-                        {selectedDocente.nombre_persona}
-                      </DetailValue>
-                    </DetailItem>
-                    <DetailItem>
-                      <DetailLabel>Cargo:</DetailLabel>
-                      <DetailValue>{selectedDocente.cargo}</DetailValue>
-                    </DetailItem>
-                  </DetailContent>
-                </DetailSection>
+                  <ImageActions>
+                    {imagePreview && !formData.quitar_imagen ? (
+                      <RemoveImageButton onClick={handleRemoveImage}>
+                        <XCircle size={16} /> Quitar imagen
+                      </RemoveImageButton>
+                    ) : formData.quitar_imagen &&
+                      selectedDocente?.imagen_persona ? (
+                      <Button onClick={handleCancelRemoveImage}>
+                        <Upload size={16} /> Restaurar imagen
+                      </Button>
+                    ) : null}
 
-                <DetailSection>
-                  <DetailTitle>
-                    <Mail size={18} /> Correos electrónicos
-                  </DetailTitle>
-                  <DetailContent>
-                    {selectedDocente.correos.length > 0 ? (
-                      <DetailList>
-                        {selectedDocente.correos.map((correo) => (
-                          <li key={correo.id_persona_correo}>
-                            {correo.email_persona}
-                          </li>
-                        ))}
-                      </DetailList>
-                    ) : (
-                      <p>No hay correos registrados.</p>
-                    )}
-                  </DetailContent>
-                </DetailSection>
+                    <UploadImageButton htmlFor="imagen_persona">
+                      <Upload size={16} />{" "}
+                      {imagePreview ? "Cambiar imagen" : "Subir imagen"}
+                      <input
+                        type="file"
+                        id="imagen_persona"
+                        name="imagen_persona"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        onChange={handleImageChange}
+                        ref={fileInputRef}
+                      />
+                    </UploadImageButton>
+                  </ImageActions>
+                </ImagePreviewContainer>
+                {formErrors.imagen_persona && (
+                  <ErrorMessage>{formErrors.imagen_persona}</ErrorMessage>
+                )}
+              </FormGroup>
 
-                <DetailSection>
-                  <DetailTitle>
-                    <Book size={18} /> Asignaturas
-                  </DetailTitle>
-                  <DetailContent>
-                    {selectedDocente.asignaturas.length > 0 ? (
-                      <DetailList>
-                        {selectedDocente.asignaturas.map((asignatura) => (
-                          <li key={asignatura.id_asignatura}>
-                            {asignatura.nombre_asignatura}
-                          </li>
-                        ))}
-                      </DetailList>
-                    ) : (
-                      <p>No hay asignaturas asignadas.</p>
-                    )}
-                  </DetailContent>
-                </DetailSection>
-              </ModalBody>
-              <ModalFooter>
-                <CancelButton onClick={closeDetailModal}>
-                  <X size={16} /> Cerrar
-                </CancelButton>
-                <ConfirmButton
-                  onClick={() => {
-                    closeDetailModal();
-                    openEditModal(selectedDocente);
-                  }}
-                >
-                  <Edit size={16} /> Editar
-                </ConfirmButton>
-              </ModalFooter>
-            </ModalContent>
-          </ModalOverlay>
-        )}
+              <FormGroup>
+                <Label>
+                  <Mail size={16} className="inline mr-2" /> Correos
+                  electrónicos
+                </Label>
 
-        {/* Modal de formulario para agregar/editar */}
-        {isFormModalOpen && (
-          <ModalOverlay>
-            <ModalContent>
-              <ModalHeader>
-                <ModalTitle>
-                  {selectedDocente ? "Editar docente" : "Agregar docente"}
-                </ModalTitle>
-                <ModalCloseButton onClick={closeFormModal}>
-                  <X size={20} />
-                </ModalCloseButton>
-              </ModalHeader>
-              <ModalBody>
-                <FormGroup>
-                  <Label htmlFor="nombre_persona">
-                    <User size={16} className="inline mr-2" /> Nombre completo *
-                  </Label>
-                  <Input
-                    type="text"
-                    id="nombre_persona"
-                    name="nombre_persona"
-                    value={formData.nombre_persona}
-                    onChange={handleFormChange}
-                    placeholder="Ej. Dr. Juan Pérez"
+                {/* Lista de correos */}
+                <EmailList>
+                  {formData.emails.length > 0 ? (
+                    formData.emails.map((email, index) => (
+                      <EmailItem key={index}>
+                        <EmailContent>
+                          <Mail size={16} />
+                          {email}
+                        </EmailContent>
+                        <EmailActions>
+                          <IconButton
+                            onClick={() => removeEmail(index)}
+                            color="#ef4444"
+                            hoverColor="#dc2626"
+                            title="Eliminar"
+                          >
+                            <Trash size={18} />
+                          </IconButton>
+                        </EmailActions>
+                      </EmailItem>
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        color: "#6b7280",
+                        fontStyle: "italic",
+                        fontSize: "0.875rem",
+                        padding: "0.5rem 0",
+                      }}
+                    >
+                      No hay correos agregados
+                    </div>
+                  )}
+                </EmailList>
+
+                {/* Agregar nuevo correo */}
+                <AddEmailContainer>
+                  <AddEmailInput
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="Agregar nuevo correo"
                   />
-                  {formErrors.nombre_persona && (
-                    <ErrorMessage>{formErrors.nombre_persona}</ErrorMessage>
-                  )}
-                </FormGroup>
+                  <AddEmailButton onClick={addEmail}>
+                    <Plus size={16} /> Agregar
+                  </AddEmailButton>
+                </AddEmailContainer>
+                {formErrors.newEmail && (
+                  <ErrorMessage>{formErrors.newEmail}</ErrorMessage>
+                )}
+                {formErrors.emails && (
+                  <ErrorMessage>{formErrors.emails}</ErrorMessage>
+                )}
+              </FormGroup>
 
-                <FormGroup>
-                  <Label htmlFor="cargo">
-                    <Briefcase size={16} className="inline mr-2" /> Cargo
-                  </Label>
-                  <Input
-                    type="text"
-                    id="cargo"
-                    name="cargo"
-                    value={formData.cargo}
-                    onChange={handleFormChange}
-                    placeholder="Ej. Docente Titular"
-                  />
-                  {formErrors.cargo && (
-                    <ErrorMessage>{formErrors.cargo}</ErrorMessage>
-                  )}
-                </FormGroup>
+              <AsignaturasSection>
+                {/* Título de Asignaturas en su propia línea */}
+                <AsignaturasTitle style={{ marginBottom: "1rem" }}>
+                  <Book size={16} /> Asignaturas
+                </AsignaturasTitle>
 
-                <FormGroup>
-                  <Label htmlFor="imagen_persona">
-                    <ImageIcon size={16} className="inline mr-2" /> Imagen de
-                    perfil
-                  </Label>
-                  <ImagePreviewContainer>
-                    <ImagePreview>
-                      {imagePreview && !formData.quitar_imagen ? (
-                        <img
-                          src={imagePreview || "/placeholder.svg"}
-                          alt="Vista previa"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/placeholder.svg";
-                          }}
-                        />
-                      ) : (
-                        <User size={40} />
-                      )}
-                    </ImagePreview>
-
-                    <ImageActions>
-                      {imagePreview && !formData.quitar_imagen ? (
-                        <RemoveImageButton onClick={handleRemoveImage}>
-                          <XCircle size={16} /> Quitar imagen
-                        </RemoveImageButton>
-                      ) : formData.quitar_imagen &&
-                        selectedDocente?.imagen_persona ? (
-                        <Button onClick={handleCancelRemoveImage}>
-                          <Upload size={16} /> Restaurar imagen
-                        </Button>
-                      ) : null}
-
-                      <UploadImageButton htmlFor="imagen_persona">
-                        <Upload size={16} />{" "}
-                        {imagePreview ? "Cambiar imagen" : "Subir imagen"}
-                        <input
-                          type="file"
-                          id="imagen_persona"
-                          name="imagen_persona"
-                          accept="image/jpeg,image/png,image/gif,image/webp"
-                          onChange={handleImageChange}
-                          ref={fileInputRef}
-                        />
-                      </UploadImageButton>
-                    </ImageActions>
-                  </ImagePreviewContainer>
-                  {formErrors.imagen_persona && (
-                    <ErrorMessage>{formErrors.imagen_persona}</ErrorMessage>
-                  )}
-                </FormGroup>
-
-                <FormGroup>
-                  <Label>
-                    <Mail size={16} className="inline mr-2" /> Correos
-                    electrónicos
-                  </Label>
-
-                  {/* Lista de correos */}
-                  <EmailList>
-                    {formData.emails.length > 0 ? (
-                      formData.emails.map((email, index) => (
-                        <EmailItem key={index}>
-                          <EmailContent>
-                            <Mail size={16} />
-                            {email}
-                          </EmailContent>
-                          <EmailActions>
-                            <IconButton
-                              onClick={() => removeEmail(index)}
-                              color="#ef4444"
-                              hoverColor="#dc2626"
-                              title="Eliminar"
-                            >
-                              <Trash size={18} />
-                            </IconButton>
-                          </EmailActions>
-                        </EmailItem>
-                      ))
-                    ) : (
-                      <div
-                        style={{
-                          color: "#6b7280",
-                          fontStyle: "italic",
-                          fontSize: "0.875rem",
-                          padding: "0.5rem 0",
-                        }}
-                      >
-                        No hay correos agregados
-                      </div>
-                    )}
-                  </EmailList>
-
-                  {/* Agregar nuevo correo */}
+                {/* Buscador de asignaturas */}
+                <div style={{ width: "100%", marginBottom: "1rem" }}>
                   <AddEmailContainer>
                     <AddEmailInput
-                      type="email"
-                      value={newEmail}
-                      onChange={(e) => setNewEmail(e.target.value)}
-                      placeholder="Agregar nuevo correo"
+                      type="text"
+                      value={newAsignatura}
+                      onChange={(e) => {
+                        setNewAsignatura(e.target.value);
+                        // Limpiar error cuando el usuario comienza a escribir
+                        if (formErrors.newAsignatura) {
+                          setFormErrors({
+                            ...formErrors,
+                            newAsignatura: null,
+                          });
+                        }
+                      }}
+                      placeholder="Escriba para buscar o agregar asignatura"
                     />
-                    <AddEmailButton onClick={addEmail}>
+                    <AddEmailButton onClick={addNewAsignatura}>
                       <Plus size={16} /> Agregar
                     </AddEmailButton>
                   </AddEmailContainer>
-                  {formErrors.newEmail && (
-                    <ErrorMessage>{formErrors.newEmail}</ErrorMessage>
+                  {formErrors.newAsignatura && (
+                    <ErrorMessage>{formErrors.newAsignatura}</ErrorMessage>
                   )}
-                  {formErrors.emails && (
-                    <ErrorMessage>{formErrors.emails}</ErrorMessage>
-                  )}
-                </FormGroup>
 
-                <AsignaturasSection>
-                  {/* Título de Asignaturas en su propia línea */}
-                  <AsignaturasTitle style={{ marginBottom: "1rem" }}>
-                    <Book size={16} /> Asignaturas
-                  </AsignaturasTitle>
-
-                  {/* Buscador de asignaturas */}
-                  <div style={{ width: "100%", marginBottom: "1rem" }}>
-                    <AddEmailContainer>
-                      <AddEmailInput
-                        type="text"
-                        value={newAsignatura}
-                        onChange={(e) => {
-                          setNewAsignatura(e.target.value);
-                          // Limpiar error cuando el usuario comienza a escribir
-                          if (formErrors.newAsignatura) {
-                            setFormErrors({
-                              ...formErrors,
-                              newAsignatura: null,
-                            });
-                          }
-                        }}
-                        placeholder="Escriba para buscar o agregar asignatura"
-                      />
-                      <AddEmailButton onClick={addNewAsignatura}>
-                        <Plus size={16} /> Agregar
-                      </AddEmailButton>
-                    </AddEmailContainer>
-                    {formErrors.newAsignatura && (
-                      <ErrorMessage>{formErrors.newAsignatura}</ErrorMessage>
-                    )}
-
-                    {/* Sugerencias de asignaturas */}
-                    {newAsignatura.trim() !== "" && (
-                      <div
-                        style={{
-                          marginTop: "0.5rem",
-                          border: "1px solid #e5e7eb",
-                          borderRadius: "0.375rem",
-                          maxHeight: "200px",
-                          overflowY: "auto",
-                        }}
-                      >
-                        {asignaturas
-                          .filter((a) =>
-                            a.nombre_asignatura
-                              .toLowerCase()
-                              .includes(newAsignatura.toLowerCase())
-                          )
-                          .slice(0, 5)
-                          .map((asignatura) => (
-                            <div
-                              key={asignatura.id_asignatura}
-                              style={{
-                                padding: "0.5rem",
-                                cursor: "pointer",
-                                borderBottom: "1px solid #e5e7eb",
-                                backgroundColor: "#f9fafb",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.5rem",
-                              }}
-                              onClick={() => {
-                                // Verificar si la asignatura ya está agregada
-                                const yaExiste = formData.asignaturas.some(
-                                  (a) => a.id === asignatura.id_asignatura
-                                );
-
-                                if (yaExiste) {
-                                  setFormErrors({
-                                    ...formErrors,
-                                    newAsignatura:
-                                      "Esta asignatura ya ha sido agregada.",
-                                  });
-                                } else {
-                                  setFormData({
-                                    ...formData,
-                                    asignaturas: [
-                                      ...formData.asignaturas,
-                                      {
-                                        id: asignatura.id_asignatura,
-                                        nombre: asignatura.nombre_asignatura,
-                                      },
-                                    ],
-                                  });
-                                  setNewAsignatura("");
-                                }
-                              }}
-                            >
-                              <Book size={16} />
-                              {asignatura.nombre_asignatura}
-                            </div>
-                          ))}
-                        {asignaturas.filter((a) =>
+                  {/* Sugerencias de asignaturas */}
+                  {newAsignatura.trim() !== "" && (
+                    <div
+                      style={{
+                        marginTop: "0.5rem",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: "0.375rem",
+                        maxHeight: "200px",
+                        overflowY: "auto",
+                      }}
+                    >
+                      {asignaturas
+                        .filter((a) =>
                           a.nombre_asignatura
                             .toLowerCase()
                             .includes(newAsignatura.toLowerCase())
-                        ).length === 0 && (
+                        )
+                        .slice(0, 5)
+                        .map((asignatura) => (
                           <div
+                            key={asignatura.id_asignatura}
                             style={{
                               padding: "0.5rem",
-                              fontStyle: "italic",
-                              color: "#6b7280",
+                              cursor: "pointer",
+                              borderBottom: "1px solid #e5e7eb",
+                              backgroundColor: "#f9fafb",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.5rem",
+                            }}
+                            onClick={() => {
+                              // Verificar si la asignatura ya está agregada
+                              const yaExiste = formData.asignaturas.some(
+                                (a) => a.id === asignatura.id_asignatura
+                              );
+
+                              if (yaExiste) {
+                                setFormErrors({
+                                  ...formErrors,
+                                  newAsignatura:
+                                    "Esta asignatura ya ha sido agregada.",
+                                });
+                              } else {
+                                setFormData({
+                                  ...formData,
+                                  asignaturas: [
+                                    ...formData.asignaturas,
+                                    {
+                                      id: asignatura.id_asignatura,
+                                      nombre: asignatura.nombre_asignatura,
+                                    },
+                                  ],
+                                });
+                                setNewAsignatura("");
+                              }
                             }}
                           >
-                            No hay coincidencias.
+                            <Book size={16} />
+                            {asignatura.nombre_asignatura}
                           </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                        ))}
+                      {asignaturas.filter((a) =>
+                        a.nombre_asignatura
+                          .toLowerCase()
+                          .includes(newAsignatura.toLowerCase())
+                      ).length === 0 && (
+                        <div
+                          style={{
+                            padding: "0.5rem",
+                            fontStyle: "italic",
+                            color: "#6b7280",
+                          }}
+                        >
+                          No hay coincidencias.
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
 
-                  {/* Lista de asignaturas existentes */}
-                  <AsignaturasList>
-                    {formData.asignaturas.length > 0 ? (
-                      formData.asignaturas.map((asignatura, index) => (
+                {/* Lista de asignaturas existentes */}
+                <AsignaturasList>
+                  {formData.asignaturas.length > 0 ? (
+                    formData.asignaturas.map((asignatura, index) => (
+                      <AsignaturaItem key={index}>
+                        <AsignaturaContent>
+                          <Book size={16} />
+                          {asignatura.nombre}
+                        </AsignaturaContent>
+                        <AsignaturaActions>
+                          <IconButton
+                            onClick={() => removeAsignatura(index)}
+                            color="#ef4444"
+                            hoverColor="#dc2626"
+                            title="Eliminar"
+                          >
+                            <Trash size={18} />
+                          </IconButton>
+                        </AsignaturaActions>
+                      </AsignaturaItem>
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        color: "#6b7280",
+                        fontStyle: "italic",
+                        fontSize: "0.875rem",
+                        padding: "0.5rem 0",
+                      }}
+                    >
+                      No hay asignaturas agregadas
+                    </div>
+                  )}
+                </AsignaturasList>
+
+                {/* Lista de nuevas asignaturas */}
+                {formData.nuevasAsignaturas.length > 0 && (
+                  <>
+                    <Label>Nuevas asignaturas</Label>
+                    <AsignaturasList>
+                      {formData.nuevasAsignaturas.map((asignatura, index) => (
                         <AsignaturaItem key={index}>
                           <AsignaturaContent>
                             <Book size={16} />
-                            {asignatura.nombre}
+                            {asignatura}{" "}
+                            <span
+                              style={{
+                                color: "#6b7280",
+                                fontStyle: "italic",
+                              }}
+                            >
+                              (Nueva)
+                            </span>
                           </AsignaturaContent>
                           <AsignaturaActions>
                             <IconButton
-                              onClick={() => removeAsignatura(index)}
+                              onClick={() => removeNewAsignatura(index)}
                               color="#ef4444"
                               hoverColor="#dc2626"
                               title="Eliminar"
@@ -1366,80 +1407,34 @@ export default function DocentesAdmin() {
                             </IconButton>
                           </AsignaturaActions>
                         </AsignaturaItem>
-                      ))
-                    ) : (
-                      <div
-                        style={{
-                          color: "#6b7280",
-                          fontStyle: "italic",
-                          fontSize: "0.875rem",
-                          padding: "0.5rem 0",
-                        }}
-                      >
-                        No hay asignaturas agregadas
-                      </div>
-                    )}
-                  </AsignaturasList>
+                      ))}
+                    </AsignaturasList>
+                  </>
+                )}
 
-                  {/* Lista de nuevas asignaturas */}
-                  {formData.nuevasAsignaturas.length > 0 && (
-                    <>
-                      <Label>Nuevas asignaturas</Label>
-                      <AsignaturasList>
-                        {formData.nuevasAsignaturas.map((asignatura, index) => (
-                          <AsignaturaItem key={index}>
-                            <AsignaturaContent>
-                              <Book size={16} />
-                              {asignatura}{" "}
-                              <span
-                                style={{
-                                  color: "#6b7280",
-                                  fontStyle: "italic",
-                                }}
-                              >
-                                (Nueva)
-                              </span>
-                            </AsignaturaContent>
-                            <AsignaturaActions>
-                              <IconButton
-                                onClick={() => removeNewAsignatura(index)}
-                                color="#ef4444"
-                                hoverColor="#dc2626"
-                                title="Eliminar"
-                              >
-                                <Trash size={18} />
-                              </IconButton>
-                            </AsignaturaActions>
-                          </AsignaturaItem>
-                        ))}
-                      </AsignaturasList>
-                    </>
-                  )}
-
-                  {/* Eliminar la sección "Agregar nueva asignatura" */}
-                </AsignaturasSection>
-              </ModalBody>
-              <ModalFooter>
-                <CancelButton onClick={closeFormModal}>
-                  <X size={16} /> Cancelar
-                </CancelButton>
-                <SaveButton onClick={handleSave} disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <SpinIcon>⟳</SpinIcon> Guardando...
-                    </>
-                  ) : (
-                    <>
-                      <Save size={16} /> Guardar
-                    </>
-                  )}
-                </SaveButton>
-              </ModalFooter>
-            </ModalContent>
-          </ModalOverlay>
-        )}
-      </Container>
-    </Container2>
+                {/* Eliminar la sección "Agregar nueva asignatura" */}
+              </AsignaturasSection>
+            </ModalBody>
+            <ModalFooter>
+              <CancelButton onClick={closeFormModal}>
+                <X size={16} /> Cancelar
+              </CancelButton>
+              <SaveButton onClick={handleSave} disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <SpinIcon>⟳</SpinIcon> Guardando...
+                  </>
+                ) : (
+                  <>
+                    <Save size={16} /> Guardar
+                  </>
+                )}
+              </SaveButton>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+    </Container>
   );
 }
 
@@ -1455,16 +1450,6 @@ const slideUp = keyframes`
 `;
 
 // Styled Components
-const Container2 = styled.div`
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem 1rem;
-
-  @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
-  }
-`;
-
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;

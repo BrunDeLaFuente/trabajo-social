@@ -132,189 +132,187 @@ const CambiarPassword = () => {
   };
 
   return (
-    <Container2>
-      <Container>
-        <Title>
-          <Key size={28} />
+    <Container>
+      <Title>
+        <Key size={28} />
+        Cambiar Contraseña
+      </Title>
+
+      <UserInfoCard>
+        <UserInfoTitle>
+          <User size={20} />
+          Información del Usuario
+        </UserInfoTitle>
+        <UserInfoGrid>
+          <UserInfoItem>
+            <UserInfoIcon>
+              <User size={18} />
+            </UserInfoIcon>
+            <UserInfoContent>
+              <UserInfoLabel>Nombre</UserInfoLabel>
+              <UserInfoValue>{user?.name || "No disponible"}</UserInfoValue>
+            </UserInfoContent>
+          </UserInfoItem>
+
+          <UserInfoItem>
+            <UserInfoIcon>
+              <Mail size={18} />
+            </UserInfoIcon>
+            <UserInfoContent>
+              <UserInfoLabel>Correo</UserInfoLabel>
+              <UserInfoValue>{user?.email || "No disponible"}</UserInfoValue>
+            </UserInfoContent>
+          </UserInfoItem>
+
+          <UserInfoItem>
+            <UserInfoIcon>
+              <Phone size={18} />
+            </UserInfoIcon>
+            <UserInfoContent>
+              <UserInfoLabel>Celular</UserInfoLabel>
+              <UserInfoValue>
+                {user?.celular_user || "No registrado"}
+              </UserInfoValue>
+            </UserInfoContent>
+          </UserInfoItem>
+        </UserInfoGrid>
+      </UserInfoCard>
+
+      <PasswordCard>
+        <PasswordTitle>
+          <Lock size={20} />
           Cambiar Contraseña
-        </Title>
+        </PasswordTitle>
 
-        <UserInfoCard>
-          <UserInfoTitle>
-            <User size={20} />
-            Información del Usuario
-          </UserInfoTitle>
-          <UserInfoGrid>
-            <UserInfoItem>
-              <UserInfoIcon>
-                <User size={18} />
-              </UserInfoIcon>
-              <UserInfoContent>
-                <UserInfoLabel>Nombre</UserInfoLabel>
-                <UserInfoValue>{user?.name || "No disponible"}</UserInfoValue>
-              </UserInfoContent>
-            </UserInfoItem>
+        {success && (
+          <SuccessMessage>
+            <CheckCircle size={18} />
+            Contraseña cambiada exitosamente
+          </SuccessMessage>
+        )}
 
-            <UserInfoItem>
-              <UserInfoIcon>
-                <Mail size={18} />
-              </UserInfoIcon>
-              <UserInfoContent>
-                <UserInfoLabel>Correo</UserInfoLabel>
-                <UserInfoValue>{user?.email || "No disponible"}</UserInfoValue>
-              </UserInfoContent>
-            </UserInfoItem>
+        {errors.general && (
+          <ErrorMessage>
+            <AlertCircle size={14} />
+            {errors.general}
+          </ErrorMessage>
+        )}
 
-            <UserInfoItem>
-              <UserInfoIcon>
-                <Phone size={18} />
-              </UserInfoIcon>
-              <UserInfoContent>
-                <UserInfoLabel>Celular</UserInfoLabel>
-                <UserInfoValue>
-                  {user?.celular_user || "No registrado"}
-                </UserInfoValue>
-              </UserInfoContent>
-            </UserInfoItem>
-          </UserInfoGrid>
-        </UserInfoCard>
+        <Form onSubmit={handleSubmit}>
+          <FormGroup>
+            <Label htmlFor="password_actual">
+              <Lock size={16} />
+              Contraseña Actual
+            </Label>
+            <InputContainer>
+              <Input
+                type={showPasswords.current ? "text" : "password"}
+                id="password_actual"
+                name="password_actual"
+                value={formData.password_actual}
+                onChange={handleInputChange}
+                placeholder="Ingresa tu contraseña actual"
+                $hasError={!!errors.password_actual}
+              />
+              <ToggleButton
+                type="button"
+                onClick={() => togglePasswordVisibility("current")}
+              >
+                {showPasswords.current ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
+              </ToggleButton>
+            </InputContainer>
+            {errors.password_actual && (
+              <ErrorMessage>
+                <AlertCircle size={14} />
+                {errors.password_actual}
+              </ErrorMessage>
+            )}
+          </FormGroup>
 
-        <PasswordCard>
-          <PasswordTitle>
-            <Lock size={20} />
-            Cambiar Contraseña
-          </PasswordTitle>
+          <FormGroup>
+            <Label htmlFor="nueva_password">
+              <Key size={16} />
+              Nueva Contraseña (10-15 caracteres)
+            </Label>
+            <InputContainer>
+              <Input
+                type={showPasswords.new ? "text" : "password"}
+                id="nueva_password"
+                name="nueva_password"
+                value={formData.nueva_password}
+                onChange={handleInputChange}
+                placeholder="Ingresa tu nueva contraseña"
+                $hasError={!!errors.nueva_password}
+              />
+              <ToggleButton
+                type="button"
+                onClick={() => togglePasswordVisibility("new")}
+              >
+                {showPasswords.new ? <EyeOff size={18} /> : <Eye size={18} />}
+              </ToggleButton>
+            </InputContainer>
+            {errors.nueva_password && (
+              <ErrorMessage>
+                <AlertCircle size={14} />
+                {errors.nueva_password}
+              </ErrorMessage>
+            )}
+          </FormGroup>
 
-          {success && (
-            <SuccessMessage>
-              <CheckCircle size={18} />
-              Contraseña cambiada exitosamente
-            </SuccessMessage>
-          )}
+          <FormGroup>
+            <Label htmlFor="nueva_password_confirmation">
+              <Key size={16} />
+              Confirmar Nueva Contraseña
+            </Label>
+            <InputContainer>
+              <Input
+                type={showPasswords.confirm ? "text" : "password"}
+                id="nueva_password_confirmation"
+                name="nueva_password_confirmation"
+                value={formData.nueva_password_confirmation}
+                onChange={handleInputChange}
+                placeholder="Confirma tu nueva contraseña"
+                $hasError={!!errors.nueva_password_confirmation}
+              />
+              <ToggleButton
+                type="button"
+                onClick={() => togglePasswordVisibility("confirm")}
+              >
+                {showPasswords.confirm ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
+              </ToggleButton>
+            </InputContainer>
+            {errors.nueva_password_confirmation && (
+              <ErrorMessage>
+                <AlertCircle size={14} />
+                {errors.nueva_password_confirmation}
+              </ErrorMessage>
+            )}
+          </FormGroup>
 
-          {errors.general && (
-            <ErrorMessage>
-              <AlertCircle size={14} />
-              {errors.general}
-            </ErrorMessage>
-          )}
-
-          <Form onSubmit={handleSubmit}>
-            <FormGroup>
-              <Label htmlFor="password_actual">
-                <Lock size={16} />
-                Contraseña Actual
-              </Label>
-              <InputContainer>
-                <Input
-                  type={showPasswords.current ? "text" : "password"}
-                  id="password_actual"
-                  name="password_actual"
-                  value={formData.password_actual}
-                  onChange={handleInputChange}
-                  placeholder="Ingresa tu contraseña actual"
-                  $hasError={!!errors.password_actual}
-                />
-                <ToggleButton
-                  type="button"
-                  onClick={() => togglePasswordVisibility("current")}
-                >
-                  {showPasswords.current ? (
-                    <EyeOff size={18} />
-                  ) : (
-                    <Eye size={18} />
-                  )}
-                </ToggleButton>
-              </InputContainer>
-              {errors.password_actual && (
-                <ErrorMessage>
-                  <AlertCircle size={14} />
-                  {errors.password_actual}
-                </ErrorMessage>
-              )}
-            </FormGroup>
-
-            <FormGroup>
-              <Label htmlFor="nueva_password">
-                <Key size={16} />
-                Nueva Contraseña (10-15 caracteres)
-              </Label>
-              <InputContainer>
-                <Input
-                  type={showPasswords.new ? "text" : "password"}
-                  id="nueva_password"
-                  name="nueva_password"
-                  value={formData.nueva_password}
-                  onChange={handleInputChange}
-                  placeholder="Ingresa tu nueva contraseña"
-                  $hasError={!!errors.nueva_password}
-                />
-                <ToggleButton
-                  type="button"
-                  onClick={() => togglePasswordVisibility("new")}
-                >
-                  {showPasswords.new ? <EyeOff size={18} /> : <Eye size={18} />}
-                </ToggleButton>
-              </InputContainer>
-              {errors.nueva_password && (
-                <ErrorMessage>
-                  <AlertCircle size={14} />
-                  {errors.nueva_password}
-                </ErrorMessage>
-              )}
-            </FormGroup>
-
-            <FormGroup>
-              <Label htmlFor="nueva_password_confirmation">
-                <Key size={16} />
-                Confirmar Nueva Contraseña
-              </Label>
-              <InputContainer>
-                <Input
-                  type={showPasswords.confirm ? "text" : "password"}
-                  id="nueva_password_confirmation"
-                  name="nueva_password_confirmation"
-                  value={formData.nueva_password_confirmation}
-                  onChange={handleInputChange}
-                  placeholder="Confirma tu nueva contraseña"
-                  $hasError={!!errors.nueva_password_confirmation}
-                />
-                <ToggleButton
-                  type="button"
-                  onClick={() => togglePasswordVisibility("confirm")}
-                >
-                  {showPasswords.confirm ? (
-                    <EyeOff size={18} />
-                  ) : (
-                    <Eye size={18} />
-                  )}
-                </ToggleButton>
-              </InputContainer>
-              {errors.nueva_password_confirmation && (
-                <ErrorMessage>
-                  <AlertCircle size={14} />
-                  {errors.nueva_password_confirmation}
-                </ErrorMessage>
-              )}
-            </FormGroup>
-
-            <SubmitButton type="submit" disabled={loading}>
-              {loading ? (
-                <>
-                  <LoadingSpinner />
-                  Cambiando contraseña...
-                </>
-              ) : (
-                <>
-                  <CheckCircle size={18} />
-                  Cambiar Contraseña
-                </>
-              )}
-            </SubmitButton>
-          </Form>
-        </PasswordCard>
-      </Container>
-    </Container2>
+          <SubmitButton type="submit" disabled={loading}>
+            {loading ? (
+              <>
+                <LoadingSpinner />
+                Cambiando contraseña...
+              </>
+            ) : (
+              <>
+                <CheckCircle size={18} />
+                Cambiar Contraseña
+              </>
+            )}
+          </SubmitButton>
+        </Form>
+      </PasswordCard>
+    </Container>
   );
 };
 
@@ -340,16 +338,6 @@ const slideUp = keyframes`
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-`;
-
-const Container2 = styled.div`
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem 1rem;
-
-  @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
   }
 `;
 

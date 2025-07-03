@@ -686,705 +686,697 @@ export default function NoticiaEditar() {
   }
 
   return (
-    <Container2>
-      <Container>
-        {/* Mensajes */}
-        {mensajes.map((mensaje) => (
-          <CajaMensaje
-            key={mensaje.id}
-            tipo={mensaje.tipo}
-            color={mensaje.color}
-            mensaje={mensaje.mensaje}
-            duracion={mensaje.duracion}
-            backgroundColor={mensaje.backgroundColor}
-            onClose={() => eliminarMensaje(mensaje.id)}
+    <Container>
+      {/* Mensajes */}
+      {mensajes.map((mensaje) => (
+        <CajaMensaje
+          key={mensaje.id}
+          tipo={mensaje.tipo}
+          color={mensaje.color}
+          mensaje={mensaje.mensaje}
+          duracion={mensaje.duracion}
+          backgroundColor={mensaje.backgroundColor}
+          onClose={() => eliminarMensaje(mensaje.id)}
+        />
+      ))}
+
+      {/* Header */}
+      <HeaderCard>
+        <HeaderContent>
+          <Title>
+            <FileText size={28} />
+            Editar Noticia
+          </Title>
+          <BackButton onClick={handleGoBack}>
+            <ArrowLeft size={20} />
+            Volver
+          </BackButton>
+        </HeaderContent>
+      </HeaderCard>
+
+      <Form onSubmit={handleSubmit}>
+        {/* Información básica */}
+        <Section>
+          <SectionTitle>
+            <FileText size={22} />
+            Información de la Noticia
+          </SectionTitle>
+
+          <FormGroup>
+            <Label htmlFor="titulo_noticia">
+              <FileText size={16} />
+              Título de la noticia *
+            </Label>
+            <Input
+              type="text"
+              id="titulo_noticia"
+              name="titulo_noticia"
+              value={formData.titulo_noticia}
+              onChange={handleInputChange}
+              placeholder="TÍTULO EN MAYÚSCULAS"
+              className={errors.titulo_noticia ? "error" : ""}
+            />
+            {errors.titulo_noticia && (
+              <ErrorMessage>{errors.titulo_noticia}</ErrorMessage>
+            )}
+          </FormGroup>
+
+          <FormGroup>
+            <Label htmlFor="autor">
+              <User size={16} />
+              Autor
+            </Label>
+            <Input
+              type="text"
+              id="autor"
+              name="autor"
+              value={formData.autor}
+              onChange={handleInputChange}
+              placeholder="Nombre del autor"
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <Label htmlFor="categoria">
+              <Tag size={16} />
+              Categoría *
+            </Label>
+            <Select
+              id="categoria"
+              name="categoria"
+              value={formData.categoria}
+              onChange={handleInputChange}
+              className={errors.categoria ? "error" : ""}
+            >
+              <option value="">Seleccionar categoría</option>
+              <StyledOption value="Articulo">Artículo</StyledOption>
+              <StyledOption value="Comunicado">Comunicado</StyledOption>
+            </Select>
+            {errors.categoria && (
+              <ErrorMessage>{errors.categoria}</ErrorMessage>
+            )}
+          </FormGroup>
+
+          <FormGroup>
+            <Label>
+              <Globe size={16} />
+              Visibilidad
+            </Label>
+            <CheckboxContainer>
+              <Checkbox
+                type="checkbox"
+                id="es_publico"
+                name="es_publico"
+                checked={formData.es_publico}
+                onChange={handleInputChange}
+              />
+              <CheckboxLabel htmlFor="es_publico">
+                {formData.es_publico ? (
+                  <Globe size={16} />
+                ) : (
+                  <GlobeLock size={16} />
+                )}
+                {formData.es_publico ? "Público" : "Privado"}
+              </CheckboxLabel>
+            </CheckboxContainer>
+          </FormGroup>
+        </Section>
+
+        {/* Contenido */}
+        <Section>
+          <SectionTitle>
+            <FileText size={22} />
+            Contenido de la Noticia
+          </SectionTitle>
+
+          <FormGroup>
+            <Label>
+              <FileText size={16} />
+              Contenido *
+            </Label>
+            <EditorContainer className={errors.contenido ? "error" : ""}>
+              <EditorToolbar>
+                <ToolbarButton
+                  type="button"
+                  active={editorState.bold}
+                  onClick={() => execCommand("bold")}
+                  title="Negrita"
+                >
+                  <Bold size={14} />
+                </ToolbarButton>
+                <ToolbarButton
+                  type="button"
+                  active={editorState.italic}
+                  onClick={() => execCommand("italic")}
+                  title="Cursiva"
+                >
+                  <Italic size={14} />
+                </ToolbarButton>
+                <ToolbarButton
+                  type="button"
+                  active={editorState.underline}
+                  onClick={() => execCommand("underline")}
+                  title="Subrayado"
+                >
+                  <Underline size={14} />
+                </ToolbarButton>
+
+                <ToolbarSeparator />
+
+                <ToolbarSelect
+                  value={editorFontSize}
+                  onChange={(e) => changeFontSize(e.target.value)}
+                  title="Tamaño de fuente"
+                >
+                  <option value="10">10px</option>
+                  <option value="12">12px</option>
+                  <option value="14">14px</option>
+                  <option value="16">16px</option>
+                  <option value="18">18px</option>
+                  <option value="20">20px</option>
+                  <option value="24">24px</option>
+                  <option value="28">28px</option>
+                  <option value="32">32px</option>
+                </ToolbarSelect>
+
+                <ColorInput
+                  type="color"
+                  value={editorColor}
+                  onChange={(e) => changeTextColor(e.target.value)}
+                  title="Color del texto"
+                />
+
+                <ToolbarSeparator />
+
+                <ToolbarButton
+                  type="button"
+                  onClick={toggleList}
+                  title="Lista con viñetas"
+                >
+                  <List size={14} />
+                </ToolbarButton>
+
+                <ToolbarSeparator />
+
+                <ToolbarButton
+                  type="button"
+                  onClick={() => execCommand("justifyLeft")}
+                  title="Alinear izquierda"
+                >
+                  <AlignLeft size={14} />
+                </ToolbarButton>
+                <ToolbarButton
+                  type="button"
+                  onClick={() => execCommand("justifyCenter")}
+                  title="Centrar"
+                >
+                  <AlignCenter size={14} />
+                </ToolbarButton>
+                <ToolbarButton
+                  type="button"
+                  onClick={() => execCommand("justifyRight")}
+                  title="Alinear derecha"
+                >
+                  <AlignRight size={14} />
+                </ToolbarButton>
+                <ToolbarButton
+                  type="button"
+                  onClick={() => execCommand("justifyFull")}
+                  title="Justificar"
+                >
+                  <AlignJustify size={14} />
+                </ToolbarButton>
+              </EditorToolbar>
+              <EditorContent
+                ref={editorRef}
+                contentEditable
+                onInput={handleEditorChange}
+                onKeyUp={() => {
+                  setEditorState({
+                    bold: document.queryCommandState("bold"),
+                    italic: document.queryCommandState("italic"),
+                    underline: document.queryCommandState("underline"),
+                  });
+                }}
+                suppressContentEditableWarning={true}
+                style={{ minHeight: "220px" }}
+              />
+            </EditorContainer>
+            {errors.contenido && (
+              <ErrorMessage>{errors.contenido}</ErrorMessage>
+            )}
+          </FormGroup>
+        </Section>
+
+        {/* Imágenes */}
+        <Section>
+          <SectionTitle>
+            <ImageIcon size={22} />
+            Imágenes (Máximo 5MB cada una)
+          </SectionTitle>
+
+          {/* Imágenes existentes */}
+          {existingImagenes.length > 0 && (
+            <>
+              <Label>Imágenes actuales:</Label>
+              <FileList>
+                {existingImagenes.map((imagen) => (
+                  <FileItem
+                    key={`existing-${imagen.id_noticia_imagen}`}
+                    toDelete={imagenesToDelete.includes(
+                      imagen.id_noticia_imagen
+                    )}
+                  >
+                    <FilePreview>
+                      <img
+                        src={imagen.url || "/placeholder.svg"}
+                        alt="Imagen de la noticia"
+                      />
+                    </FilePreview>
+                    <FileInfo>
+                      <FileName>Imagen existente</FileName>
+                    </FileInfo>
+                    <FileActions>
+                      <ViewFileButton
+                        type="button"
+                        onClick={(e) => viewFile(imagen, e)}
+                        title="Ver"
+                      >
+                        <Eye size={12} />
+                      </ViewFileButton>
+                      {imagenesToDelete.includes(imagen.id_noticia_imagen) ? (
+                        <RestoreFileButton
+                          type="button"
+                          onClick={(e) =>
+                            restoreExistingFile(
+                              imagen.id_noticia_imagen,
+                              "image",
+                              e
+                            )
+                          }
+                          title="Restaurar"
+                        >
+                          ↶
+                        </RestoreFileButton>
+                      ) : (
+                        <RemoveFileButton
+                          type="button"
+                          onClick={(e) =>
+                            removeExistingFile(
+                              imagen.id_noticia_imagen,
+                              "image",
+                              e
+                            )
+                          }
+                          title="Eliminar"
+                        >
+                          <Trash size={12} />
+                        </RemoveFileButton>
+                      )}
+                    </FileActions>
+                  </FileItem>
+                ))}
+              </FileList>
+            </>
+          )}
+
+          {/* Subir nuevas imágenes */}
+          <FileUploadSection
+            onClick={() => imageInputRef.current?.click()}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.add("dragover");
+            }}
+            onDragLeave={(e) => {
+              e.currentTarget.classList.remove("dragover");
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove("dragover");
+              handleFileUpload(e.dataTransfer.files, "image");
+            }}
+          >
+            <FileUploadIcon>
+              <ImageIcon size={56} />
+            </FileUploadIcon>
+            <FileUploadText>
+              Haz clic aquí o arrastra imágenes para agregar
+            </FileUploadText>
+            <FileUploadSubtext>
+              Formatos soportados: JPG, PNG, GIF, WebP
+            </FileUploadSubtext>
+          </FileUploadSection>
+
+          <HiddenInput
+            ref={imageInputRef}
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => handleFileUpload(e.target.files, "image")}
           />
-        ))}
 
-        {/* Header */}
-        <HeaderCard>
-          <HeaderContent>
-            <Title>
-              <FileText size={28} />
-              Editar Noticia
-            </Title>
-            <BackButton onClick={handleGoBack}>
-              <ArrowLeft size={20} />
-              Volver
-            </BackButton>
-          </HeaderContent>
-        </HeaderCard>
+          {/* Nuevas imágenes */}
+          {newImagenes.length > 0 && (
+            <>
+              <Label style={{ marginTop: "1rem" }}>Nuevas imágenes:</Label>
+              <FileList>
+                {newImagenes.map((imagen) => (
+                  <FileItem key={imagen.id}>
+                    <FilePreview>
+                      <img
+                        src={imagen.preview || "/placeholder.svg"}
+                        alt={imagen.name}
+                      />
+                    </FilePreview>
+                    <FileInfo>
+                      <FileName>{imagen.name}</FileName>
+                      <FileSize>{formatFileSize(imagen.size)}</FileSize>
+                    </FileInfo>
+                    <FileActions>
+                      <ViewFileButton
+                        type="button"
+                        onClick={(e) => viewFile(imagen, e)}
+                        title="Ver"
+                      >
+                        <Eye size={12} />
+                      </ViewFileButton>
+                      <RemoveFileButton
+                        type="button"
+                        onClick={(e) => removeNewFile(imagen.id, "image", e)}
+                        title="Eliminar"
+                      >
+                        <Trash size={12} />
+                      </RemoveFileButton>
+                    </FileActions>
+                  </FileItem>
+                ))}
+              </FileList>
+            </>
+          )}
+        </Section>
 
-        <Form onSubmit={handleSubmit}>
-          {/* Información básica */}
-          <Section>
-            <SectionTitle>
-              <FileText size={22} />
-              Información de la Noticia
-            </SectionTitle>
+        {/* Videos */}
+        <Section>
+          <SectionTitle>
+            <Video size={22} />
+            Videos (Máximo 30MB cada uno)
+          </SectionTitle>
 
-            <FormGroup>
-              <Label htmlFor="titulo_noticia">
-                <FileText size={16} />
-                Título de la noticia *
-              </Label>
-              <Input
-                type="text"
-                id="titulo_noticia"
-                name="titulo_noticia"
-                value={formData.titulo_noticia}
-                onChange={handleInputChange}
-                placeholder="TÍTULO EN MAYÚSCULAS"
-                className={errors.titulo_noticia ? "error" : ""}
-              />
-              {errors.titulo_noticia && (
-                <ErrorMessage>{errors.titulo_noticia}</ErrorMessage>
-              )}
-            </FormGroup>
-
-            <FormGroup>
-              <Label htmlFor="autor">
-                <User size={16} />
-                Autor
-              </Label>
-              <Input
-                type="text"
-                id="autor"
-                name="autor"
-                value={formData.autor}
-                onChange={handleInputChange}
-                placeholder="Nombre del autor"
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label htmlFor="categoria">
-                <Tag size={16} />
-                Categoría *
-              </Label>
-              <Select
-                id="categoria"
-                name="categoria"
-                value={formData.categoria}
-                onChange={handleInputChange}
-                className={errors.categoria ? "error" : ""}
-              >
-                <option value="">Seleccionar categoría</option>
-                <StyledOption value="Articulo">Artículo</StyledOption>
-                <StyledOption value="Comunicado">Comunicado</StyledOption>
-              </Select>
-              {errors.categoria && (
-                <ErrorMessage>{errors.categoria}</ErrorMessage>
-              )}
-            </FormGroup>
-
-            <FormGroup>
-              <Label>
-                <Globe size={16} />
-                Visibilidad
-              </Label>
-              <CheckboxContainer>
-                <Checkbox
-                  type="checkbox"
-                  id="es_publico"
-                  name="es_publico"
-                  checked={formData.es_publico}
-                  onChange={handleInputChange}
-                />
-                <CheckboxLabel htmlFor="es_publico">
-                  {formData.es_publico ? (
-                    <Globe size={16} />
-                  ) : (
-                    <GlobeLock size={16} />
-                  )}
-                  {formData.es_publico ? "Público" : "Privado"}
-                </CheckboxLabel>
-              </CheckboxContainer>
-            </FormGroup>
-          </Section>
-
-          {/* Contenido */}
-          <Section>
-            <SectionTitle>
-              <FileText size={22} />
-              Contenido de la Noticia
-            </SectionTitle>
-
-            <FormGroup>
-              <Label>
-                <FileText size={16} />
-                Contenido *
-              </Label>
-              <EditorContainer className={errors.contenido ? "error" : ""}>
-                <EditorToolbar>
-                  <ToolbarButton
-                    type="button"
-                    active={editorState.bold}
-                    onClick={() => execCommand("bold")}
-                    title="Negrita"
+          {/* Videos existentes */}
+          {existingVideos.length > 0 && (
+            <>
+              <Label>Videos actuales:</Label>
+              <FileList>
+                {existingVideos.map((video) => (
+                  <FileItem
+                    key={`existing-${video.id_noticia_video}`}
+                    toDelete={videosToDelete.includes(video.id_noticia_video)}
                   >
-                    <Bold size={14} />
-                  </ToolbarButton>
-                  <ToolbarButton
-                    type="button"
-                    active={editorState.italic}
-                    onClick={() => execCommand("italic")}
-                    title="Cursiva"
-                  >
-                    <Italic size={14} />
-                  </ToolbarButton>
-                  <ToolbarButton
-                    type="button"
-                    active={editorState.underline}
-                    onClick={() => execCommand("underline")}
-                    title="Subrayado"
-                  >
-                    <Underline size={14} />
-                  </ToolbarButton>
-
-                  <ToolbarSeparator />
-
-                  <ToolbarSelect
-                    value={editorFontSize}
-                    onChange={(e) => changeFontSize(e.target.value)}
-                    title="Tamaño de fuente"
-                  >
-                    <option value="10">10px</option>
-                    <option value="12">12px</option>
-                    <option value="14">14px</option>
-                    <option value="16">16px</option>
-                    <option value="18">18px</option>
-                    <option value="20">20px</option>
-                    <option value="24">24px</option>
-                    <option value="28">28px</option>
-                    <option value="32">32px</option>
-                  </ToolbarSelect>
-
-                  <ColorInput
-                    type="color"
-                    value={editorColor}
-                    onChange={(e) => changeTextColor(e.target.value)}
-                    title="Color del texto"
-                  />
-
-                  <ToolbarSeparator />
-
-                  <ToolbarButton
-                    type="button"
-                    onClick={toggleList}
-                    title="Lista con viñetas"
-                  >
-                    <List size={14} />
-                  </ToolbarButton>
-
-                  <ToolbarSeparator />
-
-                  <ToolbarButton
-                    type="button"
-                    onClick={() => execCommand("justifyLeft")}
-                    title="Alinear izquierda"
-                  >
-                    <AlignLeft size={14} />
-                  </ToolbarButton>
-                  <ToolbarButton
-                    type="button"
-                    onClick={() => execCommand("justifyCenter")}
-                    title="Centrar"
-                  >
-                    <AlignCenter size={14} />
-                  </ToolbarButton>
-                  <ToolbarButton
-                    type="button"
-                    onClick={() => execCommand("justifyRight")}
-                    title="Alinear derecha"
-                  >
-                    <AlignRight size={14} />
-                  </ToolbarButton>
-                  <ToolbarButton
-                    type="button"
-                    onClick={() => execCommand("justifyFull")}
-                    title="Justificar"
-                  >
-                    <AlignJustify size={14} />
-                  </ToolbarButton>
-                </EditorToolbar>
-                <EditorContent
-                  ref={editorRef}
-                  contentEditable
-                  onInput={handleEditorChange}
-                  onKeyUp={() => {
-                    setEditorState({
-                      bold: document.queryCommandState("bold"),
-                      italic: document.queryCommandState("italic"),
-                      underline: document.queryCommandState("underline"),
-                    });
-                  }}
-                  suppressContentEditableWarning={true}
-                  style={{ minHeight: "220px" }}
-                />
-              </EditorContainer>
-              {errors.contenido && (
-                <ErrorMessage>{errors.contenido}</ErrorMessage>
-              )}
-            </FormGroup>
-          </Section>
-
-          {/* Imágenes */}
-          <Section>
-            <SectionTitle>
-              <ImageIcon size={22} />
-              Imágenes (Máximo 5MB cada una)
-            </SectionTitle>
-
-            {/* Imágenes existentes */}
-            {existingImagenes.length > 0 && (
-              <>
-                <Label>Imágenes actuales:</Label>
-                <FileList>
-                  {existingImagenes.map((imagen) => (
-                    <FileItem
-                      key={`existing-${imagen.id_noticia_imagen}`}
-                      toDelete={imagenesToDelete.includes(
-                        imagen.id_noticia_imagen
+                    <FilePreview>
+                      <video src={video.url} controls />
+                    </FilePreview>
+                    <FileInfo>
+                      <FileName>Video existente</FileName>
+                    </FileInfo>
+                    <FileActions>
+                      <ViewFileButton
+                        type="button"
+                        onClick={(e) => viewFile(video, e)}
+                        title="Ver"
+                      >
+                        <Eye size={12} />
+                      </ViewFileButton>
+                      {videosToDelete.includes(video.id_noticia_video) ? (
+                        <RestoreFileButton
+                          type="button"
+                          onClick={(e) =>
+                            restoreExistingFile(
+                              video.id_noticia_video,
+                              "video",
+                              e
+                            )
+                          }
+                          title="Restaurar"
+                        >
+                          ↶
+                        </RestoreFileButton>
+                      ) : (
+                        <RemoveFileButton
+                          type="button"
+                          onClick={(e) =>
+                            removeExistingFile(
+                              video.id_noticia_video,
+                              "video",
+                              e
+                            )
+                          }
+                          title="Eliminar"
+                        >
+                          <Trash size={12} />
+                        </RemoveFileButton>
                       )}
-                    >
-                      <FilePreview>
-                        <img
-                          src={imagen.url || "/placeholder.svg"}
-                          alt="Imagen de la noticia"
-                        />
-                      </FilePreview>
-                      <FileInfo>
-                        <FileName>Imagen existente</FileName>
-                      </FileInfo>
-                      <FileActions>
-                        <ViewFileButton
+                    </FileActions>
+                  </FileItem>
+                ))}
+              </FileList>
+            </>
+          )}
+
+          {/* Subir nuevos videos */}
+          <FileUploadSection
+            onClick={() => videoInputRef.current?.click()}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.add("dragover");
+            }}
+            onDragLeave={(e) => {
+              e.currentTarget.classList.remove("dragover");
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove("dragover");
+              handleFileUpload(e.dataTransfer.files, "video");
+            }}
+          >
+            <FileUploadIcon>
+              <Video size={56} />
+            </FileUploadIcon>
+            <FileUploadText>
+              Haz clic aquí o arrastra videos para agregar
+            </FileUploadText>
+            <FileUploadSubtext>
+              Formatos soportados: MP4, AVI, MOV, WebM
+            </FileUploadSubtext>
+          </FileUploadSection>
+
+          <HiddenInput
+            ref={videoInputRef}
+            type="file"
+            multiple
+            accept="video/*"
+            onChange={(e) => handleFileUpload(e.target.files, "video")}
+          />
+
+          {/* Nuevos videos */}
+          {newVideos.length > 0 && (
+            <>
+              <Label style={{ marginTop: "1rem" }}>Nuevos videos:</Label>
+              <FileList>
+                {newVideos.map((video) => (
+                  <FileItem key={video.id}>
+                    <FilePreview>
+                      <video src={video.preview} controls />
+                    </FilePreview>
+                    <FileInfo>
+                      <FileName>{video.name}</FileName>
+                      <FileSize>{formatFileSize(video.size)}</FileSize>
+                    </FileInfo>
+                    <FileActions>
+                      <ViewFileButton
+                        type="button"
+                        onClick={(e) => viewFile(video, e)}
+                        title="Ver"
+                      >
+                        <Eye size={12} />
+                      </ViewFileButton>
+                      <RemoveFileButton
+                        type="button"
+                        onClick={(e) => removeNewFile(video.id, "video", e)}
+                        title="Eliminar"
+                      >
+                        <Trash size={12} />
+                      </RemoveFileButton>
+                    </FileActions>
+                  </FileItem>
+                ))}
+              </FileList>
+            </>
+          )}
+        </Section>
+
+        {/* Archivos */}
+        <Section>
+          <SectionTitle>
+            <File size={22} />
+            Archivos (Máximo 5MB cada uno)
+          </SectionTitle>
+
+          {/* Archivos existentes */}
+          {existingArchivos.length > 0 && (
+            <>
+              <Label>Archivos actuales:</Label>
+              <FileList>
+                {existingArchivos.map((archivo) => (
+                  <FileItem
+                    key={`existing-${archivo.id_noticia_archivo}`}
+                    toDelete={archivosToDelete.includes(
+                      archivo.id_noticia_archivo
+                    )}
+                  >
+                    <FilePreview>
+                      <File size={48} />
+                    </FilePreview>
+                    <FileInfo>
+                      <FileName>Archivo existente</FileName>
+                    </FileInfo>
+                    <FileActions>
+                      <ViewFileButton
+                        type="button"
+                        onClick={(e) => viewFile(archivo, e)}
+                        title="Ver"
+                      >
+                        <Eye size={12} />
+                      </ViewFileButton>
+                      {archivosToDelete.includes(archivo.id_noticia_archivo) ? (
+                        <RestoreFileButton
                           type="button"
-                          onClick={(e) => viewFile(imagen, e)}
-                          title="Ver"
+                          onClick={(e) =>
+                            restoreExistingFile(
+                              archivo.id_noticia_archivo,
+                              "file",
+                              e
+                            )
+                          }
+                          title="Restaurar"
                         >
-                          <Eye size={12} />
-                        </ViewFileButton>
-                        {imagenesToDelete.includes(imagen.id_noticia_imagen) ? (
-                          <RestoreFileButton
-                            type="button"
-                            onClick={(e) =>
-                              restoreExistingFile(
-                                imagen.id_noticia_imagen,
-                                "image",
-                                e
-                              )
-                            }
-                            title="Restaurar"
-                          >
-                            ↶
-                          </RestoreFileButton>
-                        ) : (
-                          <RemoveFileButton
-                            type="button"
-                            onClick={(e) =>
-                              removeExistingFile(
-                                imagen.id_noticia_imagen,
-                                "image",
-                                e
-                              )
-                            }
-                            title="Eliminar"
-                          >
-                            <Trash size={12} />
-                          </RemoveFileButton>
-                        )}
-                      </FileActions>
-                    </FileItem>
-                  ))}
-                </FileList>
-              </>
-            )}
-
-            {/* Subir nuevas imágenes */}
-            <FileUploadSection
-              onClick={() => imageInputRef.current?.click()}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.currentTarget.classList.add("dragover");
-              }}
-              onDragLeave={(e) => {
-                e.currentTarget.classList.remove("dragover");
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                e.currentTarget.classList.remove("dragover");
-                handleFileUpload(e.dataTransfer.files, "image");
-              }}
-            >
-              <FileUploadIcon>
-                <ImageIcon size={56} />
-              </FileUploadIcon>
-              <FileUploadText>
-                Haz clic aquí o arrastra imágenes para agregar
-              </FileUploadText>
-              <FileUploadSubtext>
-                Formatos soportados: JPG, PNG, GIF, WebP
-              </FileUploadSubtext>
-            </FileUploadSection>
-
-            <HiddenInput
-              ref={imageInputRef}
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={(e) => handleFileUpload(e.target.files, "image")}
-            />
-
-            {/* Nuevas imágenes */}
-            {newImagenes.length > 0 && (
-              <>
-                <Label style={{ marginTop: "1rem" }}>Nuevas imágenes:</Label>
-                <FileList>
-                  {newImagenes.map((imagen) => (
-                    <FileItem key={imagen.id}>
-                      <FilePreview>
-                        <img
-                          src={imagen.preview || "/placeholder.svg"}
-                          alt={imagen.name}
-                        />
-                      </FilePreview>
-                      <FileInfo>
-                        <FileName>{imagen.name}</FileName>
-                        <FileSize>{formatFileSize(imagen.size)}</FileSize>
-                      </FileInfo>
-                      <FileActions>
-                        <ViewFileButton
-                          type="button"
-                          onClick={(e) => viewFile(imagen, e)}
-                          title="Ver"
-                        >
-                          <Eye size={12} />
-                        </ViewFileButton>
+                          ↶
+                        </RestoreFileButton>
+                      ) : (
                         <RemoveFileButton
                           type="button"
-                          onClick={(e) => removeNewFile(imagen.id, "image", e)}
+                          onClick={(e) =>
+                            removeExistingFile(
+                              archivo.id_noticia_archivo,
+                              "file",
+                              e
+                            )
+                          }
                           title="Eliminar"
                         >
                           <Trash size={12} />
                         </RemoveFileButton>
-                      </FileActions>
-                    </FileItem>
-                  ))}
-                </FileList>
-              </>
-            )}
-          </Section>
-
-          {/* Videos */}
-          <Section>
-            <SectionTitle>
-              <Video size={22} />
-              Videos (Máximo 30MB cada uno)
-            </SectionTitle>
-
-            {/* Videos existentes */}
-            {existingVideos.length > 0 && (
-              <>
-                <Label>Videos actuales:</Label>
-                <FileList>
-                  {existingVideos.map((video) => (
-                    <FileItem
-                      key={`existing-${video.id_noticia_video}`}
-                      toDelete={videosToDelete.includes(video.id_noticia_video)}
-                    >
-                      <FilePreview>
-                        <video src={video.url} controls />
-                      </FilePreview>
-                      <FileInfo>
-                        <FileName>Video existente</FileName>
-                      </FileInfo>
-                      <FileActions>
-                        <ViewFileButton
-                          type="button"
-                          onClick={(e) => viewFile(video, e)}
-                          title="Ver"
-                        >
-                          <Eye size={12} />
-                        </ViewFileButton>
-                        {videosToDelete.includes(video.id_noticia_video) ? (
-                          <RestoreFileButton
-                            type="button"
-                            onClick={(e) =>
-                              restoreExistingFile(
-                                video.id_noticia_video,
-                                "video",
-                                e
-                              )
-                            }
-                            title="Restaurar"
-                          >
-                            ↶
-                          </RestoreFileButton>
-                        ) : (
-                          <RemoveFileButton
-                            type="button"
-                            onClick={(e) =>
-                              removeExistingFile(
-                                video.id_noticia_video,
-                                "video",
-                                e
-                              )
-                            }
-                            title="Eliminar"
-                          >
-                            <Trash size={12} />
-                          </RemoveFileButton>
-                        )}
-                      </FileActions>
-                    </FileItem>
-                  ))}
-                </FileList>
-              </>
-            )}
-
-            {/* Subir nuevos videos */}
-            <FileUploadSection
-              onClick={() => videoInputRef.current?.click()}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.currentTarget.classList.add("dragover");
-              }}
-              onDragLeave={(e) => {
-                e.currentTarget.classList.remove("dragover");
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                e.currentTarget.classList.remove("dragover");
-                handleFileUpload(e.dataTransfer.files, "video");
-              }}
-            >
-              <FileUploadIcon>
-                <Video size={56} />
-              </FileUploadIcon>
-              <FileUploadText>
-                Haz clic aquí o arrastra videos para agregar
-              </FileUploadText>
-              <FileUploadSubtext>
-                Formatos soportados: MP4, AVI, MOV, WebM
-              </FileUploadSubtext>
-            </FileUploadSection>
-
-            <HiddenInput
-              ref={videoInputRef}
-              type="file"
-              multiple
-              accept="video/*"
-              onChange={(e) => handleFileUpload(e.target.files, "video")}
-            />
-
-            {/* Nuevos videos */}
-            {newVideos.length > 0 && (
-              <>
-                <Label style={{ marginTop: "1rem" }}>Nuevos videos:</Label>
-                <FileList>
-                  {newVideos.map((video) => (
-                    <FileItem key={video.id}>
-                      <FilePreview>
-                        <video src={video.preview} controls />
-                      </FilePreview>
-                      <FileInfo>
-                        <FileName>{video.name}</FileName>
-                        <FileSize>{formatFileSize(video.size)}</FileSize>
-                      </FileInfo>
-                      <FileActions>
-                        <ViewFileButton
-                          type="button"
-                          onClick={(e) => viewFile(video, e)}
-                          title="Ver"
-                        >
-                          <Eye size={12} />
-                        </ViewFileButton>
-                        <RemoveFileButton
-                          type="button"
-                          onClick={(e) => removeNewFile(video.id, "video", e)}
-                          title="Eliminar"
-                        >
-                          <Trash size={12} />
-                        </RemoveFileButton>
-                      </FileActions>
-                    </FileItem>
-                  ))}
-                </FileList>
-              </>
-            )}
-          </Section>
-
-          {/* Archivos */}
-          <Section>
-            <SectionTitle>
-              <File size={22} />
-              Archivos (Máximo 5MB cada uno)
-            </SectionTitle>
-
-            {/* Archivos existentes */}
-            {existingArchivos.length > 0 && (
-              <>
-                <Label>Archivos actuales:</Label>
-                <FileList>
-                  {existingArchivos.map((archivo) => (
-                    <FileItem
-                      key={`existing-${archivo.id_noticia_archivo}`}
-                      toDelete={archivosToDelete.includes(
-                        archivo.id_noticia_archivo
                       )}
-                    >
-                      <FilePreview>
-                        <File size={48} />
-                      </FilePreview>
-                      <FileInfo>
-                        <FileName>Archivo existente</FileName>
-                      </FileInfo>
-                      <FileActions>
-                        <ViewFileButton
-                          type="button"
-                          onClick={(e) => viewFile(archivo, e)}
-                          title="Ver"
-                        >
-                          <Eye size={12} />
-                        </ViewFileButton>
-                        {archivosToDelete.includes(
-                          archivo.id_noticia_archivo
-                        ) ? (
-                          <RestoreFileButton
-                            type="button"
-                            onClick={(e) =>
-                              restoreExistingFile(
-                                archivo.id_noticia_archivo,
-                                "file",
-                                e
-                              )
-                            }
-                            title="Restaurar"
-                          >
-                            ↶
-                          </RestoreFileButton>
-                        ) : (
-                          <RemoveFileButton
-                            type="button"
-                            onClick={(e) =>
-                              removeExistingFile(
-                                archivo.id_noticia_archivo,
-                                "file",
-                                e
-                              )
-                            }
-                            title="Eliminar"
-                          >
-                            <Trash size={12} />
-                          </RemoveFileButton>
-                        )}
-                      </FileActions>
-                    </FileItem>
-                  ))}
-                </FileList>
-              </>
-            )}
+                    </FileActions>
+                  </FileItem>
+                ))}
+              </FileList>
+            </>
+          )}
 
-            {/* Subir nuevos archivos */}
-            <FileUploadSection
-              onClick={() => fileInputRef.current?.click()}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.currentTarget.classList.add("dragover");
-              }}
-              onDragLeave={(e) => {
-                e.currentTarget.classList.remove("dragover");
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                e.currentTarget.classList.remove("dragover");
-                handleFileUpload(e.dataTransfer.files, "file");
-              }}
-            >
-              <FileUploadIcon>
-                <File size={56} />
-              </FileUploadIcon>
-              <FileUploadText>
-                Haz clic aquí o arrastra archivos para agregar
-              </FileUploadText>
-              <FileUploadSubtext>
-                Formatos soportados: PDF, DOC, DOCX, XLS, XLSX, TXT
-              </FileUploadSubtext>
-            </FileUploadSection>
+          {/* Subir nuevos archivos */}
+          <FileUploadSection
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.add("dragover");
+            }}
+            onDragLeave={(e) => {
+              e.currentTarget.classList.remove("dragover");
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove("dragover");
+              handleFileUpload(e.dataTransfer.files, "file");
+            }}
+          >
+            <FileUploadIcon>
+              <File size={56} />
+            </FileUploadIcon>
+            <FileUploadText>
+              Haz clic aquí o arrastra archivos para agregar
+            </FileUploadText>
+            <FileUploadSubtext>
+              Formatos soportados: PDF, DOC, DOCX, XLS, XLSX, TXT
+            </FileUploadSubtext>
+          </FileUploadSection>
 
-            <HiddenInput
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
-              onChange={(e) => handleFileUpload(e.target.files, "file")}
-            />
+          <HiddenInput
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
+            onChange={(e) => handleFileUpload(e.target.files, "file")}
+          />
 
-            {/* Nuevos archivos */}
-            {newArchivos.length > 0 && (
+          {/* Nuevos archivos */}
+          {newArchivos.length > 0 && (
+            <>
+              <Label style={{ marginTop: "1rem" }}>Nuevos archivos:</Label>
+              <FileList>
+                {newArchivos.map((archivo) => (
+                  <FileItem key={archivo.id}>
+                    <FilePreview>
+                      <File size={48} />
+                    </FilePreview>
+                    <FileInfo>
+                      <FileName>{archivo.name}</FileName>
+                      <FileSize>{formatFileSize(archivo.size)}</FileSize>
+                    </FileInfo>
+                    <FileActions>
+                      <ViewFileButton
+                        type="button"
+                        onClick={(e) => viewFile(archivo, e)}
+                        title="Ver"
+                      >
+                        <Eye size={12} />
+                      </ViewFileButton>
+                      <RemoveFileButton
+                        type="button"
+                        onClick={(e) => removeNewFile(archivo.id, "file", e)}
+                        title="Eliminar"
+                      >
+                        <Trash size={12} />
+                      </RemoveFileButton>
+                    </FileActions>
+                  </FileItem>
+                ))}
+              </FileList>
+            </>
+          )}
+        </Section>
+
+        {/* Botones de acción */}
+        <ActionButtons>
+          <CancelButton type="button" onClick={handleCancel} disabled={saving}>
+            <RefreshCw size={16} />
+            Cancelar Cambios
+          </CancelButton>
+          <SaveButton type="submit" disabled={saving}>
+            {saving ? (
               <>
-                <Label style={{ marginTop: "1rem" }}>Nuevos archivos:</Label>
-                <FileList>
-                  {newArchivos.map((archivo) => (
-                    <FileItem key={archivo.id}>
-                      <FilePreview>
-                        <File size={48} />
-                      </FilePreview>
-                      <FileInfo>
-                        <FileName>{archivo.name}</FileName>
-                        <FileSize>{formatFileSize(archivo.size)}</FileSize>
-                      </FileInfo>
-                      <FileActions>
-                        <ViewFileButton
-                          type="button"
-                          onClick={(e) => viewFile(archivo, e)}
-                          title="Ver"
-                        >
-                          <Eye size={12} />
-                        </ViewFileButton>
-                        <RemoveFileButton
-                          type="button"
-                          onClick={(e) => removeNewFile(archivo.id, "file", e)}
-                          title="Eliminar"
-                        >
-                          <Trash size={12} />
-                        </RemoveFileButton>
-                      </FileActions>
-                    </FileItem>
-                  ))}
-                </FileList>
+                <SpinIcon>⟳</SpinIcon>
+                Guardando...
+              </>
+            ) : (
+              <>
+                <Save size={16} />
+                Guardar Cambios
               </>
             )}
-          </Section>
-
-          {/* Botones de acción */}
-          <ActionButtons>
-            <CancelButton
-              type="button"
-              onClick={handleCancel}
-              disabled={saving}
-            >
-              <RefreshCw size={16} />
-              Cancelar Cambios
-            </CancelButton>
-            <SaveButton type="submit" disabled={saving}>
-              {saving ? (
-                <>
-                  <SpinIcon>⟳</SpinIcon>
-                  Guardando...
-                </>
-              ) : (
-                <>
-                  <Save size={16} />
-                  Guardar Cambios
-                </>
-              )}
-            </SaveButton>
-          </ActionButtons>
-        </Form>
-      </Container>
-    </Container2>
+          </SaveButton>
+        </ActionButtons>
+      </Form>
+    </Container>
   );
 }
 
@@ -1410,16 +1402,6 @@ const shimmer = keyframes`
 `;
 
 // Styled Components
-const Container2 = styled.div`
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem 1rem;
-
-  @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
-  }
-`;
-
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;

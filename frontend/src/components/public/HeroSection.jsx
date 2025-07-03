@@ -1,9 +1,23 @@
-import styled from "styled-components";
-import backgroundImage from "../../assets/img/portada.png"; // Ruta de la imagen
+import { useEffect, useState } from "react";
+import styled, { keyframes } from "styled-components";
+import backgroundImage1 from "../../assets/img/portada.png";
+import backgroundImage2 from "../../assets/img/portada2.jpg";
 
 const HeroSection = ({ title }) => {
+  const backgrounds = [backgroundImage1, backgroundImage2];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % backgrounds.length);
+    }, 10000); // cambia cada 10 segundos
+    return () => clearInterval(interval);
+  }, []);
+
+  const activeBg = backgrounds[index];
+
   return (
-    <HeroContainer>
+    <HeroContainer style={{ backgroundImage: `url(${activeBg})` }}>
       <Overlay />
       <HeroText>
         <Line />
@@ -25,16 +39,16 @@ export default HeroSection;
 const HeroContainer = styled.div`
   position: relative;
   width: 100%;
-  height: 320px; /* Altura en escritorio */
-  background: url(${backgroundImage}) no-repeat center center/cover;
+  height: 320px;
+  background: no-repeat center center/cover;
   display: flex;
   align-items: flex-start;
   padding-left: 5%;
   justify-content: flex-start;
-  padding-top: 50px; /* Ajuste del texto */
+  padding-top: 50px;
   overflow: hidden;
-  
-   /* 📌 Elimina cualquier capa extra de fondo */
+  transition: background-image 1.5s ease-in-out;
+
   &::before {
     content: "";
     position: absolute;
@@ -42,16 +56,16 @@ const HeroContainer = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Opacidad uniforme */
+    background: rgba(0, 0, 0, 0.6);
   }
 
-  /* 🔹 Asegura que no haya otro fondo afectando */
   * {
     background: transparent !important;
   }
+
   @media (max-width: 768px) {
-    height: 200px; /* Reducir altura */
-    padding-top: 30px; 
+    height: 200px;
+    padding-top: 30px;
   }
 `;
 
@@ -69,17 +83,15 @@ const HeroText = styled.div`
   display: flex;
   align-items: center;
 
-  /* 🔹 Línea vertical detrás del texto */
   &::before {
     content: "";
     position: absolute;
-    left: -8px; /* Ajuste en escritorio */
+    left: -8px;
     top: 0;
     height: 100%;
     width: 4px;
     background-color: white;
 
-    /* 🔹 Línea más delgada y corta en pantallas pequeñas */
     @media (max-width: 768px) {
       left: -5px;
       width: 3px;
@@ -89,14 +101,13 @@ const HeroText = styled.div`
 `;
 
 const Line = styled.div`
-  display: none; /* Eliminamos esta ya que la agregamos en HeroText */
+  display: none;
 `;
 
 const Title = styled.h1`
-  font-size: 2.5rem; /* Tamaño normal */
+  font-size: 2.5rem;
   margin-left: 10px;
 
-  /* 🔹 Reducir tamaño en móviles */
   @media (max-width: 768px) {
     font-size: 2rem;
   }
@@ -104,11 +115,10 @@ const Title = styled.h1`
 
 const WaveSvg = styled.svg`
   position: absolute;
-  bottom: 0;
+  bottom: -1px;
   left: 0;
   width: 100%;
-  max-width: 100vw; /* ✅ Evita que el SVG se expanda más allá del viewport */
+  max-width: 100vw;
   overflow: hidden;
-  bottom: -1px;
+  z-index: 3;
 `;
-

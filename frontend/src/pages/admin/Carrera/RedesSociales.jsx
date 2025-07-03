@@ -185,155 +185,143 @@ export default function RedesSociales() {
   }
 
   return (
-    <Container2>
-      <Container>
-        {/* Mensajes */}
-        {mensajes.map((mensaje) => (
-          <CajaMensaje
-            key={mensaje.id}
-            tipo={mensaje.tipo}
-            color={mensaje.color}
-            mensaje={mensaje.mensaje}
-            duracion={mensaje.duracion}
-            backgroundColor={mensaje.backgroundColor}
-            onClose={() => eliminarMensaje(mensaje.id)}
-          />
-        ))}
+    <Container>
+      {/* Mensajes */}
+      {mensajes.map((mensaje) => (
+        <CajaMensaje
+          key={mensaje.id}
+          tipo={mensaje.tipo}
+          color={mensaje.color}
+          mensaje={mensaje.mensaje}
+          duracion={mensaje.duracion}
+          backgroundColor={mensaje.backgroundColor}
+          onClose={() => eliminarMensaje(mensaje.id)}
+        />
+      ))}
 
-        <Title>
-          <Globe size={24} /> Redes sociales
-        </Title>
+      <Title>
+        <Globe size={24} /> Redes sociales
+      </Title>
 
-        <ContentArea>
-          <TableContainer>
-            <Table>
-              {/* Header de la tabla - solo visible en desktop */}
-              <TableHeader>
-                <TableHeaderCell>Red Social</TableHeaderCell>
-                <TableHeaderCell>URL</TableHeaderCell>
-                <TableHeaderCell>Público</TableHeaderCell>
-                <TableHeaderCell>Estado</TableHeaderCell>
-              </TableHeader>
+      <ContentArea>
+        <TableContainer>
+          <Table>
+            {/* Header de la tabla - solo visible en desktop */}
+            <TableHeader>
+              <TableHeaderCell>Red Social</TableHeaderCell>
+              <TableHeaderCell>URL</TableHeaderCell>
+              <TableHeaderCell>Público</TableHeaderCell>
+              <TableHeaderCell>Estado</TableHeaderCell>
+            </TableHeader>
 
-              <TableBody>
-                {redes.map((red, index) => {
-                  const { icon, color } = getSocialIcon(red.nombre_rrss);
-                  return (
-                    <TableRow key={red.id_carrera_rrss}>
-                      {/* Red Social */}
-                      <TableCell>
-                        <SocialIcon style={{ backgroundColor: color }}>
-                          {icon}
-                        </SocialIcon>
-                        <SocialName>{red.nombre_rrss}</SocialName>
-                      </TableCell>
+            <TableBody>
+              {redes.map((red, index) => {
+                const { icon, color } = getSocialIcon(red.nombre_rrss);
+                return (
+                  <TableRow key={red.id_carrera_rrss}>
+                    {/* Red Social */}
+                    <TableCell>
+                      <SocialIcon style={{ backgroundColor: color }}>
+                        {icon}
+                      </SocialIcon>
+                      <SocialName>{red.nombre_rrss}</SocialName>
+                    </TableCell>
 
-                      {/* URL */}
-                      <TableCell>
-                        <MobileFieldContainer>
-                          <MobileLabel>URL</MobileLabel>
-                          <Input
-                            type="url"
-                            value={red.url_rrss}
+                    {/* URL */}
+                    <TableCell>
+                      <MobileFieldContainer>
+                        <MobileLabel>URL</MobileLabel>
+                        <Input
+                          type="url"
+                          value={red.url_rrss}
+                          onChange={(e) =>
+                            handleUrlChange(index, e.target.value)
+                          }
+                          placeholder={`URL de ${red.nombre_rrss}`}
+                        />
+                      </MobileFieldContainer>
+                    </TableCell>
+
+                    {/* Público */}
+                    <TableCell>
+                      <MobileFieldContainer>
+                        <MobileLabel>Mostrar públicamente</MobileLabel>
+                        <CheckboxContainer>
+                          <Checkbox
+                            type="checkbox"
+                            id={`public-${red.id_carrera_rrss}`}
+                            checked={red.es_publico === 1}
                             onChange={(e) =>
-                              handleUrlChange(index, e.target.value)
+                              handlePublicChange(index, e.target.checked)
                             }
-                            placeholder={`URL de ${red.nombre_rrss}`}
                           />
-                        </MobileFieldContainer>
-                      </TableCell>
-
-                      {/* Público */}
-                      <TableCell>
-                        <MobileFieldContainer>
-                          <MobileLabel>Mostrar públicamente</MobileLabel>
-                          <CheckboxContainer>
-                            <Checkbox
-                              type="checkbox"
-                              id={`public-${red.id_carrera_rrss}`}
-                              checked={red.es_publico === 1}
-                              onChange={(e) =>
-                                handlePublicChange(index, e.target.checked)
-                              }
-                            />
-                            <CheckboxLabel
-                              htmlFor={`public-${red.id_carrera_rrss}`}
-                            >
-                              {red.es_publico === 1 ? "Sí" : "No"}
-                            </CheckboxLabel>
-                          </CheckboxContainer>
-                        </MobileFieldContainer>
-                      </TableCell>
-
-                      {/* Estado */}
-                      <TableCell>
-                        <MobileFieldContainer>
-                          <MobileLabel>Estado</MobileLabel>
-                          <span
-                            style={{
-                              padding: "0.25rem 0.5rem",
-                              borderRadius: "0.375rem",
-                              fontSize: "0.75rem",
-                              fontWeight: "500",
-                              backgroundColor:
-                                red.url_rrss && isValidUrl(red.url_rrss)
-                                  ? "#dcfce7"
-                                  : "#fef2f2",
-                              color:
-                                red.url_rrss && isValidUrl(red.url_rrss)
-                                  ? "#166534"
-                                  : "#dc2626",
-                            }}
+                          <CheckboxLabel
+                            htmlFor={`public-${red.id_carrera_rrss}`}
                           >
-                            {red.url_rrss && isValidUrl(red.url_rrss)
-                              ? "Válida"
-                              : "Inválida"}
-                          </span>
-                        </MobileFieldContainer>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                            {red.es_publico === 1 ? "Sí" : "No"}
+                          </CheckboxLabel>
+                        </CheckboxContainer>
+                      </MobileFieldContainer>
+                    </TableCell>
 
-          {/* Botones de acción - siempre visibles */}
-          <ActionButtons>
-            <CancelButton onClick={handleCancel} disabled={saving}>
-              <X size={16} /> Cancelar
-            </CancelButton>
-            <SaveButton onClick={handleSave} disabled={saving}>
-              {saving ? (
-                <>
-                  <SpinIcon>⟳</SpinIcon> Guardando...
-                </>
-              ) : (
-                <>
-                  <Save size={16} /> Guardar cambios
-                </>
-              )}
-            </SaveButton>
-          </ActionButtons>
-        </ContentArea>
-      </Container>
-    </Container2>
+                    {/* Estado */}
+                    <TableCell>
+                      <MobileFieldContainer>
+                        <MobileLabel>Estado</MobileLabel>
+                        <span
+                          style={{
+                            padding: "0.25rem 0.5rem",
+                            borderRadius: "0.375rem",
+                            fontSize: "0.75rem",
+                            fontWeight: "500",
+                            backgroundColor:
+                              red.url_rrss && isValidUrl(red.url_rrss)
+                                ? "#dcfce7"
+                                : "#fef2f2",
+                            color:
+                              red.url_rrss && isValidUrl(red.url_rrss)
+                                ? "#166534"
+                                : "#dc2626",
+                          }}
+                        >
+                          {red.url_rrss && isValidUrl(red.url_rrss)
+                            ? "Válida"
+                            : "Inválida"}
+                        </span>
+                      </MobileFieldContainer>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* Botones de acción - siempre visibles */}
+        <ActionButtons>
+          <CancelButton onClick={handleCancel} disabled={saving}>
+            <X size={16} /> Cancelar
+          </CancelButton>
+          <SaveButton onClick={handleSave} disabled={saving}>
+            {saving ? (
+              <>
+                <SpinIcon>⟳</SpinIcon> Guardando...
+              </>
+            ) : (
+              <>
+                <Save size={16} /> Guardar cambios
+              </>
+            )}
+          </SaveButton>
+        </ActionButtons>
+      </ContentArea>
+    </Container>
   );
 }
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
-`;
-
-const Container2 = styled.div`
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem 1rem;
-
-  @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
-  }
 `;
 
 // Styled Components

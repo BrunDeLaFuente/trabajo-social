@@ -471,439 +471,436 @@ export default function AutoridadesAdmin() {
   }
 
   return (
-    <Container2>
-      <Container>
-        {/* Mensajes */}
-        {mensajes.map((mensaje) => (
-          <CajaMensaje
-            key={mensaje.id}
-            tipo={mensaje.tipo}
-            color={mensaje.color}
-            mensaje={mensaje.mensaje}
-            duracion={mensaje.duracion}
-            backgroundColor={mensaje.backgroundColor}
-            onClose={() => eliminarMensaje(mensaje.id)}
+    <Container>
+      {/* Mensajes */}
+      {mensajes.map((mensaje) => (
+        <CajaMensaje
+          key={mensaje.id}
+          tipo={mensaje.tipo}
+          color={mensaje.color}
+          mensaje={mensaje.mensaje}
+          duracion={mensaje.duracion}
+          backgroundColor={mensaje.backgroundColor}
+          onClose={() => eliminarMensaje(mensaje.id)}
+        />
+      ))}
+
+      <Title>
+        <User size={24} /> Autoridades de la carrera
+      </Title>
+
+      <TopControls>
+        <SearchContainer>
+          <SearchInput
+            type="text"
+            placeholder="Buscar por nombre, cargo o correo..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-        ))}
+          <SearchIcon>
+            <Search size={16} />
+          </SearchIcon>
+        </SearchContainer>
 
-        <Title>
-          <User size={24} /> Autoridades de la carrera
-        </Title>
+        <AddButton onClick={openAddModal}>
+          <Plus size={16} /> Agregar autoridad
+        </AddButton>
+      </TopControls>
 
-        <TopControls>
-          <SearchContainer>
-            <SearchInput
-              type="text"
-              placeholder="Buscar por nombre, cargo o correo..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <SearchIcon>
-              <Search size={16} />
-            </SearchIcon>
-          </SearchContainer>
+      {/* Vista de escritorio */}
+      <DesktopView>
+        <TableContainer>
+          <Table>
+            <TableHeader>
+              <TableHeaderCell>Nombre</TableHeaderCell>
+              <TableHeaderCell>Cargo</TableHeaderCell>
+              <TableHeaderCell>Correo</TableHeaderCell>
+              <TableHeaderCell>Imagen</TableHeaderCell>
+              <TableHeaderCell>Acciones</TableHeaderCell>
+            </TableHeader>
 
-          <AddButton onClick={openAddModal}>
-            <Plus size={16} /> Agregar autoridad
-          </AddButton>
-        </TopControls>
-
-        {/* Vista de escritorio */}
-        <DesktopView>
-          <TableContainer>
-            <Table>
-              <TableHeader>
-                <TableHeaderCell>Nombre</TableHeaderCell>
-                <TableHeaderCell>Cargo</TableHeaderCell>
-                <TableHeaderCell>Correo</TableHeaderCell>
-                <TableHeaderCell>Imagen</TableHeaderCell>
-                <TableHeaderCell>Acciones</TableHeaderCell>
-              </TableHeader>
-
-              <TableBody>
-                {getCurrentPageItems().length > 0 ? (
-                  getCurrentPageItems().map((autoridad) => (
-                    <TableRow key={autoridad.id_persona}>
-                      <TableCell>{autoridad.nombre_persona}</TableCell>
-                      <TableCell>{autoridad.cargo}</TableCell>
-                      <TableCell>
-                        <Mail size={16} />
-                        {autoridad.correos.length > 0
-                          ? autoridad.correos[0].email_persona
-                          : "Sin correo"}
-                        {autoridad.correos.length > 1 && (
-                          <span
-                            title={autoridad.correos
-                              .map((c) => c.email_persona)
-                              .join(", ")}
-                          >
-                            {` (+${autoridad.correos.length - 1} más)`}
-                          </span>
+            <TableBody>
+              {getCurrentPageItems().length > 0 ? (
+                getCurrentPageItems().map((autoridad) => (
+                  <TableRow key={autoridad.id_persona}>
+                    <TableCell>{autoridad.nombre_persona}</TableCell>
+                    <TableCell>{autoridad.cargo}</TableCell>
+                    <TableCell>
+                      <Mail size={16} />
+                      {autoridad.correos.length > 0
+                        ? autoridad.correos[0].email_persona
+                        : "Sin correo"}
+                      {autoridad.correos.length > 1 && (
+                        <span
+                          title={autoridad.correos
+                            .map((c) => c.email_persona)
+                            .join(", ")}
+                        >
+                          {` (+${autoridad.correos.length - 1} más)`}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <ProfileImage>
+                        {autoridad.imagen_persona_url ? (
+                          <img
+                            src={
+                              autoridad.imagen_persona_url || "/placeholder.svg"
+                            }
+                            alt={autoridad.nombre_persona}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "/placeholder.svg";
+                            }}
+                          />
+                        ) : (
+                          <User size={16} />
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <ProfileImage>
-                          {autoridad.imagen_persona_url ? (
-                            <img
-                              src={
-                                autoridad.imagen_persona_url ||
-                                "/placeholder.svg"
-                              }
-                              alt={autoridad.nombre_persona}
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "/placeholder.svg";
-                              }}
-                            />
-                          ) : (
-                            <User size={16} />
-                          )}
-                        </ProfileImage>
-                      </TableCell>
-                      <TableCell>
-                        <ActionButtons>
-                          <EditButton
-                            onClick={() => openEditModal(autoridad)}
-                            title="Editar"
-                          >
-                            <Edit size={16} />
-                          </EditButton>
-                          <DeleteButton
-                            onClick={() => openDeleteModal(autoridad)}
+                      </ProfileImage>
+                    </TableCell>
+                    <TableCell>
+                      <ActionButtons>
+                        <EditButton
+                          onClick={() => openEditModal(autoridad)}
+                          title="Editar"
+                        >
+                          <Edit size={16} />
+                        </EditButton>
+                        <DeleteButton
+                          onClick={() => openDeleteModal(autoridad)}
+                          title="Eliminar"
+                        >
+                          <Trash size={16} />
+                        </DeleteButton>
+                      </ActionButtons>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <NoResults>No se encontraron autoridades</NoResults>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </DesktopView>
+
+      {/* Vista móvil */}
+      <MobileView>
+        {getCurrentPageItems().length > 0 ? (
+          getCurrentPageItems().map((autoridad) => (
+            <MobileCard key={autoridad.id_persona}>
+              <MobileCardHeader>
+                <MobileCardTitle>{autoridad.nombre_persona}</MobileCardTitle>
+                <ProfileImage>
+                  {autoridad.imagen_persona_url ? (
+                    <img
+                      src={autoridad.imagen_persona_url || "/placeholder.svg"}
+                      alt={autoridad.nombre_persona}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/placeholder.svg";
+                      }}
+                    />
+                  ) : (
+                    <User size={16} />
+                  )}
+                </ProfileImage>
+              </MobileCardHeader>
+              <MobileCardContent>
+                <MobileCardItem>
+                  <Briefcase size={16} />
+                  {autoridad.cargo}
+                </MobileCardItem>
+                <MobileCardItem>
+                  <Mail size={16} />
+                  {autoridad.correos.length > 0
+                    ? autoridad.correos[0].email_persona
+                    : "Sin correo"}
+                  {autoridad.correos.length > 1 && (
+                    <span
+                      style={{ fontStyle: "italic", marginLeft: "0.25rem" }}
+                    >
+                      {`(+${autoridad.correos.length - 1} más)`}
+                    </span>
+                  )}
+                </MobileCardItem>
+              </MobileCardContent>
+              <MobileCardActions>
+                <EditButton
+                  onClick={() => openEditModal(autoridad)}
+                  title="Editar"
+                >
+                  <Edit size={16} />
+                </EditButton>
+                <DeleteButton
+                  onClick={() => openDeleteModal(autoridad)}
+                  title="Eliminar"
+                >
+                  <Trash size={16} />
+                </DeleteButton>
+              </MobileCardActions>
+            </MobileCard>
+          ))
+        ) : (
+          <NoResults>No se encontraron autoridades</NoResults>
+        )}
+      </MobileView>
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <Pagination>
+          <PageButton
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft size={16} />
+          </PageButton>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <PageButton
+              key={page}
+              active={page === currentPage}
+              onClick={() => handlePageChange(page)}
+            >
+              {page}
+            </PageButton>
+          ))}
+
+          <PageButton
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <ChevronRight size={16} />
+          </PageButton>
+        </Pagination>
+      )}
+
+      {/* Modal de confirmación para eliminar */}
+      {isDeleteModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>
+              <ModalTitle>Confirmar eliminación</ModalTitle>
+              <ModalCloseButton onClick={closeDeleteModal}>
+                <X size={20} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <div className="flex items-center gap-3 mb-4">
+                <AlertTriangle size={24} className="text-red-500" />
+                <p>
+                  ¿Está seguro que desea eliminar a{" "}
+                  <strong>{selectedAutoridad?.nombre_persona}</strong>?
+                </p>
+              </div>
+              <p className="text-gray-500 text-sm">
+                Esta acción no se puede deshacer.
+              </p>
+            </ModalBody>
+            <ModalFooter>
+              <CancelButton onClick={closeDeleteModal}>
+                <X size={16} /> Cancelar
+              </CancelButton>
+              <ConfirmButton
+                danger
+                onClick={handleDelete}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <SpinIcon>⟳</SpinIcon> Eliminando...
+                  </>
+                ) : (
+                  <>
+                    <Trash size={16} /> Eliminar
+                  </>
+                )}
+              </ConfirmButton>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+
+      {/* Modal de formulario para agregar/editar */}
+      {isFormModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>
+              <ModalTitle>
+                {selectedAutoridad ? "Editar autoridad" : "Agregar autoridad"}
+              </ModalTitle>
+              <ModalCloseButton onClick={closeFormModal}>
+                <X size={20} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <FormGroup>
+                <Label htmlFor="nombre_persona">
+                  <User size={16} className="inline mr-2" /> Nombre completo *
+                </Label>
+                <Input
+                  type="text"
+                  id="nombre_persona"
+                  name="nombre_persona"
+                  value={formData.nombre_persona}
+                  onChange={handleFormChange}
+                  placeholder="Ej. Dr. Juan Pérez"
+                />
+                {formErrors.nombre_persona && (
+                  <ErrorMessage>{formErrors.nombre_persona}</ErrorMessage>
+                )}
+              </FormGroup>
+
+              <FormGroup>
+                <Label htmlFor="cargo">
+                  <Briefcase size={16} className="inline mr-2" /> Cargo *
+                </Label>
+                <Input
+                  type="text"
+                  id="cargo"
+                  name="cargo"
+                  value={formData.cargo}
+                  onChange={handleFormChange}
+                  placeholder="Ej. Director de Carrera"
+                />
+                {formErrors.cargo && (
+                  <ErrorMessage>{formErrors.cargo}</ErrorMessage>
+                )}
+              </FormGroup>
+
+              <FormGroup>
+                <Label>
+                  <Mail size={16} className="inline mr-2" /> Correos
+                  electrónicos
+                </Label>
+
+                {/* Lista de correos */}
+                <EmailList>
+                  {formData.emails.length > 0 ? (
+                    formData.emails.map((email, index) => (
+                      <EmailItem key={index}>
+                        <EmailContent>
+                          <Mail size={16} />
+                          {email}
+                        </EmailContent>
+                        <EmailActions>
+                          <IconButton
+                            onClick={() => removeEmail(index)}
+                            color="#ef4444"
+                            hoverColor="#dc2626"
                             title="Eliminar"
                           >
-                            <Trash size={16} />
-                          </DeleteButton>
-                        </ActionButtons>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <NoResults>No se encontraron autoridades</NoResults>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DesktopView>
+                            <Trash size={18} />
+                          </IconButton>
+                        </EmailActions>
+                      </EmailItem>
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        color: "#6b7280",
+                        fontStyle: "italic",
+                        fontSize: "0.875rem",
+                        padding: "0.5rem 0",
+                      }}
+                    >
+                      No hay correos agregados
+                    </div>
+                  )}
+                </EmailList>
 
-        {/* Vista móvil */}
-        <MobileView>
-          {getCurrentPageItems().length > 0 ? (
-            getCurrentPageItems().map((autoridad) => (
-              <MobileCard key={autoridad.id_persona}>
-                <MobileCardHeader>
-                  <MobileCardTitle>{autoridad.nombre_persona}</MobileCardTitle>
-                  <ProfileImage>
-                    {autoridad.imagen_persona_url ? (
+                {/* Agregar nuevo correo */}
+                <AddEmailContainer>
+                  <AddEmailInput
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="Agregar nuevo correo"
+                  />
+                  <AddEmailButton onClick={addEmail}>
+                    <Plus size={16} /> Agregar
+                  </AddEmailButton>
+                </AddEmailContainer>
+                {formErrors.newEmail && (
+                  <ErrorMessage>{formErrors.newEmail}</ErrorMessage>
+                )}
+                {formErrors.emails && (
+                  <ErrorMessage>{formErrors.emails}</ErrorMessage>
+                )}
+              </FormGroup>
+
+              <FormGroup>
+                <Label htmlFor="imagen_persona">
+                  <ImageIcon size={16} className="inline mr-2" /> Imagen de
+                  perfil
+                </Label>
+                <ImagePreviewContainer>
+                  <ImagePreview>
+                    {imagePreview && !formData.quitar_imagen ? (
                       <img
-                        src={autoridad.imagen_persona_url || "/placeholder.svg"}
-                        alt={autoridad.nombre_persona}
+                        src={imagePreview || "/placeholder.svg"}
+                        alt="Vista previa"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = "/placeholder.svg";
                         }}
                       />
                     ) : (
-                      <User size={16} />
+                      <User size={40} />
                     )}
-                  </ProfileImage>
-                </MobileCardHeader>
-                <MobileCardContent>
-                  <MobileCardItem>
-                    <Briefcase size={16} />
-                    {autoridad.cargo}
-                  </MobileCardItem>
-                  <MobileCardItem>
-                    <Mail size={16} />
-                    {autoridad.correos.length > 0
-                      ? autoridad.correos[0].email_persona
-                      : "Sin correo"}
-                    {autoridad.correos.length > 1 && (
-                      <span
-                        style={{ fontStyle: "italic", marginLeft: "0.25rem" }}
-                      >
-                        {`(+${autoridad.correos.length - 1} más)`}
-                      </span>
-                    )}
-                  </MobileCardItem>
-                </MobileCardContent>
-                <MobileCardActions>
-                  <EditButton
-                    onClick={() => openEditModal(autoridad)}
-                    title="Editar"
-                  >
-                    <Edit size={16} />
-                  </EditButton>
-                  <DeleteButton
-                    onClick={() => openDeleteModal(autoridad)}
-                    title="Eliminar"
-                  >
-                    <Trash size={16} />
-                  </DeleteButton>
-                </MobileCardActions>
-              </MobileCard>
-            ))
-          ) : (
-            <NoResults>No se encontraron autoridades</NoResults>
-          )}
-        </MobileView>
+                  </ImagePreview>
 
-        {/* Paginación */}
-        {totalPages > 1 && (
-          <Pagination>
-            <PageButton
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft size={16} />
-            </PageButton>
+                  <ImageActions>
+                    {imagePreview && !formData.quitar_imagen ? (
+                      <RemoveImageButton onClick={handleRemoveImage}>
+                        <XCircle size={16} /> Quitar imagen
+                      </RemoveImageButton>
+                    ) : formData.quitar_imagen &&
+                      selectedAutoridad?.imagen_persona ? (
+                      <Button onClick={handleCancelRemoveImage}>
+                        <Upload size={16} /> Restaurar imagen
+                      </Button>
+                    ) : null}
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <PageButton
-                key={page}
-                active={page === currentPage}
-                onClick={() => handlePageChange(page)}
-              >
-                {page}
-              </PageButton>
-            ))}
-
-            <PageButton
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight size={16} />
-            </PageButton>
-          </Pagination>
-        )}
-
-        {/* Modal de confirmación para eliminar */}
-        {isDeleteModalOpen && (
-          <ModalOverlay>
-            <ModalContent>
-              <ModalHeader>
-                <ModalTitle>Confirmar eliminación</ModalTitle>
-                <ModalCloseButton onClick={closeDeleteModal}>
-                  <X size={20} />
-                </ModalCloseButton>
-              </ModalHeader>
-              <ModalBody>
-                <div className="flex items-center gap-3 mb-4">
-                  <AlertTriangle size={24} className="text-red-500" />
-                  <p>
-                    ¿Está seguro que desea eliminar a{" "}
-                    <strong>{selectedAutoridad?.nombre_persona}</strong>?
-                  </p>
-                </div>
-                <p className="text-gray-500 text-sm">
-                  Esta acción no se puede deshacer.
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <CancelButton onClick={closeDeleteModal}>
-                  <X size={16} /> Cancelar
-                </CancelButton>
-                <ConfirmButton
-                  danger
-                  onClick={handleDelete}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <SpinIcon>⟳</SpinIcon> Eliminando...
-                    </>
-                  ) : (
-                    <>
-                      <Trash size={16} /> Eliminar
-                    </>
-                  )}
-                </ConfirmButton>
-              </ModalFooter>
-            </ModalContent>
-          </ModalOverlay>
-        )}
-
-        {/* Modal de formulario para agregar/editar */}
-        {isFormModalOpen && (
-          <ModalOverlay>
-            <ModalContent>
-              <ModalHeader>
-                <ModalTitle>
-                  {selectedAutoridad ? "Editar autoridad" : "Agregar autoridad"}
-                </ModalTitle>
-                <ModalCloseButton onClick={closeFormModal}>
-                  <X size={20} />
-                </ModalCloseButton>
-              </ModalHeader>
-              <ModalBody>
-                <FormGroup>
-                  <Label htmlFor="nombre_persona">
-                    <User size={16} className="inline mr-2" /> Nombre completo *
-                  </Label>
-                  <Input
-                    type="text"
-                    id="nombre_persona"
-                    name="nombre_persona"
-                    value={formData.nombre_persona}
-                    onChange={handleFormChange}
-                    placeholder="Ej. Dr. Juan Pérez"
-                  />
-                  {formErrors.nombre_persona && (
-                    <ErrorMessage>{formErrors.nombre_persona}</ErrorMessage>
-                  )}
-                </FormGroup>
-
-                <FormGroup>
-                  <Label htmlFor="cargo">
-                    <Briefcase size={16} className="inline mr-2" /> Cargo *
-                  </Label>
-                  <Input
-                    type="text"
-                    id="cargo"
-                    name="cargo"
-                    value={formData.cargo}
-                    onChange={handleFormChange}
-                    placeholder="Ej. Director de Carrera"
-                  />
-                  {formErrors.cargo && (
-                    <ErrorMessage>{formErrors.cargo}</ErrorMessage>
-                  )}
-                </FormGroup>
-
-                <FormGroup>
-                  <Label>
-                    <Mail size={16} className="inline mr-2" /> Correos
-                    electrónicos
-                  </Label>
-
-                  {/* Lista de correos */}
-                  <EmailList>
-                    {formData.emails.length > 0 ? (
-                      formData.emails.map((email, index) => (
-                        <EmailItem key={index}>
-                          <EmailContent>
-                            <Mail size={16} />
-                            {email}
-                          </EmailContent>
-                          <EmailActions>
-                            <IconButton
-                              onClick={() => removeEmail(index)}
-                              color="#ef4444"
-                              hoverColor="#dc2626"
-                              title="Eliminar"
-                            >
-                              <Trash size={18} />
-                            </IconButton>
-                          </EmailActions>
-                        </EmailItem>
-                      ))
-                    ) : (
-                      <div
-                        style={{
-                          color: "#6b7280",
-                          fontStyle: "italic",
-                          fontSize: "0.875rem",
-                          padding: "0.5rem 0",
-                        }}
-                      >
-                        No hay correos agregados
-                      </div>
-                    )}
-                  </EmailList>
-
-                  {/* Agregar nuevo correo */}
-                  <AddEmailContainer>
-                    <AddEmailInput
-                      type="email"
-                      value={newEmail}
-                      onChange={(e) => setNewEmail(e.target.value)}
-                      placeholder="Agregar nuevo correo"
-                    />
-                    <AddEmailButton onClick={addEmail}>
-                      <Plus size={16} /> Agregar
-                    </AddEmailButton>
-                  </AddEmailContainer>
-                  {formErrors.newEmail && (
-                    <ErrorMessage>{formErrors.newEmail}</ErrorMessage>
-                  )}
-                  {formErrors.emails && (
-                    <ErrorMessage>{formErrors.emails}</ErrorMessage>
-                  )}
-                </FormGroup>
-
-                <FormGroup>
-                  <Label htmlFor="imagen_persona">
-                    <ImageIcon size={16} className="inline mr-2" /> Imagen de
-                    perfil
-                  </Label>
-                  <ImagePreviewContainer>
-                    <ImagePreview>
-                      {imagePreview && !formData.quitar_imagen ? (
-                        <img
-                          src={imagePreview || "/placeholder.svg"}
-                          alt="Vista previa"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/placeholder.svg";
-                          }}
-                        />
-                      ) : (
-                        <User size={40} />
-                      )}
-                    </ImagePreview>
-
-                    <ImageActions>
-                      {imagePreview && !formData.quitar_imagen ? (
-                        <RemoveImageButton onClick={handleRemoveImage}>
-                          <XCircle size={16} /> Quitar imagen
-                        </RemoveImageButton>
-                      ) : formData.quitar_imagen &&
-                        selectedAutoridad?.imagen_persona ? (
-                        <Button onClick={handleCancelRemoveImage}>
-                          <Upload size={16} /> Restaurar imagen
-                        </Button>
-                      ) : null}
-
-                      <UploadButton htmlFor="imagen_persona">
-                        <Upload size={16} />{" "}
-                        {imagePreview ? "Cambiar imagen" : "Subir imagen"}
-                        <input
-                          type="file"
-                          id="imagen_persona"
-                          name="imagen_persona"
-                          accept="image/jpeg,image/png,image/gif,image/webp"
-                          onChange={handleImageChange}
-                          ref={fileInputRef}
-                        />
-                      </UploadButton>
-                    </ImageActions>
-                  </ImagePreviewContainer>
-                  {formErrors.imagen_persona && (
-                    <ErrorMessage>{formErrors.imagen_persona}</ErrorMessage>
-                  )}
-                </FormGroup>
-              </ModalBody>
-              <ModalFooter>
-                <CancelButton onClick={closeFormModal}>
-                  <X size={16} /> Cancelar
-                </CancelButton>
-                <SaveButton onClick={handleSave} disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <SpinIcon>⟳</SpinIcon> Guardando...
-                    </>
-                  ) : (
-                    <>
-                      <Save size={16} /> Guardar
-                    </>
-                  )}
-                </SaveButton>
-              </ModalFooter>
-            </ModalContent>
-          </ModalOverlay>
-        )}
-      </Container>
-    </Container2>
+                    <UploadButton htmlFor="imagen_persona">
+                      <Upload size={16} />{" "}
+                      {imagePreview ? "Cambiar imagen" : "Subir imagen"}
+                      <input
+                        type="file"
+                        id="imagen_persona"
+                        name="imagen_persona"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        onChange={handleImageChange}
+                        ref={fileInputRef}
+                      />
+                    </UploadButton>
+                  </ImageActions>
+                </ImagePreviewContainer>
+                {formErrors.imagen_persona && (
+                  <ErrorMessage>{formErrors.imagen_persona}</ErrorMessage>
+                )}
+              </FormGroup>
+            </ModalBody>
+            <ModalFooter>
+              <CancelButton onClick={closeFormModal}>
+                <X size={16} /> Cancelar
+              </CancelButton>
+              <SaveButton onClick={handleSave} disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <SpinIcon>⟳</SpinIcon> Guardando...
+                  </>
+                ) : (
+                  <>
+                    <Save size={16} /> Guardar
+                  </>
+                )}
+              </SaveButton>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+    </Container>
   );
 }
 
@@ -919,17 +916,6 @@ const slideUp = keyframes`
 `;
 
 // Styled Components
-
-const Container2 = styled.div`
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem 1rem;
-
-  @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
-  }
-`;
-
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;

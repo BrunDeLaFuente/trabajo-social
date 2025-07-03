@@ -279,276 +279,274 @@ export default function Informacion() {
   }
 
   return (
-    <Container2>
-      <Container>
-        {/* Mensajes */}
-        {mensajes.map((mensaje) => (
-          <CajaMensaje
-            key={mensaje.id}
-            tipo={mensaje.tipo}
-            color={mensaje.color}
-            mensaje={mensaje.mensaje}
-            duracion={mensaje.duracion}
-            backgroundColor={mensaje.backgroundColor}
-            onClose={() => eliminarMensaje(mensaje.id)}
-          />
-        ))}
+    <Container>
+      {/* Mensajes */}
+      {mensajes.map((mensaje) => (
+        <CajaMensaje
+          key={mensaje.id}
+          tipo={mensaje.tipo}
+          color={mensaje.color}
+          mensaje={mensaje.mensaje}
+          duracion={mensaje.duracion}
+          backgroundColor={mensaje.backgroundColor}
+          onClose={() => eliminarMensaje(mensaje.id)}
+        />
+      ))}
 
-        <Title>Información de la carrera</Title>
+      <Title>Información de la carrera</Title>
 
-        {/* Información principal */}
-        <Grid>
-          <div>
-            <FormGroup>
-              <Label htmlFor="nombre_carrera">Nombre de la carrera</Label>
-              <Input
-                type="text"
-                id="nombre_carrera"
-                name="nombre_carrera"
-                value={carrera.nombre_carrera}
-                onChange={handleChange}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label htmlFor="facultad">Facultad</Label>
-              <Input
-                type="text"
-                id="facultad"
-                name="facultad"
-                value={carrera.facultad}
-                onChange={handleChange}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label htmlFor="duracion">Duración</Label>
-              <Input
-                type="text"
-                id="duracion"
-                name="duracion"
-                value={carrera.duracion}
-                onChange={handleChange}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label htmlFor="ensenanza">Enseñanza</Label>
-              <Input
-                type="text"
-                id="ensenanza"
-                name="ensenanza"
-                value={carrera.ensenanza}
-                onChange={handleChange}
-              />
-            </FormGroup>
-          </div>
-
-          <div>
-            <FormGroup>
-              <Label htmlFor="idiomas">Idiomas</Label>
-              <Input
-                type="text"
-                id="idiomas"
-                name="idiomas"
-                value={carrera.idiomas}
-                onChange={handleChange}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label htmlFor="grado">Grado</Label>
-              <Input
-                type="text"
-                id="grado"
-                name="grado"
-                value={carrera.grado}
-                onChange={handleChange}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label htmlFor="direccion">Dirección</Label>
-              <Input
-                type="text"
-                id="direccion"
-                name="direccion"
-                value={carrera.direccion}
-                onChange={handleChange}
-              />
-            </FormGroup>
-          </div>
-        </Grid>
-
-        {/* Sección de correos */}
-        <Section>
-          <SectionTitle>
-            <Mail size={20} /> Correos electrónicos
-          </SectionTitle>
-
-          <ItemList>
-            {carrera.correos.map((correo, index) => (
-              <ItemRow key={correo.id_carrera_correo}>
-                {editingEmail === index ? (
-                  <ItemInput
-                    type="email"
-                    value={correo.correo_carrera}
-                    onChange={(e) => handleEmailChange(index, e.target.value)}
-                  />
-                ) : (
-                  <ItemContent>
-                    <Mail
-                      size={16}
-                      style={{
-                        display: "inline-block",
-                        marginRight: "0.5rem",
-                        verticalAlign: "middle",
-                      }}
-                    />
-                    {correo.correo_carrera}
-                  </ItemContent>
-                )}
-
-                <ButtonGroup>
-                  {editingEmail === index ? (
-                    <IconButton
-                      onClick={() => setEditingEmail(null)}
-                      color="#22c55e"
-                      hoverColor="#16a34a"
-                      title="Guardar"
-                    >
-                      <Save size={18} />
-                    </IconButton>
-                  ) : (
-                    <IconButton
-                      onClick={() => setEditingEmail(index)}
-                      color="#3b82f6"
-                      hoverColor="#2563eb"
-                      title="Editar"
-                    >
-                      <Edit size={18} />
-                    </IconButton>
-                  )}
-                  <IconButton
-                    onClick={() => deleteEmail(index)}
-                    color="#ef4444"
-                    hoverColor="#dc2626"
-                    title="Eliminar"
-                  >
-                    <Trash size={18} />
-                  </IconButton>
-                </ButtonGroup>
-              </ItemRow>
-            ))}
-          </ItemList>
-
-          <AddItemContainer>
-            <AddItemInput
-              type="email"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              placeholder="Agregar nuevo correo"
-            />
-            <AddButton onClick={addEmail}>
-              <Plus size={18} /> Agregar
-            </AddButton>
-          </AddItemContainer>
-        </Section>
-
-        {/* Sección de teléfonos */}
-        <Section>
-          <SectionTitle>
-            <Phone size={20} /> Teléfonos
-          </SectionTitle>
-
-          <ItemList>
-            {carrera.telefonos.map((telefono, index) => (
-              <ItemRow key={telefono.id_carrera_telefono}>
-                {editingPhone === index ? (
-                  <ItemInput
-                    type="text"
-                    value={telefono.telefono}
-                    onChange={(e) => handlePhoneChange(index, e.target.value)}
-                  />
-                ) : (
-                  <ItemContent>
-                    <Phone
-                      size={16}
-                      style={{
-                        display: "inline-block",
-                        marginRight: "0.5rem",
-                        verticalAlign: "middle",
-                      }}
-                    />
-                    {telefono.telefono}
-                  </ItemContent>
-                )}
-
-                <ButtonGroup>
-                  {editingPhone === index ? (
-                    <IconButton
-                      onClick={() => setEditingPhone(null)}
-                      color="#22c55e"
-                      hoverColor="#16a34a"
-                      title="Guardar"
-                    >
-                      <Save size={18} />
-                    </IconButton>
-                  ) : (
-                    <IconButton
-                      onClick={() => setEditingPhone(index)}
-                      color="#3b82f6"
-                      hoverColor="#2563eb"
-                      title="Editar"
-                    >
-                      <Edit size={18} />
-                    </IconButton>
-                  )}
-                  <IconButton
-                    onClick={() => deletePhone(index)}
-                    color="#ef4444"
-                    hoverColor="#dc2626"
-                    title="Eliminar"
-                  >
-                    <Trash size={18} />
-                  </IconButton>
-                </ButtonGroup>
-              </ItemRow>
-            ))}
-          </ItemList>
-
-          <AddItemContainer>
-            <AddItemInput
+      {/* Información principal */}
+      <Grid>
+        <div>
+          <FormGroup>
+            <Label htmlFor="nombre_carrera">Nombre de la carrera</Label>
+            <Input
               type="text"
-              value={newPhone}
-              onChange={(e) => setNewPhone(e.target.value)}
-              placeholder="Agregar nuevo teléfono"
+              id="nombre_carrera"
+              name="nombre_carrera"
+              value={carrera.nombre_carrera}
+              onChange={handleChange}
             />
-            <AddButton onClick={addPhone}>
-              <Plus size={18} /> Agregar
-            </AddButton>
-          </AddItemContainer>
-        </Section>
+          </FormGroup>
 
-        {/* Botones de acción */}
-        <ActionButtons>
-          <CancelButton onClick={handleCancel} disabled={saving}>
-            <X size={18} /> Cancelar
-          </CancelButton>
-          <SaveButton onClick={handleSave} disabled={saving}>
-            {saving ? (
-              <>
-                <SpinIcon>⟳</SpinIcon> Guardando...
-              </>
-            ) : (
-              <>
-                <Save size={18} /> Guardar cambios
-              </>
-            )}
-          </SaveButton>
-        </ActionButtons>
-      </Container>
-    </Container2>
+          <FormGroup>
+            <Label htmlFor="facultad">Facultad</Label>
+            <Input
+              type="text"
+              id="facultad"
+              name="facultad"
+              value={carrera.facultad}
+              onChange={handleChange}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <Label htmlFor="duracion">Duración</Label>
+            <Input
+              type="text"
+              id="duracion"
+              name="duracion"
+              value={carrera.duracion}
+              onChange={handleChange}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <Label htmlFor="ensenanza">Enseñanza</Label>
+            <Input
+              type="text"
+              id="ensenanza"
+              name="ensenanza"
+              value={carrera.ensenanza}
+              onChange={handleChange}
+            />
+          </FormGroup>
+        </div>
+
+        <div>
+          <FormGroup>
+            <Label htmlFor="idiomas">Idiomas</Label>
+            <Input
+              type="text"
+              id="idiomas"
+              name="idiomas"
+              value={carrera.idiomas}
+              onChange={handleChange}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <Label htmlFor="grado">Grado</Label>
+            <Input
+              type="text"
+              id="grado"
+              name="grado"
+              value={carrera.grado}
+              onChange={handleChange}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <Label htmlFor="direccion">Dirección</Label>
+            <Input
+              type="text"
+              id="direccion"
+              name="direccion"
+              value={carrera.direccion}
+              onChange={handleChange}
+            />
+          </FormGroup>
+        </div>
+      </Grid>
+
+      {/* Sección de correos */}
+      <Section>
+        <SectionTitle>
+          <Mail size={20} /> Correos electrónicos
+        </SectionTitle>
+
+        <ItemList>
+          {carrera.correos.map((correo, index) => (
+            <ItemRow key={correo.id_carrera_correo}>
+              {editingEmail === index ? (
+                <ItemInput
+                  type="email"
+                  value={correo.correo_carrera}
+                  onChange={(e) => handleEmailChange(index, e.target.value)}
+                />
+              ) : (
+                <ItemContent>
+                  <Mail
+                    size={16}
+                    style={{
+                      display: "inline-block",
+                      marginRight: "0.5rem",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                  {correo.correo_carrera}
+                </ItemContent>
+              )}
+
+              <ButtonGroup>
+                {editingEmail === index ? (
+                  <IconButton
+                    onClick={() => setEditingEmail(null)}
+                    color="#22c55e"
+                    hoverColor="#16a34a"
+                    title="Guardar"
+                  >
+                    <Save size={18} />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    onClick={() => setEditingEmail(index)}
+                    color="#3b82f6"
+                    hoverColor="#2563eb"
+                    title="Editar"
+                  >
+                    <Edit size={18} />
+                  </IconButton>
+                )}
+                <IconButton
+                  onClick={() => deleteEmail(index)}
+                  color="#ef4444"
+                  hoverColor="#dc2626"
+                  title="Eliminar"
+                >
+                  <Trash size={18} />
+                </IconButton>
+              </ButtonGroup>
+            </ItemRow>
+          ))}
+        </ItemList>
+
+        <AddItemContainer>
+          <AddItemInput
+            type="email"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+            placeholder="Agregar nuevo correo"
+          />
+          <AddButton onClick={addEmail}>
+            <Plus size={18} /> Agregar
+          </AddButton>
+        </AddItemContainer>
+      </Section>
+
+      {/* Sección de teléfonos */}
+      <Section>
+        <SectionTitle>
+          <Phone size={20} /> Teléfonos
+        </SectionTitle>
+
+        <ItemList>
+          {carrera.telefonos.map((telefono, index) => (
+            <ItemRow key={telefono.id_carrera_telefono}>
+              {editingPhone === index ? (
+                <ItemInput
+                  type="text"
+                  value={telefono.telefono}
+                  onChange={(e) => handlePhoneChange(index, e.target.value)}
+                />
+              ) : (
+                <ItemContent>
+                  <Phone
+                    size={16}
+                    style={{
+                      display: "inline-block",
+                      marginRight: "0.5rem",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                  {telefono.telefono}
+                </ItemContent>
+              )}
+
+              <ButtonGroup>
+                {editingPhone === index ? (
+                  <IconButton
+                    onClick={() => setEditingPhone(null)}
+                    color="#22c55e"
+                    hoverColor="#16a34a"
+                    title="Guardar"
+                  >
+                    <Save size={18} />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    onClick={() => setEditingPhone(index)}
+                    color="#3b82f6"
+                    hoverColor="#2563eb"
+                    title="Editar"
+                  >
+                    <Edit size={18} />
+                  </IconButton>
+                )}
+                <IconButton
+                  onClick={() => deletePhone(index)}
+                  color="#ef4444"
+                  hoverColor="#dc2626"
+                  title="Eliminar"
+                >
+                  <Trash size={18} />
+                </IconButton>
+              </ButtonGroup>
+            </ItemRow>
+          ))}
+        </ItemList>
+
+        <AddItemContainer>
+          <AddItemInput
+            type="text"
+            value={newPhone}
+            onChange={(e) => setNewPhone(e.target.value)}
+            placeholder="Agregar nuevo teléfono"
+          />
+          <AddButton onClick={addPhone}>
+            <Plus size={18} /> Agregar
+          </AddButton>
+        </AddItemContainer>
+      </Section>
+
+      {/* Botones de acción */}
+      <ActionButtons>
+        <CancelButton onClick={handleCancel} disabled={saving}>
+          <X size={18} /> Cancelar
+        </CancelButton>
+        <SaveButton onClick={handleSave} disabled={saving}>
+          {saving ? (
+            <>
+              <SpinIcon>⟳</SpinIcon> Guardando...
+            </>
+          ) : (
+            <>
+              <Save size={18} /> Guardar cambios
+            </>
+          )}
+        </SaveButton>
+      </ActionButtons>
+    </Container>
   );
 }
 
@@ -557,16 +555,6 @@ export default function Informacion() {
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
-`;
-
-const Container2 = styled.div`
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem 1rem;
-
-  @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
-  }
 `;
 
 const Container = styled.div`

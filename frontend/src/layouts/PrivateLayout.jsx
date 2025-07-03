@@ -1,40 +1,35 @@
 import { useState } from "react";
-import styled from "styled-components";
-import Sidebar from "../components/admin/Sidebar";
+import { Box } from "@mui/material";
+import MaterialSidebar from "../components/admin/Sidebar";
 
 const PrivateLayout = ({ children }) => {
-  const [sidebarWidth, setSidebarWidth] = useState(250);
+  const [sidebarWidth, setSidebarWidth] = useState(280);
 
-  // Function to update sidebar width
   const handleSidebarResize = (width) => {
     setSidebarWidth(width);
   };
 
   return (
-    <LayoutContainer>
-      <Sidebar onResize={handleSidebarResize} />
-      <MainContent sidebarWidth={sidebarWidth}>{children}</MainContent>
-    </LayoutContainer>
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+      <MaterialSidebar onResize={handleSidebarResize} />
+
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          ml: { xs: 0, md: `${sidebarWidth}px` },
+          transition: "margin-left 0.3s ease",
+          minHeight: "100vh",
+          backgroundColor: "#f5f5f5",
+        }}
+      >
+        {/* Main Content */}
+        <Box sx={{ p: 3, pt: { xs: 8, md: 3 } }}>
+          <Box sx={{ mx: "auto" }}>{children}</Box>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
 export default PrivateLayout;
-
-const LayoutContainer = styled.div`
-  display: flex;
-  min-height: 100vh;
-  width: 100%;
-  overflow-x: hidden; /* ✅ solución al scroll horizontal */
-`;
-
-const MainContent = styled.main`
-  flex: 1;
-  margin-left: ${({ sidebarWidth }) => sidebarWidth}px;
-  padding: 20px;
-  transition: margin-left 0.3s ease;
-
-  @media (max-width: 768px) {
-    margin-left: 0;
-    padding: 60px 20px 20px;
-  }
-`;

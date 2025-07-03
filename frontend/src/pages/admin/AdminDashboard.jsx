@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, createGlobalStyle } from "styled-components";
 import {
   Calendar,
   FileText,
@@ -73,219 +73,234 @@ const AdminDashboard = () => {
   }
 
   return (
-    <Container>
-      <Content>
-        <Header>
-          <Title>Bienvenido a la Página Administrativa</Title>
-          <Subtitle>Carrera de Trabajo Social</Subtitle>
-        </Header>
+    <>
+      <GlobalStyle />
+      <Container>
+        <Content>
+          <Header>
+            <Title>Bienvenido a la Página Administrativa</Title>
+            <Subtitle>Carrera de Trabajo Social</Subtitle>
+          </Header>
 
-        <StatsSection>
-          {/* Eventos */}
-          <StatsCard delay="0s">
-            <CardHeader>
-              <IconWrapper color="#4299e1">
-                <Calendar size={24} />
-              </IconWrapper>
-              <CardTitle>Eventos</CardTitle>
-            </CardHeader>
-            <StatItem>
-              <StatLabel>Total de Eventos</StatLabel>
-              <StatValue>{data?.eventos?.total || 0}</StatValue>
-            </StatItem>
-            <StatItem>
-              <StatLabel>Eventos de Pago</StatLabel>
-              <StatValue>{data?.eventos?.pago || 0}</StatValue>
-            </StatItem>
-            <StatItem>
-              <StatLabel>Eventos Gratuitos</StatLabel>
-              <StatValue>{data?.eventos?.gratis || 0}</StatValue>
-            </StatItem>
-          </StatsCard>
+          <StatsSection>
+            {/* Eventos */}
+            <StatsCard delay="0s">
+              <CardHeader>
+                <IconWrapper color="#4299e1">
+                  <Calendar size={24} />
+                </IconWrapper>
+                <CardTitle>Eventos</CardTitle>
+              </CardHeader>
+              <StatItem>
+                <StatLabel>Total de Eventos</StatLabel>
+                <StatValue>{data?.eventos?.total || 0}</StatValue>
+              </StatItem>
+              <StatItem>
+                <StatLabel>Eventos de Pago</StatLabel>
+                <StatValue>{data?.eventos?.pago || 0}</StatValue>
+              </StatItem>
+              <StatItem>
+                <StatLabel>Eventos Gratuitos</StatLabel>
+                <StatValue>{data?.eventos?.gratis || 0}</StatValue>
+              </StatItem>
+            </StatsCard>
 
-          {/* Noticias */}
-          <StatsCard delay="0.1s">
-            <CardHeader>
-              <IconWrapper color="#48bb78">
-                <FileText size={24} />
-              </IconWrapper>
-              <CardTitle>Noticias</CardTitle>
-            </CardHeader>
-            <StatItem>
-              <StatLabel>Total de Noticias</StatLabel>
-              <StatValue>{data?.noticias?.total || 0}</StatValue>
-            </StatItem>
-            <StatItem>
-              <StatLabel>Artículos</StatLabel>
-              <StatValue>
-                {data?.noticias?.por_categoria?.Articulo || 0}
-              </StatValue>
-            </StatItem>
-            <StatItem>
-              <StatLabel>Comunicados</StatLabel>
-              <StatValue>
-                {data?.noticias?.por_categoria?.Comunicado || 0}
-              </StatValue>
-            </StatItem>
-          </StatsCard>
+            {/* Noticias */}
+            <StatsCard delay="0.1s">
+              <CardHeader>
+                <IconWrapper color="#48bb78">
+                  <FileText size={24} />
+                </IconWrapper>
+                <CardTitle>Noticias</CardTitle>
+              </CardHeader>
+              <StatItem>
+                <StatLabel>Total de Noticias</StatLabel>
+                <StatValue>{data?.noticias?.total || 0}</StatValue>
+              </StatItem>
+              <StatItem>
+                <StatLabel>Artículos</StatLabel>
+                <StatValue>
+                  {data?.noticias?.por_categoria?.Articulo || 0}
+                </StatValue>
+              </StatItem>
+              <StatItem>
+                <StatLabel>Comunicados</StatLabel>
+                <StatValue>
+                  {data?.noticias?.por_categoria?.Comunicado || 0}
+                </StatValue>
+              </StatItem>
+            </StatsCard>
 
-          {/* Usuarios */}
-          <StatsCard delay="0.2s">
-            <CardHeader>
-              <IconWrapper color="#ed8936">
-                <Users size={24} />
-              </IconWrapper>
-              <CardTitle>Usuarios del Sistema</CardTitle>
-            </CardHeader>
-            <StatItem>
-              <StatLabel>Usuarios No Admin</StatLabel>
-              <StatValue>{data?.usuarios_no_admin || 0}</StatValue>
-            </StatItem>
-          </StatsCard>
+            {/* Usuarios */}
+            <StatsCard delay="0.2s">
+              <CardHeader>
+                <IconWrapper color="#ed8936">
+                  <Users size={24} />
+                </IconWrapper>
+                <CardTitle>Usuarios del Sistema</CardTitle>
+              </CardHeader>
+              <StatItem>
+                <StatLabel>Usuarios No Admin</StatLabel>
+                <StatValue>{data?.usuarios_no_admin || 0}</StatValue>
+              </StatItem>
+            </StatsCard>
 
-          {/* Personas */}
-          <StatsCard delay="0.3s">
-            <CardHeader>
-              <IconWrapper color="#9f7aea">
-                <UserCheck size={24} />
-              </IconWrapper>
-              <CardTitle>Personal</CardTitle>
-            </CardHeader>
-            <StatItem>
-              <StatLabel>Autoridades</StatLabel>
-              <StatValue>{data?.personas?.Autoridad || 0}</StatValue>
-            </StatItem>
-            <StatItem>
-              <StatLabel>Administrativos</StatLabel>
-              <StatValue>{data?.personas?.Administrativo || 0}</StatValue>
-            </StatItem>
-            <StatItem>
-              <StatLabel>Docentes</StatLabel>
-              <StatValue>{data?.personas?.Docente || 0}</StatValue>
-            </StatItem>
-          </StatsCard>
+            {/* Personas */}
+            <StatsCard delay="0.3s">
+              <CardHeader>
+                <IconWrapper color="#9f7aea">
+                  <UserCheck size={24} />
+                </IconWrapper>
+                <CardTitle>Personal</CardTitle>
+              </CardHeader>
+              <StatItem>
+                <StatLabel>Autoridades</StatLabel>
+                <StatValue>{data?.personas?.Autoridad || 0}</StatValue>
+              </StatItem>
+              <StatItem>
+                <StatLabel>Administrativos</StatLabel>
+                <StatValue>{data?.personas?.Administrativo || 0}</StatValue>
+              </StatItem>
+              <StatItem>
+                <StatLabel>Docentes</StatLabel>
+                <StatValue>{data?.personas?.Docente || 0}</StatValue>
+              </StatItem>
+            </StatsCard>
 
-          {/* Trámites */}
-          <StatsCard delay="0.4s">
-            <CardHeader>
-              <IconWrapper color="#38b2ac">
-                <Briefcase size={24} />
-              </IconWrapper>
-              <CardTitle>Trámites</CardTitle>
-            </CardHeader>
-            <StatItem>
-              <StatLabel>Total de Trámites</StatLabel>
-              <StatValue>{data?.tramites || 0}</StatValue>
-            </StatItem>
-          </StatsCard>
+            {/* Trámites */}
+            <StatsCard delay="0.4s">
+              <CardHeader>
+                <IconWrapper color="#38b2ac">
+                  <Briefcase size={24} />
+                </IconWrapper>
+                <CardTitle>Trámites</CardTitle>
+              </CardHeader>
+              <StatItem>
+                <StatLabel>Total de Trámites</StatLabel>
+                <StatValue>{data?.tramites || 0}</StatValue>
+              </StatItem>
+            </StatsCard>
 
-          {/* Malla Curricular */}
-          <StatsCard delay="0.5s">
-            <CardHeader>
-              <IconWrapper color="#f56565">
-                <BookOpen size={24} />
-              </IconWrapper>
-              <CardTitle>Malla Curricular</CardTitle>
-            </CardHeader>
-            <StatItem>
-              <StatLabel>Total Semestres</StatLabel>
-              <StatValue>{data?.malla?.total_semestres || 0}</StatValue>
-            </StatItem>
-            <StatItem>
-              <StatLabel>Total Materias</StatLabel>
-              <StatValue>{data?.malla?.total_materias || 0}</StatValue>
-            </StatItem>
-          </StatsCard>
+            {/* Malla Curricular */}
+            <StatsCard delay="0.5s">
+              <CardHeader>
+                <IconWrapper color="#f56565">
+                  <BookOpen size={24} />
+                </IconWrapper>
+                <CardTitle>Malla Curricular</CardTitle>
+              </CardHeader>
+              <StatItem>
+                <StatLabel>Total Semestres</StatLabel>
+                <StatValue>{data?.malla?.total_semestres || 0}</StatValue>
+              </StatItem>
+              <StatItem>
+                <StatLabel>Total Materias</StatLabel>
+                <StatValue>{data?.malla?.total_materias || 0}</StatValue>
+              </StatItem>
+            </StatsCard>
 
-          {/* Redes Sociales */}
-          <StatsCard delay="0.6s">
-            <CardHeader>
-              <IconWrapper color="#667eea">
-                <Share2 size={24} />
-              </IconWrapper>
-              <CardTitle>Redes Sociales</CardTitle>
-            </CardHeader>
-            <StatItem>
-              <StatLabel>Total de Redes</StatLabel>
-              <StatValue>{data?.redes_publicas?.total || 0}</StatValue>
-            </StatItem>
-            <div style={{ marginTop: "1rem" }}>
-              <StatLabel style={{ marginBottom: "0.5rem", display: "block" }}>
-                Plataformas:
-              </StatLabel>
-              <NetworkList>
-                {data?.redes_publicas?.nombres?.map((red, index) => (
-                  <NetworkTag key={index}>{red}</NetworkTag>
-                ))}
-              </NetworkList>
-            </div>
-          </StatsCard>
-        </StatsSection>
+            {/* Redes Sociales */}
+            <StatsCard delay="0.6s">
+              <CardHeader>
+                <IconWrapper color="#667eea">
+                  <Share2 size={24} />
+                </IconWrapper>
+                <CardTitle>Redes Sociales</CardTitle>
+              </CardHeader>
+              <StatItem>
+                <StatLabel>Total de Redes</StatLabel>
+                <StatValue>{data?.redes_publicas?.total || 0}</StatValue>
+              </StatItem>
+              <div style={{ marginTop: "1rem" }}>
+                <StatLabel style={{ marginBottom: "0.5rem", display: "block" }}>
+                  Plataformas:
+                </StatLabel>
+                <NetworkList>
+                  {data?.redes_publicas?.nombres?.map((red, index) => (
+                    <NetworkTag key={index}>{red}</NetworkTag>
+                  ))}
+                </NetworkList>
+              </div>
+            </StatsCard>
+          </StatsSection>
 
-        <ManualsSection>
-          <SectionTitle>Documentación del Sistema</SectionTitle>
-          <ManualsGrid>
-            <ManualCard>
-              <ManualIcon>
-                <Users size={30} />
-              </ManualIcon>
-              <ManualTitle>Manual de Usuario</ManualTitle>
-              <ManualDescription>
-                Guía completa para el uso del sistema administrativo
-              </ManualDescription>
-              <ManualActions>
-                <ActionButton
-                  primary
-                  onClick={() => handleViewPDF(manualUsuario)}
-                >
-                  <Eye size={16} />
-                  Ver
-                </ActionButton>
-                <ActionButton
-                  onClick={() =>
-                    handleDownloadPDF(manualUsuario, "manual-usuario.pdf")
-                  }
-                >
-                  <Download size={16} />
-                  Descargar
-                </ActionButton>
-              </ManualActions>
-            </ManualCard>
+          <ManualsSection>
+            <SectionTitle>Documentación del Sistema</SectionTitle>
+            <ManualsGrid>
+              <ManualCard>
+                <ManualIcon>
+                  <Users size={30} />
+                </ManualIcon>
+                <ManualTitle>Manual de Usuario</ManualTitle>
+                <ManualDescription>
+                  Guía completa para el uso del sistema administrativo
+                </ManualDescription>
+                <ManualActions>
+                  <ActionButton
+                    primary
+                    onClick={() => handleViewPDF(manualUsuario)}
+                  >
+                    <Eye size={16} />
+                    Ver
+                  </ActionButton>
+                  <ActionButton
+                    onClick={() =>
+                      handleDownloadPDF(manualUsuario, "manual-usuario.pdf")
+                    }
+                  >
+                    <Download size={16} />
+                    Descargar
+                  </ActionButton>
+                </ManualActions>
+              </ManualCard>
 
-            <ManualCard>
-              <ManualIcon>
-                <GraduationCap size={30} />
-              </ManualIcon>
-              <ManualTitle>Manual Técnico</ManualTitle>
-              <ManualDescription>
-                Documentación técnica del sistema y arquitectura
-              </ManualDescription>
-              <ManualActions>
-                <ActionButton
-                  primary
-                  onClick={() => handleViewPDF(manualTecnico)}
-                >
-                  <Eye size={16} />
-                  Ver
-                </ActionButton>
-                <ActionButton
-                  onClick={() =>
-                    handleDownloadPDF(manualTecnico, "manual-tecnico.pdf")
-                  }
-                >
-                  <Download size={16} />
-                  Descargar
-                </ActionButton>
-              </ManualActions>
-            </ManualCard>
-          </ManualsGrid>
-        </ManualsSection>
-      </Content>
-    </Container>
+              <ManualCard>
+                <ManualIcon>
+                  <GraduationCap size={30} />
+                </ManualIcon>
+                <ManualTitle>Manual Técnico</ManualTitle>
+                <ManualDescription>
+                  Documentación técnica del sistema y arquitectura
+                </ManualDescription>
+                <ManualActions>
+                  <ActionButton
+                    primary
+                    onClick={() => handleViewPDF(manualTecnico)}
+                  >
+                    <Eye size={16} />
+                    Ver
+                  </ActionButton>
+                  <ActionButton
+                    onClick={() =>
+                      handleDownloadPDF(manualTecnico, "manual-tecnico.pdf")
+                    }
+                  >
+                    <Download size={16} />
+                    Descargar
+                  </ActionButton>
+                </ManualActions>
+              </ManualCard>
+            </ManualsGrid>
+          </ManualsSection>
+        </Content>
+      </Container>
+    </>
   );
 };
 
 export default AdminDashboard;
+
+// Agregar después de los imports y antes de las animaciones
+const GlobalStyle = createGlobalStyle`
+  html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+  
+  * {
+    box-sizing: border-box !important;
+  }
+`;
 
 // Animaciones
 const fadeInUp = keyframes`
@@ -312,9 +327,11 @@ const pulse = keyframes`
 const Container = styled.div`
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem;
+  padding: 1.5rem;
   box-sizing: border-box;
   position: relative;
+  max-width: 100vw;
+  overflow: hidden;
 
   @media (max-width: 768px) {
     padding: 1rem;
@@ -326,10 +343,19 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-  max-width: 1400px;
+  max-width: min(1400px, calc(100vw - 3rem));
   margin: 0 auto;
   animation: ${fadeInUp} 0.8s ease-out;
   position: relative;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    max-width: calc(100vw - 2rem);
+  }
+
+  @media (max-width: 480px) {
+    max-width: calc(100vw - 1rem);
+  }
 `;
 
 const Header = styled.div`
@@ -374,14 +400,15 @@ const Subtitle = styled.h2`
 
 const StatsSection = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 2rem;
   margin-bottom: 3rem;
   width: 100%;
   box-sizing: border-box;
+  overflow: hidden;
 
   @media (max-width: 768px) {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
     gap: 1.5rem;
   }
 
