@@ -133,11 +133,11 @@ const menuItems = [
         url: "/admin/noticias",
         icon: Newspaper,
       },
-      {
-        title: "Biblioteca",
-        url: "/admin/biblioteca",
-        icon: LocalLibrary,
-      },
+      //      {
+      //        title: "Biblioteca",
+      //        url: "/admin/biblioteca",
+      //        icon: LocalLibrary,
+      //      },
     ],
   },
   {
@@ -152,12 +152,12 @@ const menuItems = [
       },
       {
         title: "Asistentes",
-        url: "/admin/asistentes",
+        url: "/admin/eventos/asistentes",
         icon: PeopleAlt,
       },
       {
         title: "Expositores",
-        url: "/admin/expositores",
+        url: "/admin/eventos/expositores",
         icon: RecordVoiceOver,
       },
       {

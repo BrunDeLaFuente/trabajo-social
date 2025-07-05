@@ -14,7 +14,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_evento');
             $table->dateTime('fecha_registro')->useCurrent();
             $table->string('email_inscripcion')->nullable();
-            $table->char('celular_inscripcion', 7)->nullable();
+            $table->char('celular_inscripcion', 8)->nullable();
             $table->string('comprobante_pago')->nullable();
             $table->boolean('certificado_entregado')->default(false);
             $table->boolean('entrada')->default(false);

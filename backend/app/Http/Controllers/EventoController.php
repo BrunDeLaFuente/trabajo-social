@@ -252,19 +252,31 @@ class EventoController extends Controller
 
     public function destroy($id): JsonResponse
     {
-        $evento = Evento::findOrFail($id);
-
         DB::beginTransaction();
+
         try {
-            // Elimina archivos asociados
+            $evento = Evento::with('inscripciones')->findOrFail($id);
+
+            // 🔥 Eliminar inscripciones con Eloquent para disparar el deleting
+            foreach ($evento->inscripciones as $inscripcion) {
+                $inscripcion->delete(); // Esto ejecuta el hook deleting
+            }
+
+            // Eliminar carpeta de imágenes del evento
             Storage::deleteDirectory('public/eventos/' . $evento->id_evento);
 
             $evento->delete();
+
             DB::commit();
+
             return response()->json(['message' => 'Evento eliminado correctamente']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Error al eliminar el evento', 'message' => $e->getMessage()], 500);
+
+            return response()->json([
+                'error' => 'Error al eliminar el evento',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 

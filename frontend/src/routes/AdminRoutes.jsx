@@ -20,7 +20,6 @@ import NoticiasAdmin from "../pages/admin/Noticias/NoticiasAdmin";
 import NoticiaCrear from "../pages/admin/Noticias/NoticiaCrear";
 import NoticiaEditar from "../pages/admin/Noticias/NoticiaEditar";
 import EventosAdmin from "../pages/admin/Eventos/EventosAdmin";
-
 import UsuariosAdmin from "../pages/admin/Usuarios/UsuariosAdmin";
 import CambiarPassword from "../pages/admin/Usuarios/CambiarPassword";
 import EventoCrear from "../pages/admin/Eventos/EventoCrear";
@@ -28,6 +27,8 @@ import EventoEditar from "../pages/admin/Eventos/EventoEditar";
 import AsistentesAdmin from "../pages/admin/Eventos/AsistentesAdmin";
 import NotificarAdmin from "../pages/admin/Eventos/NotificarAdmin";
 import DashboardEstadisticas from "../pages/admin/Eventos/DashboardEstadisticas";
+import Asistentes from "../pages/admin/Eventos/Asistentes";
+import Expositores from "../pages/admin/Eventos/Expositores";
 
 const AdminRoutes = () => {
   const { user, loading } = useContext(AuthContext);
@@ -67,15 +68,13 @@ const AdminRoutes = () => {
         <Route path="/noticias" element={<NoticiasAdmin />} />
         <Route path="/noticias/agregar" element={<NoticiaCrear />} />
         <Route path="/noticias/editar/:id" element={<NoticiaEditar />} />
-
         <Route path="/eventos" element={<EventosAdmin />} />
         <Route path="/eventos/agregar" element={<EventoCrear />} />
         <Route path="/eventos/editar/:id" element={<EventoEditar />} />
         <Route path="/eventos/inscritos/:id" element={<AsistentesAdmin />} />
         <Route path="eventos/notificar/:id" element={<NotificarAdmin />} />
-
-        <Route path="/eventos-sin-costo" element={<h1>Eventos Sin Costo</h1>} />
-        <Route path="/eventos-con-costo" element={<h1>Eventos Con Costo</h1>} />
+        <Route path="/eventos/asistentes" element={<Asistentes />} />
+        <Route path="/eventos/expositores" element={<Expositores />} />
         <Route path="/eventos-dashboard" element={<DashboardEstadisticas />} />
       </Routes>
     </PrivateLayout>
