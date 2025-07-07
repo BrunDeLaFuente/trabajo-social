@@ -45,12 +45,8 @@ const Eventos = () => {
     navigate(`/noticias/eventos/${slug}`);
   };
 
-  const eventosGratuitos = eventos.filter(
-    (evento) => evento.es_pago === 0 && evento.formulario === 1
-  );
-  const eventosPagados = eventos.filter(
-    (evento) => evento.es_pago === 1 && evento.formulario === 1
-  );
+  const eventosGratuitos = eventos.filter((evento) => evento.es_pago === 0);
+  const eventosPagados = eventos.filter((evento) => evento.es_pago === 1);
 
   const renderEventCard = (evento, index, isPaid = false) => (
     <EventCard
@@ -164,13 +160,15 @@ const Eventos = () => {
           </ExpositorsContainer>
         )}
 
-        <RegisterButton
-          className={isPaid ? "paid" : "free"}
-          onClick={() => handleRegister(evento.slug)}
-        >
-          INSCRIBIRSE
-          <ArrowRight />
-        </RegisterButton>
+        {evento.formulario === 1 && (
+          <RegisterButton
+            className={isPaid ? "paid" : "free"}
+            onClick={() => handleRegister(evento.slug)}
+          >
+            INSCRIBIRSE
+            <ArrowRight />
+          </RegisterButton>
+        )}
       </CardContent>
     </EventCard>
   );

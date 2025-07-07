@@ -25,6 +25,8 @@ import {
   MapPin,
   DollarSign,
   AlertTriangle,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import api from "../../../utils/api";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
@@ -83,6 +85,7 @@ const AsistentesAdmin = () => {
     campo: "",
   });
   const [comprobantePago, setComprobantePago] = useState(null);
+  const [mostrarComprobante, setMostrarComprobante] = useState(false);
 
   // Agregar/eliminar mensajes
   const agregarMensaje = (tipo, color, texto, duracion = 5000) => {
@@ -229,6 +232,7 @@ const AsistentesAdmin = () => {
   // Modales
   const abrirModalDetalle = async (inscripcion) => {
     setModalDetalle({ visible: true, inscripcion });
+    setMostrarComprobante(false);
 
     // Cargar comprobante de pago si existe
     if (inscripcion.comprobante_pago) {
@@ -423,12 +427,12 @@ const AsistentesAdmin = () => {
 
     if (
       formData.celular_inscripcion &&
-      !/^\d{7}$/.test(formData.celular_inscripcion)
+      !/^\d{8}$/.test(formData.celular_inscripcion)
     ) {
       agregarMensaje(
         "fail",
         "#D32F2F",
-        "El celular debe tener exactamente 7 dígitos"
+        "El celular debe tener exactamente 8 dígitos"
       );
       return false;
     }
@@ -470,6 +474,38 @@ const AsistentesAdmin = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const descargarComprobante = async () => {
+    try {
+      const response = await api.get(
+        `/inscripcion/comprobante/${modalDetalle.inscripcion.id_inscripcion}`,
+        {
+          responseType: "blob",
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `comprobante-${modalDetalle.inscripcion.asistente.nombre_asistente}.jpg`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      agregarMensaje(
+        "success",
+        "#2E7D32",
+        "Comprobante descargado exitosamente"
+      );
+    } catch (error) {
+      console.error("Error al descargar comprobante:", error);
+      agregarMensaje("fail", "#D32F2F", "Error al descargar el comprobante");
+    }
   };
 
   if (loading) {
@@ -816,17 +852,70 @@ const AsistentesAdmin = () => {
 
                 {modalDetalle.inscripcion?.comprobante_pago && (
                   <ComprobanteContainer>
-                    <DetailLabel>
-                      <CreditCard size={16} />
-                      Comprobante de Pago
-                    </DetailLabel>
-                    {comprobantePago ? (
-                      <ComprobanteImage
-                        src={comprobantePago}
-                        alt="Comprobante de pago"
-                      />
-                    ) : (
-                      <p>Cargando comprobante...</p>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "1rem",
+                      }}
+                    >
+                      <DetailLabel
+                        style={{ margin: 0, cursor: "pointer" }}
+                        onClick={() =>
+                          setMostrarComprobante(!mostrarComprobante)
+                        }
+                      >
+                        <CreditCard size={16} />
+                        Comprobante de Pago
+                        {mostrarComprobante ? (
+                          <ChevronUp size={16} />
+                        ) : (
+                          <ChevronDown size={16} />
+                        )}
+                      </DetailLabel>
+                      <button
+                        onClick={descargarComprobante}
+                        style={{
+                          background:
+                            "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "8px",
+                          width: "36px",
+                          height: "36px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          transition: "all 0.3s ease",
+                          boxShadow: "0 2px 8px rgba(59, 130, 246, 0.3)",
+                        }}
+                        onMouseOver={(e) => {
+                          e.target.style.transform = "translateY(-2px)";
+                          e.target.style.boxShadow =
+                            "0 4px 15px rgba(59, 130, 246, 0.4)";
+                        }}
+                        onMouseOut={(e) => {
+                          e.target.style.transform = "translateY(0)";
+                          e.target.style.boxShadow =
+                            "0 2px 8px rgba(59, 130, 246, 0.3)";
+                        }}
+                      >
+                        <Download size={16} />
+                      </button>
+                    </div>
+                    {mostrarComprobante && (
+                      <div style={{ animation: "slideDown 0.3s ease-out" }}>
+                        {comprobantePago ? (
+                          <ComprobanteImage
+                            src={comprobantePago}
+                            alt="Comprobante de pago"
+                          />
+                        ) : (
+                          <p>Cargando comprobante...</p>
+                        )}
+                      </div>
                     )}
                   </ComprobanteContainer>
                 )}
@@ -928,7 +1017,7 @@ const AsistentesAdmin = () => {
                       value={formData.celular_inscripcion}
                       onChange={handleInputChange}
                       placeholder="Ingrese el celular"
-                      maxLength="7"
+                      maxLength="8"
                     />
                   </FormGroup>
                   <FormGroup>
@@ -1091,7 +1180,7 @@ const AsistentesAdmin = () => {
                       value={formData.celular_inscripcion}
                       onChange={handleInputChange}
                       placeholder="Ingrese el celular"
-                      maxLength="7"
+                      maxLength="8"
                     />
                   </FormGroup>
                 </FormGrid>

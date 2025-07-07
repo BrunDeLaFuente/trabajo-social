@@ -22,7 +22,8 @@
     "react-icons": "^5.4.0",
     "react-router-dom": "^7.1.5",
     "recharts": "^3.0.0",
-    "styled-components": "^6.1.15"
+    "styled-components": "^6.1.15",
+    "tesseract.js": "^6.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

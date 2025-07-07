@@ -1157,7 +1157,7 @@ const SelectedExpositores = styled.div`
 `;
 
 const ExpositorTag = styled.div`
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: rgb(55, 111, 231);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 20px;
