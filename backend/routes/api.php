@@ -111,10 +111,10 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::get('/eventos/descargar-pdf/{id}', [EventoController::class, 'descargarAsistentesPDF']);
 
     Route::get('/eventos/{id}/detalles', [InscripcionController::class, 'getEventoConInscripciones']);
+    Route::post('/eventos/{id}/inscribir', [InscripcionController::class, 'store']);
     Route::get('/inscripcion/comprobante/{id}', [InscripcionController::class, 'obtenerComprobante']);
     Route::match(['PUT', 'POST'], '/inscripcionActualizar/{id}', [InscripcionController::class, 'update']);
     Route::delete('/inscripcionesEliminar/{id}', [InscripcionController::class, 'destroy']);
-
 
     // Asistentes
     Route::get('/asistentes', [AsistenteController::class, 'index']);
@@ -170,9 +170,11 @@ Route::middleware([])->group(function () {
     // Noticias
     Route::get('/noticias', [NoticiaController::class, 'indexPublic']);
     Route::get('/noticias/{slug}', [NoticiaController::class, 'mostrarPorSlug']);
+    Route::get('/noticias/{tipo}/{id}/descargar', [NoticiaController::class, 'descargarArchivo']);
 
     // Eventos
     Route::get('/eventos/publicos', [EventoController::class, 'indexPublic']);
     Route::get('/eventos/publicos/{slug}', [EventoController::class, 'getEventoPorSlug']);
-    Route::post('/eventos/{id}/inscribir', [InscripcionController::class, 'store']);
+    Route::post('/eventos/publicos/{id}/inscribir', [InscripcionController::class, 'storePublic']);
+    Route::get('/eventos/{id}/qr/download', [EventoController::class, 'descargarQR']);
 });

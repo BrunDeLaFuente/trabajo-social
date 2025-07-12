@@ -334,4 +334,46 @@ class NoticiaController extends Controller
 
         return response()->json(['message' => 'Noticia y archivos eliminados completamente']);
     }
+
+    public function descargarArchivo($tipo, $id)
+    {
+        try {
+            switch ($tipo) {
+                case 'imagen':
+                    $archivo = DB::table('noticia_imagen')
+                        ->where('id_noticia_imagen', $id)
+                        ->first();
+                    $ruta = $archivo->ruta_imagen_noticia ?? null;
+                    break;
+
+                case 'video':
+                    $archivo = DB::table('noticia_video')
+                        ->where('id_noticia_video', $id)
+                        ->first();
+                    $ruta = $archivo->ruta_video_noticia ?? null;
+                    break;
+
+                case 'archivo':
+                    $archivo = DB::table('noticia_archivo')
+                        ->where('id_noticia_archivo', $id)
+                        ->first();
+                    $ruta = $archivo->ruta_archivo ?? null;
+                    break;
+
+                default:
+                    return response()->json(['error' => 'Tipo de archivo no válido.'], 400);
+            }
+
+            if (!$archivo || !Storage::exists('public/' . $ruta)) {
+                return response()->json(['error' => 'Archivo no encontrado.'], 404);
+            }
+
+            return response()->file(storage_path('app/public/' . $ruta));
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al descargar el archivo.',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

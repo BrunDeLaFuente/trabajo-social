@@ -50,6 +50,7 @@ const AsistentesAdmin = () => {
   const [filtros, setFiltros] = useState({
     busqueda: "",
     fecha: "",
+    habilitado: "",
   });
 
   // Estados de modales
@@ -73,6 +74,7 @@ const AsistentesAdmin = () => {
     ci: "",
     email_inscripcion: "",
     celular_inscripcion: "",
+    habilitado: "1",
     certificado_entregado: "0",
     entrada: "0",
     salida: "0",
@@ -176,6 +178,14 @@ const AsistentesAdmin = () => {
       );
     }
 
+    // Filtro de habilitado
+    if (filtros.habilitado !== "") {
+      filtradas = filtradas.filter(
+        (inscripcion) =>
+          inscripcion.habilitado.toString() === filtros.habilitado
+      );
+    }
+
     setInscripcionesFiltradas(filtradas);
   };
 
@@ -260,6 +270,7 @@ const AsistentesAdmin = () => {
       ci: inscripcion.asistente.ci,
       email_inscripcion: inscripcion.email_inscripcion,
       celular_inscripcion: inscripcion.celular_inscripcion,
+      habilitado: inscripcion.habilitado.toString(),
       certificado_entregado: inscripcion.certificado_entregado.toString(),
       entrada: inscripcion.entrada.toString(),
       salida: inscripcion.salida.toString(),
@@ -273,6 +284,7 @@ const AsistentesAdmin = () => {
       ci: "",
       email_inscripcion: "",
       celular_inscripcion: "",
+      habilitado: "1",
       certificado_entregado: "0",
       entrada: "0",
       salida: "0",
@@ -601,6 +613,14 @@ const AsistentesAdmin = () => {
               value={filtros.fecha}
               onChange={(e) => handleFiltroChange("fecha", e.target.value)}
             />
+            <Select
+              value={filtros.habilitado}
+              onChange={(e) => handleFiltroChange("habilitado", e.target.value)}
+            >
+              <option value="">Todos los estados</option>
+              <option value="1">✅ Habilitado</option>
+              <option value="0">❌ Deshabilitado</option>
+            </Select>
           </FiltersContainer>
         </ControlsCard>
 
@@ -634,6 +654,7 @@ const AsistentesAdmin = () => {
                         </DeleteButton>
                       </MobileCardActions>
                     </MobileCardHeader>
+
                     <MobileCardInfo>
                       <MobileCardItem>
                         <CreditCard size={14} />
@@ -644,8 +665,16 @@ const AsistentesAdmin = () => {
                         {inscripcion.email_inscripcion || "No especificado"}
                       </MobileCardItem>
                       <MobileCardItem>
-                        <Calendar size={14} />
-                        {formatearFecha(inscripcion.fecha_registro)}
+                        <CheckCircle size={14} />
+                        <StatusBadge
+                          status={
+                            inscripcion.habilitado ? "presente" : "ausente"
+                          }
+                        >
+                          {inscripcion.habilitado
+                            ? "Habilitado"
+                            : "Deshabilitado"}
+                        </StatusBadge>
                       </MobileCardItem>
                     </MobileCardInfo>
                   </MobileCard>
@@ -660,7 +689,7 @@ const AsistentesAdmin = () => {
                       <TableHeaderCell>Nombre</TableHeaderCell>
                       <TableHeaderCell>CI</TableHeaderCell>
                       <TableHeaderCell>Email</TableHeaderCell>
-                      <TableHeaderCell>Fecha Registro</TableHeaderCell>
+                      <TableHeaderCell>Habilitado</TableHeaderCell>
                       <TableHeaderCell>Acciones</TableHeaderCell>
                     </tr>
                   </TableHeader>
@@ -675,7 +704,20 @@ const AsistentesAdmin = () => {
                           {inscripcion.email_inscripcion || "No especificado"}
                         </TableCell>
                         <TableCell>
-                          {formatearFecha(inscripcion.fecha_registro)}
+                          <StatusBadge
+                            status={
+                              inscripcion.habilitado ? "presente" : "ausente"
+                            }
+                          >
+                            {inscripcion.habilitado ? (
+                              <CheckCircle size={16} />
+                            ) : (
+                              <XCircle size={16} />
+                            )}
+                            {inscripcion.habilitado
+                              ? "Habilitado"
+                              : "Deshabilitado"}
+                          </StatusBadge>
                         </TableCell>
                         <TableCell>
                           <TableActions>
@@ -765,6 +807,30 @@ const AsistentesAdmin = () => {
                     <DetailValue>
                       {modalDetalle.inscripcion?.celular_inscripcion ||
                         "No especificado"}
+                    </DetailValue>
+                  </DetailItem>
+                  <DetailItem>
+                    <DetailLabel>
+                      <CheckCircle size={16} />
+                      Estado
+                    </DetailLabel>
+                    <DetailValue>
+                      <StatusBadge
+                        status={
+                          modalDetalle.inscripcion?.habilitado
+                            ? "presente"
+                            : "ausente"
+                        }
+                      >
+                        {modalDetalle.inscripcion?.habilitado ? (
+                          <CheckCircle size={16} />
+                        ) : (
+                          <XCircle size={16} />
+                        )}
+                        {modalDetalle.inscripcion?.habilitado
+                          ? "Habilitado"
+                          : "Deshabilitado"}
+                      </StatusBadge>
                     </DetailValue>
                   </DetailItem>
                   <DetailItem>
@@ -1019,6 +1085,20 @@ const AsistentesAdmin = () => {
                       placeholder="Ingrese el celular"
                       maxLength="8"
                     />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>
+                      <CheckCircle size={16} />
+                      Estado
+                    </Label>
+                    <Select
+                      name="habilitado"
+                      value={formData.habilitado}
+                      onChange={handleInputChange}
+                    >
+                      <option value="1">Habilitado</option>
+                      <option value="0">Deshabilitado</option>
+                    </Select>
                   </FormGroup>
                   <FormGroup>
                     <Label>
@@ -1572,8 +1652,9 @@ const FiltersContainer = styled.div`
 
   @media (min-width: 768px) {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    align-items: end;
+    grid-template-columns: 2fr 1fr 1fr;
+    align-items: start;
+    gap: 1rem;
   }
 `;
 
@@ -1646,6 +1727,41 @@ const DateInput = styled.input`
 
   @media (min-width: 768px) {
     padding: 0.875rem 1rem;
+    border-radius: 12px;
+    font-size: 1rem;
+  }
+`;
+
+const Select = styled.select`
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  background: white;
+  cursor: pointer;
+  box-sizing: border-box;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' strokeLinecap='round' strokeLinejoin='round' strokeWidth='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+  appearance: none;
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
+  }
+
+  &:hover {
+    border-color: #9ca3af;
+  }
+
+  @media (min-width: 768px) {
+    padding: 0.875rem 2.5rem 0.875rem 1rem;
     border-radius: 12px;
     font-size: 1rem;
   }
@@ -2122,31 +2238,6 @@ const Input = styled.input`
     background: #f9fafb;
     color: #9ca3af;
     cursor: not-allowed;
-  }
-
-  @media (min-width: 768px) {
-    padding: 0.875rem 1rem;
-    border-radius: 12px;
-    font-size: 1rem;
-  }
-`;
-
-const Select = styled.select`
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  background: white;
-  cursor: pointer;
-  box-sizing: border-box;
-
-  &:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    transform: translateY(-1px);
   }
 
   @media (min-width: 768px) {

@@ -85,36 +85,74 @@ const NoticiaDetalle = () => {
     });
   };
 
-  const handleDownload = (url, filename, type = "archivo", index = 1) => {
-    const link = document.createElement("a");
-    link.href = url;
+  const handleDownload = async (item, filename, type, index = 1) => {
+    try {
+      // Determinar el ID según el tipo
+      let id;
+      switch (type) {
+        case "imagen":
+          id = item.id_noticia_imagen;
+          break;
+        case "video":
+          id = item.id_noticia_video;
+          break;
+        case "archivo":
+          id = item.id_noticia_archivo;
+          break;
+        default:
+          console.error("Tipo de archivo no válido:", type);
+          return;
+      }
 
-    // Obtener la extensión del archivo original
-    const originalExtension = filename
-      ? filename.split(".").pop().toLowerCase()
-      : "";
+      // Hacer la llamada API para obtener el archivo
+      const response = await api.get(`/noticias/${type}/${id}/descargar`, {
+        responseType: "blob", // Importante para manejar archivos binarios
+      });
 
-    // Crear el nuevo nombre usando el slug de la noticia
-    let newFilename;
-    if (type === "imagen") {
-      newFilename = `${noticia.slug}-imagen-${index}.${
-        originalExtension || "jpg"
-      }`;
-    } else if (type === "video") {
-      newFilename = `${noticia.slug}-video-${index}.${
-        originalExtension || "mp4"
-      }`;
-    } else {
-      newFilename = `${noticia.slug}-archivo-${index}.${
-        originalExtension || "pdf"
-      }`;
+      // Crear un blob URL temporal para la descarga
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
+
+      // Crear el enlace de descarga
+      const link = document.createElement("a");
+      link.href = url;
+
+      // Obtener la extensión del archivo original
+      const originalExtension = filename
+        ? filename.split(".").pop().toLowerCase()
+        : "";
+
+      // Crear el nuevo nombre usando el slug de la noticia
+      let newFilename;
+      if (type === "imagen") {
+        newFilename = `${noticia.slug}-imagen-${index}.${
+          originalExtension || "jpg"
+        }`;
+      } else if (type === "video") {
+        newFilename = `${noticia.slug}-video-${index}.${
+          originalExtension || "mp4"
+        }`;
+      } else {
+        newFilename = `${noticia.slug}-archivo-${index}.${
+          originalExtension || "pdf"
+        }`;
+      }
+
+      link.download = newFilename;
+      link.target = "_blank";
+
+      // Ejecutar la descarga
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Limpiar el blob URL temporal
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error al descargar el archivo:", error);
+      // Aquí podrías mostrar un mensaje de error al usuario
+      alert("Error al descargar el archivo. Por favor, inténtalo de nuevo.");
     }
-
-    link.download = newFilename;
-    link.target = "_blank";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   const getFileIcon = (filename) => {
@@ -128,6 +166,10 @@ const NoticiaDetalle = () => {
       default:
         return <File style={{ color: "#6b7280" }} />;
     }
+  };
+
+  const getNameExtension = (filename) => {
+    return `${noticia.slug}.${filename.split(".").pop().toLowerCase()}`;
   };
 
   const canPreviewFile = (filename) => {
@@ -366,12 +408,14 @@ const NoticiaDetalle = () => {
                             <FileHeader>
                               <FileInfo>
                                 {getFileIcon(filename)}
-                                <FileName>{filename}</FileName>
+                                <FileName>
+                                  {getNameExtension(filename)}
+                                </FileName>
                               </FileInfo>
                               <FileDownloadButton
                                 onClick={() =>
                                   handleDownload(
-                                    archivo.url,
+                                    archivo,
                                     filename,
                                     "archivo",
                                     index + 1
@@ -419,7 +463,7 @@ const NoticiaDetalle = () => {
                           <DownloadButton
                             onClick={() =>
                               handleDownload(
-                                imagen.url,
+                                imagen,
                                 `imagen-${index + 1}.jpg`,
                                 "imagen",
                                 index + 1
@@ -455,7 +499,7 @@ const NoticiaDetalle = () => {
                           <DownloadButton
                             onClick={() =>
                               handleDownload(
-                                video.url,
+                                video,
                                 `video-${index + 1}.mp4`,
                                 "video",
                                 index + 1
@@ -518,6 +562,7 @@ const slideUp = keyframes`
 
 // Styled Components
 const Container = styled.div`
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
 `;
 

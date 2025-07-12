@@ -446,4 +446,22 @@ class EventoController extends Controller
             'modalidad' => $porModalidad,
         ]);
     }
+
+    public function descargarQR($id)
+    {
+        try {
+            $evento = Evento::findOrFail($id);
+
+            if (!$evento->qr_pago || !Storage::exists('public/' . $evento->qr_pago)) {
+                return response()->json(['error' => 'QR no encontrado para este evento.'], 404);
+            }
+
+            return response()->file(storage_path('app/public/' . $evento->qr_pago));
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al descargar el QR.',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

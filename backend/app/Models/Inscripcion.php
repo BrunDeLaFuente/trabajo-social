@@ -16,6 +16,7 @@ class Inscripcion extends Model
         'email_inscripcion',
         'celular_inscripcion',
         'comprobante_pago',
+        'habilitado',
         'certificado_entregado',
         'entrada',
         'salida'
