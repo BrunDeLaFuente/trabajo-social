@@ -26,6 +26,52 @@ const Tramites = () => {
     fetchTramites();
   }, []);
 
+  const handleDownload = async (item) => {
+    try {
+      const id = item.id_tramite;
+
+      // Hacer la llamada API para obtener el archivo
+      const response = await api.get(`/tramites/${id}/descargar`, {
+        responseType: "blob", // Importante para manejar archivos binarios
+      });
+
+      // Crear un blob URL temporal para la descarga
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
+
+      // Crear el enlace de descarga
+      const link = document.createElement("a");
+      link.href = url;
+
+      // Formatear el título: minúsculas y espacios por "_"
+      const safeTitle = item.titulo_tramite
+        .toLowerCase()
+        .replace(/\s+/g, "_") // reemplazar espacios con "_"
+        .replace(/[^a-z0-9_]/g, ""); // quitar caracteres raros
+
+      // Obtener extensión del archivo original
+      const filename = item.planilla_download_url.split("/").pop();
+      const originalExtension = filename.split(".").pop().toLowerCase();
+
+      // Nuevo nombre seguro
+      const newFilename = `${safeTitle}.${originalExtension || "pdf"}`;
+
+      link.download = newFilename;
+      link.target = "_blank";
+
+      // Ejecutar la descarga
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Limpiar el blob URL temporal
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error al descargar la planilla:", error);
+      alert("Error al descargar la planilla. Por favor, inténtalo de nuevo.");
+    }
+  };
+
   return (
     <PageContainer>
       <HeroSection title="Trámites" />
@@ -48,11 +94,7 @@ const Tramites = () => {
               <Description>
                 <p>{tramite.descripcion_tramite}</p>
                 {tramite.planilla_download_url && (
-                  <PlanillaButton
-                    href={tramite.planilla_download_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <PlanillaButton onClick={() => handleDownload(tramite)}>
                     Descargar Planilla
                   </PlanillaButton>
                 )}

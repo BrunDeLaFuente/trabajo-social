@@ -99,4 +99,22 @@ class TramiteController extends Controller
 
         return response()->json(['message' => 'Trámite eliminado correctamente.']);
     }
+
+    public function descargarPlanilla($id)
+    {
+        try {
+            $tramite = Tramite::findOrFail($id);
+
+            if (!$tramite->planilla_url || !Storage::exists('public/' . $tramite->planilla_url)) {
+                return response()->json(['error' => 'Planilla no encontrada.'], 404);
+            }
+
+            return response()->file(storage_path('app/public/' . $tramite->planilla_url));
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al descargar la planilla.',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

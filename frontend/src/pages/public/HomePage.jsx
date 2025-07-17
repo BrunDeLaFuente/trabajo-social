@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import backgroundImage1 from "../../assets/img/portada.png";
 import backgroundImage2 from "../../assets/img/portada2.jpg";
 import platformIcon from "../../assets/img/educacion-en-linea.png";
@@ -11,11 +11,16 @@ import NoticiasSection from "../../components/public/NoticiasSection";
 
 const HomePage = () => {
   const backgrounds = [backgroundImage1, backgroundImage2];
+  const [animateText, setAnimateText] = useState(true);
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % backgrounds.length);
+
+      // Reiniciar la animación del texto
+      setAnimateText(false);
+      setTimeout(() => setAnimateText(true), 50); // Pequeño delay para reiniciar keyframes
     }, 10000); // cambia cada 10 segundos
 
     return () => clearInterval(interval);
@@ -28,7 +33,7 @@ const HomePage = () => {
     <Container>
       <HeroSection isFirst={isFirstBg} background={activeBg}>
         <Overlay />
-        <TextOverlay>
+        <TextOverlay animate={animateText}>
           <Title>Carrera de Trabajo Social</Title>
           <Subtitle>FHyCE | UMSS</Subtitle>
         </TextOverlay>
@@ -40,7 +45,6 @@ const HomePage = () => {
           ></path>
         </WaveSvg>
       </HeroSection>
-
       <LinksSection>
         <LinkCard
           href="https://www.umss.edu.bo/plataformas-educativas-estudiantes/"
@@ -68,7 +72,6 @@ const HomePage = () => {
           <Text>WebSISS</Text>
         </LinkCard>
       </LinksSection>
-
       <CareerSection />
       <NoticiasSection />
     </Container>
@@ -126,8 +129,13 @@ const TextOverlay = styled.div`
   position: relative;
   color: white;
   text-align: center;
-  animation: ${fadeIn} 2s ease-in-out;
   z-index: 2;
+
+  ${(props) =>
+    props.animate &&
+    css`
+      animation: ${fadeIn} 2s ease-in-out;
+    `}
 `;
 
 const Title = styled.h1`

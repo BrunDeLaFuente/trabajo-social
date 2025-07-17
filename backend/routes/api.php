@@ -163,6 +163,7 @@ Route::middleware([])->group(function () {
 
     // Trámites
     Route::get('/tramites', [TramiteController::class, 'index']);
+    Route::get('/tramites/{id}/descargar', [TramiteController::class, 'descargarPlanilla']);
 
     // Malla curricular
     Route::get('/malla', [MallaCurricularController::class, 'show']);
