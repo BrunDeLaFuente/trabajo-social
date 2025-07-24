@@ -4,11 +4,12 @@ import { Download } from "lucide-react";
 import HeroSection from "../../../components/public/HeroSection";
 import pdfFile from "../../../assets/doc/brochure-trabajo-social.pdf";
 import imghistoria from "../../../assets/img/historia.jpg";
-import imgPerfil from "../../../assets/img/perfil.jpg"
+import imgPerfil from "../../../assets/img/perfil.jpg";
+import imgHistoriaExtra from "../../../assets/img/historia-extra.jpeg";
+import imgPerfilExtra from "../../../assets/img/perfil-extra.webp";
 
 export default function NuestraCarrera() {
   useEffect(() => {
-    // Efecto para animar elementos cuando aparecen en el viewport
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -66,49 +67,60 @@ export default function NuestraCarrera() {
                   ninguna decisión, por lo que el trámite se derivó a la
                   Facultad de Humanidades y Ciencias de la Educación.
                 </HistoryText>
-                <HistoryText>
-                  De esta manera mediante R.C.F. 334/05 de 13 de diciembre de
-                  2005, se aprueba la creación del Programa de Trabajo Social,
-                  refrendándose con la Resolución del Comité Académico del
-                  Consejo Universitario (Acuerdo CA-HCU N° 19/2006 DE FECHA 16
-                  DE MAYO DE 2006) . Así fue aprobado en el H. Consejo
-                  Universitario según Resolución N° 24/06 de fecha 06 de julio
-                  de 2006.
-                </HistoryText>
-                <HistoryText>
-                  En términos institucionales, Trabajo Social tiene un Jefe de
-                  Departamento y a partir del 2009 se confirmó un Consejo de
-                  Programa en la que participan docentes y estudiantes electos
-                  democráticamente en forma paritaria.
-                </HistoryText>
-                <HistoryText>
-                  El proceso de conversión a carrera y la compatibilización
-                  Curricular del Programa de Trabajo Social y las acciones que
-                  han derivado de ella, se han basado permanentemente en el
-                  marco normativo de la Universidad Boliviana en General y la
-                  Universidad Mayor de San Simón en particular.
-                </HistoryText>
-                <HistoryText>
-                  De hecho, la Nueva Constitución Política del Estado
-                  Plurinacional (NCPE) , orientado a satisfacer las necesidades
-                  de la población más necesitada, ha posibilitado el desarrollo
-                  de Políticas Sociales orientadas a esta población, en la que
-                  se destaca la participación de profesionales de Trabajo
-                  Social, tanto en instituciones públicas como privadas que
-                  operativizan Políticas Sociales, a través de planes, programas
-                  y proyectos dentro de las áreas de educación, vivienda, salud,
-                  trabajo, etc., en la que necesariamente deben participar los
-                  profesionales en Trabajo Social por las competencias que
-                  tienen.
-                </HistoryText>
+                <HistoryText></HistoryText>
               </HistoryTextContainer>
+
+              {/* Imagen a la derecha */}
               <HistoryImageContainer>
                 <HistoryImage
-                  src= {imghistoria}
+                  src={imghistoria}
                   alt="Historia de la Carrera de Trabajo Social"
                 />
               </HistoryImageContainer>
             </HistoryContainer>
+
+            {/* Párrafos que ahora ocupan ancho completo */}
+            <FullWidthText>
+              <HistoryText>
+                De esta manera mediante R.C.F. 334/05 de 13 de diciembre de
+                2005, se aprueba la creación del Programa de Trabajo Social,
+                refrendándose con la Resolución del Comité Académico del Consejo
+                Universitario (Acuerdo CA-HCU N° 19/2006 DE FECHA 16 DE MAYO DE
+                2006) . Así fue aprobado en el H. Consejo Universitario según
+                Resolución N° 24/06 de fecha 06 de julio de 2006.
+              </HistoryText>
+              <HistoryText>
+                En términos institucionales, Trabajo Social tiene un Jefe de
+                Departamento y a partir del 2009 se confirmó un Consejo de
+                Programa en la que participan docentes y estudiantes electos
+                democráticamente en forma paritaria.
+              </HistoryText>
+              <HistoryText>
+                El proceso de conversión a carrera y la compatibilización
+                Curricular del Programa de Trabajo Social y las acciones que han
+                derivado de ella, se han basado permanentemente en el marco
+                normativo de la Universidad Boliviana en General y la
+                Universidad Mayor de San Simón en particular.
+              </HistoryText>
+              <HistoryText>
+                De hecho, la Nueva Constitución Política del Estado
+                Plurinacional (NCPE) , orientado a satisfacer las necesidades de
+                la población más necesitada, ha posibilitado el desarrollo de
+                Políticas Sociales orientadas a esta población, en la que se
+                destaca la participación de profesionales de Trabajo Social,
+                tanto en instituciones públicas como privadas que operativizan
+                Políticas Sociales, a través de planes, programas y proyectos
+                dentro de las áreas de educación, vivienda, salud, trabajo,
+                etc., en la que necesariamente deben participar los
+                profesionales en Trabajo Social por las competencias que tienen.
+              </HistoryText>
+            </FullWidthText>
+
+            {/* ✅ Nueva imagen al final de la sección */}
+            <CenteredImage
+              src={imgHistoriaExtra}
+              alt="Trabajo Social - Historia"
+            />
           </SectionContent>
         </Container>
       </SectionWrapper>
@@ -124,21 +136,24 @@ export default function NuestraCarrera() {
                 <ElegantCardText>
                   La Carrera de Trabajo Social es una unidad académica
                   reconocida por su destacado aporte a la sociedad, que integra
-                  procesos de formación, investigación e intervención con alta
-                  capacidad y sensibilidad humana para contribuir a la
-                  resolución de problemáticas emergentes de la dinámica de la
-                  cuestión social, comprometida con la construcción de una
-                  sociedad justa y solidaria.
+                  procesos de formación, investigación, intervención,
+                  información e interacción con alta capacidad y sensibilidad
+                  humana para contribuir a la resolución de problemáticas
+                  emergentes de la dinámica de la cuestión social, comprometida
+                  con la construcción de una sociedad justa y solidaria.
                 </ElegantCardText>
               </Card>
               <Card>
                 <ElegantCardTitle>Misión</ElegantCardTitle>
                 <ElegantCardText>
-                  Formar profesionales altamente calificados con capacidad de
-                  manejo teórico-práctico en procesos de investigación e
-                  intervención, para responder a demandas y problemas sociales
-                  con sólidas bases éticas, respecto a la dignidad humana y
-                  derechos fundamentales en un contexto dinámico y cambiante.
+                  Formar profesionales altamente calificados con una sólida
+                  capacidad crítica en el manejo teórico-práctico de procesos de
+                  investigación e intervención. Estos profesionales estarán
+                  preparados para abordar demandas y desafíos sociales,
+                  fundamentados en valores éticos, el respeto a la dignidad
+                  humana y los derechos fundamentales. Todo ello en el contexto
+                  de una época caracterizada por la crisis climática, la
+                  sociedad digital y los movimientos migratorios.
                 </ElegantCardText>
               </Card>
             </FlexRow>
@@ -187,8 +202,14 @@ export default function NuestraCarrera() {
             <FlexRow>
               <FlexColumn>
                 <Image
-                  src= {imgPerfil}
+                  src={imgPerfil}
                   alt="Imagen de profesionales de Trabajo Social"
+                />
+                {/* ✅ Nueva imagen debajo de la existente */}
+                <Image
+                  src={imgPerfilExtra}
+                  alt="Trabajo Social - Perfil adicional"
+                  style={{ marginTop: "1.5rem" }}
                 />
               </FlexColumn>
               <FlexColumn>
@@ -237,7 +258,6 @@ export default function NuestraCarrera() {
                 </Card>
               </FlexColumn>
             </FlexRow>
-
             <div style={{ marginTop: "3rem" }}>
               <Card>
                 <FormalCardTitle>Práctica profesional</FormalCardTitle>
@@ -627,5 +647,39 @@ const HistoryImage = styled.img`
 
   @media (max-width: 968px) {
     max-height: 300px;
+  }
+`;
+
+// Para que los párrafos finales ocupen 100%
+const FullWidthText = styled.div`
+  margin-top: 2rem;
+  text-align: justify;
+  animation: ${fadeIn} 0.8s ease-out;
+
+  ${HistoryText} {
+    max-width: 100%;
+    line-height: 1.8;
+    font-size: 1.1rem;
+    color: #333;
+  }
+`;
+
+// Imagen centrada al final de Historia
+const CenteredImage = styled.img`
+  display: block;
+  margin: 3rem auto 0 auto; /* Centrar y dejar margen arriba */
+  width: 100%;
+  max-width: 900px; /* Limitar tamaño máximo */
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  animation: ${fadeIn} 1s ease-in-out;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+
+  &:hover {
+    transform: scale(1.02);
+    transition: transform 0.3s ease;
   }
 `;
