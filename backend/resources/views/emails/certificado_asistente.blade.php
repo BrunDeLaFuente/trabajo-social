@@ -24,6 +24,16 @@
             margin-bottom: 20px;
         }
 
+        .logo img {
+            height: 80px;
+        }
+
+        @media (min-width: 768px) {
+            .logo img {
+                height: 120px;
+            }
+        }
+
         .footer {
             margin-top: 40px;
             font-size: 0.9rem;
@@ -37,7 +47,7 @@
 <body>
     <div class="container">
         <div class="logo">
-            <img src="{{ url('assets/logo-ts.png') }}" alt="Logo Trabajo Social" height="80">
+            <img src="{{ url('assets/logo-ts.png') }}" alt="Logo Trabajo Social">
         </div>
 
         <h2>¡Felicitaciones, {{ $nombre }}!</h2>
@@ -45,7 +55,8 @@
         <p>{{ $mensajePersonalizado }}</p>
 
         <p>Has participado en el evento <strong>{{ $evento }}</strong> celebrado el
-            <strong>{{ \Carbon\Carbon::parse($fecha_evento)->format('d/m/Y') }}</strong>.</p>
+            <strong>{{ \Carbon\Carbon::parse($fecha_evento)->format('d/m/Y') }}</strong>.
+        </p>
 
         <p>Adjunto encontrarás tu certificado de participación en formato PDF.</p>
 

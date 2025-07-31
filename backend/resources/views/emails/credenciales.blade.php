@@ -24,6 +24,16 @@
             margin-bottom: 20px;
         }
 
+        .logo img {
+            height: 80px;
+        }
+
+        @media (min-width: 768px) {
+            .logo img {
+                height: 120px;
+            }
+        }
+
         .button {
             background-color: #2d3748;
             /* Color similar al de la imagen */
@@ -53,7 +63,7 @@
 <body>
     <div class="container">
         <div class="logo">
-            <img src="{{ url('assets/logo-ts.png') }}" alt="Logo Trabajo Social" height="80">
+            <img src="{{ url('assets/logo-ts.png') }}" alt="Logo Trabajo Social">
         </div>
 
         <h2>Hola, {{ $nombre }}</h2>

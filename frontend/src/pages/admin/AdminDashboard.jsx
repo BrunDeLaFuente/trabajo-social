@@ -504,7 +504,7 @@ const NetworkList = styled.div`
 `;
 
 const NetworkTag = styled.span`
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #3b82f6;
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -544,7 +544,7 @@ const SectionTitle = styled.h3`
     transform: translateX(-50%);
     width: 60px;
     height: 3px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #3b82f6;
     border-radius: 2px;
   }
 `;
@@ -574,7 +574,7 @@ const ManualCard = styled.div`
   box-sizing: border-box;
 
   &:hover {
-    border-color: #667eea;
+    border-color: #3b82f6;
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
   }
@@ -584,7 +584,7 @@ const ManualIcon = styled.div`
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #3b82f6;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -624,8 +624,7 @@ const ActionButton = styled.button`
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: ${(props) =>
-    props.primary ? "linear-gradient(135deg, #667eea, #764ba2)" : "#f7fafc"};
+  background: ${(props) => (props.primary ? "#3b82f6" : "#f7fafc")};
   color: ${(props) => (props.primary ? "white" : "#4a5568")};
   white-space: nowrap;
 

@@ -24,6 +24,16 @@
             margin-bottom: 20px;
         }
 
+        .logo img {
+            height: 80px;
+        }
+
+        @media (min-width: 768px) {
+            .logo img {
+                height: 120px;
+            }
+        }
+
         .footer {
             margin-top: 40px;
             font-size: 0.9rem;
@@ -46,7 +56,7 @@
 <body>
     <div class="container">
         <div class="logo">
-            <img src="{{ url('assets/logo-ts.png') }}" alt="Logo Trabajo Social" height="80">
+            <img src="{{ url('assets/logo-ts.png') }}" alt="Logo Trabajo Social">
         </div>
 
         <h2>Hola {{ $nombre }}!</h2>

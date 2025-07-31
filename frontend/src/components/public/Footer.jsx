@@ -6,7 +6,7 @@ import {
   FaTelegramPlane,
   FaYoutube,
 } from "react-icons/fa";
-import footerBackground2 from "../../assets/img/portada2.jpg";
+import footerBackground2 from "../../assets/img/tramite-universitario.jpg";
 import logo from "../../assets/img/logo-footer.png";
 import logoBordeado from "../../assets/img/logo.jpeg";
 import banner from "../../assets/img/banner.png";
@@ -23,14 +23,8 @@ const Footer = () => {
           <LinksSection>
             <Column>
               <ColumnTitle>Centros y Laboratorios</ColumnTitle>
-              <FooterLink href="/centro-aguas">
-                Centro de Aguas y Saneamiento Ambiental
-              </FooterLink>
-              <FooterLink href="/geotecnia">Geotecnia</FooterLink>
-              <FooterLink href="/hidraulica">Hidráulica</FooterLink>
-              <FooterLink href="/pavimentos">Pavimentos y Asfaltos</FooterLink>
-              <FooterLink href="/resistencia-materiales">
-                Resistencia de Materiales
+              <FooterLink href="https://idiomas.hum.umss.edu.bo/cil/">
+                Laboratorio de Lenguas - CIL
               </FooterLink>
             </Column>
             <Column>
@@ -57,10 +51,10 @@ const Footer = () => {
             <Column>
               <ColumnTitle>Síguenos en</ColumnTitle>
               <SocialLinks>
-                <SocialIcon href="https://facebook.com">
+                <SocialIcon href="https://www.facebook.com/PosgradoFHyCE/">
                   <FaFacebookF />
                 </SocialIcon>
-                <SocialIcon href="https://instagram.com">
+                <SocialIcon href="https://www.instagram.com/posgradofhyce/">
                   <FaInstagram />
                 </SocialIcon>
                 <SocialIcon href="https://linkedin.com">
@@ -69,7 +63,7 @@ const Footer = () => {
                 <SocialIcon href="https://t.me">
                   <FaTelegramPlane />
                 </SocialIcon>
-                <SocialIcon href="https://youtube.com">
+                <SocialIcon href="https://www.youtube.com/channel/UCUkOfJjc4rfFom5SRTxxPKQ">
                   <FaYoutube />
                 </SocialIcon>
               </SocialLinks>
