@@ -23,6 +23,39 @@ const MallaCurricular = () => {
     fetchMalla();
   }, []);
 
+  const handleDownload = async () => {
+    try {
+      const response = await api.get(`/malla/descargar`, {
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+
+      const filename = mallaData.archivo_pdf_url.split("/").pop();
+      const originalExtension = filename.split(".").pop().toLowerCase();
+
+      const newFilename = `Malla_Curricular_TrabajoSocial.${
+        originalExtension || "pdf"
+      }`;
+
+      link.download = newFilename;
+      link.target = "_blank";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error al descargar la malla:", error);
+      //alert("Error al descargar la malla. Por favor, inténtalo de nuevo.");
+    }
+  };
+
   const toggleSemester = (semesterId) => {
     setExpandedSemesters((prev) =>
       prev.includes(semesterId)
@@ -50,7 +83,7 @@ const MallaCurricular = () => {
           <ButtonBox>
             <h3>Ver Malla Curricular</h3>
             <ButtonContainer>
-              <DownloadButton href={mallaData.archivo_pdf_url} download>
+              <DownloadButton onClick={() => handleDownload()}>
                 Descargar en PDF <FaDownload />
               </DownloadButton>
 

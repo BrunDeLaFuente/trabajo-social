@@ -53,7 +53,7 @@ const PersonalDocente = () => {
                       alt={docente.nombre_persona}
                     />
                   ) : (
-                    <FaUserTie />
+                    <IconPlaceholder />
                   )}
                 </IconContainer>
                 <DocenteInfo>
@@ -222,14 +222,27 @@ const NoResults = styled.p`
 `;
 
 const Img = styled.img`
-  width: 70px;
-  height: 70px;
+  width: 110px;
+  height: 110px;
   object-fit: cover;
   border-radius: 50%;
+  border: 2px solid #0056b3;
+  transition: all 0.3s ease-in-out;
+
+  @media (min-width: 1024px) {
+    width: 130px;
+    height: 130px;
+  }
 `;
 
 const SmallCorreo = styled.small`
   font-size: 0.8rem;
   color: #555;
   margin-bottom: 5px;
+`;
+
+const IconPlaceholder = styled(FaUserTie)`
+  font-size: 100px;
+  color: #0056b3;
+  margin-top: 20px;
 `;

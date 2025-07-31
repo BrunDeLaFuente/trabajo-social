@@ -339,7 +339,18 @@ export default function MallaAdmin() {
       );
     } catch (error) {
       console.error("Error al guardar:", error);
-      agregarMensaje("fail", "#D32F2F", "Error al actualizar los archivos.");
+
+      // Si hay errores de validación desde el backend
+      if (error.response && error.response.data && error.response.data.errors) {
+        const errores = error.response.data.errors;
+        for (const campo in errores) {
+          errores[campo].forEach((msg) => {
+            agregarMensaje("fail", "#D32F2F", msg); // Mensaje personalizado
+          });
+        }
+      } else {
+        agregarMensaje("fail", "#D32F2F", "Error al actualizar los archivos.");
+      }
     } finally {
       setIsSavingFiles(false);
     }
@@ -832,7 +843,7 @@ export default function MallaAdmin() {
                 color: "#374151",
               }}
             >
-              Archivo PDF/Word/Excel
+              Archivo PDF
             </h3>
             <FilePreview>
               {pdfPreview && !fileChanges.quitar_pdf ? (
@@ -874,7 +885,7 @@ export default function MallaAdmin() {
                 <input
                   type="file"
                   id="pdf-upload"
-                  accept=".pdf,.doc,.docx,.xls,.xlsx"
+                  accept=".pdf"
                   onChange={handlePdfChange}
                   ref={pdfInputRef}
                 />

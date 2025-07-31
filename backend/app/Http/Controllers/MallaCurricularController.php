@@ -24,6 +24,11 @@ class MallaCurricularController extends Controller
             'archivo_pdf' => 'nullable|file|mimes:pdf|max:5120',
             'quitar_imagen' => 'nullable|boolean',
             'quitar_pdf' => 'nullable|boolean',
+        ], [
+            'archivo_pdf.mimes' => 'El archivo debe ser un PDF.',
+            'archivo_pdf.max' => 'El archivo PDF no debe superar los 5MB.',
+            'imagen.image' => 'La imagen debe ser un archivo de tipo imagen.',
+            'imagen.max' => 'La imagen no debe superar los 2MB.',
         ]);
 
         DB::beginTransaction();
@@ -62,6 +67,24 @@ class MallaCurricularController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['message' => 'Error al actualizar la malla curricular', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function descargarMalla()
+    {
+        try {
+            $malla = MallaCurricular::first();
+
+            if (!$malla->archivo_pdf || !Storage::exists('public/' . $malla->archivo_pdf)) {
+                return response()->json(['error' => 'Malla no encontrada.'], 404);
+            }
+
+            return response()->file(storage_path('app/public/' . $malla->archivo_pdf));
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al descargar la malla.',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 }

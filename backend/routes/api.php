@@ -167,6 +167,7 @@ Route::middleware([])->group(function () {
 
     // Malla curricular
     Route::get('/malla', [MallaCurricularController::class, 'show']);
+    Route::get('/malla/descargar', [MallaCurricularController::class, 'descargarMalla']);
 
     // Noticias
     Route::get('/noticias', [NoticiaController::class, 'indexPublic']);
