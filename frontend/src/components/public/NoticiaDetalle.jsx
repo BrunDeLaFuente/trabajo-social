@@ -196,6 +196,17 @@ const NoticiaDetalle = () => {
     setCurrentImageIndex(index);
   };
 
+  const convertUrlsToLinks = (htmlContent) => {
+    const urlRegex =
+      /(?:https?:\/\/|www\.)[\w.-]+\.[a-z]{2,}(\/[\w\d%./?=&#-]*)?/gi;
+
+    return htmlContent.replace(urlRegex, (url) => {
+      // Asegura que los links inicien con http
+      const href = url.startsWith("http") ? url : `https://${url}`;
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    });
+  };
+
   if (loading) {
     return (
       <LoadingContainer>
@@ -271,9 +282,10 @@ const NoticiaDetalle = () => {
           <ContentContainer>
             {/* Contenido HTML */}
             <ContentHTML
-              dangerouslySetInnerHTML={{ __html: noticia.contenido }}
+              dangerouslySetInnerHTML={{
+                __html: convertUrlsToLinks(noticia.contenido),
+              }}
             />
-
             {/* Renderizado según categoría */}
             {isArticle ? (
               // Layout para Artículos
@@ -786,6 +798,15 @@ const ContentHTML = styled.div`
   b {
     font-weight: 600;
   }
+
+  a {
+    color: #1d4ed8;
+    text-decoration: underline;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    display: inline-block;
+    max-width: 100%;
+  }
 `;
 
 const MediaSection = styled.div`
@@ -855,7 +876,7 @@ const ImageContainer = styled.div`
 `;
 
 const Image = styled.img`
-  width: 100%;
+  width: 65%;
   object-fit: ${(props) => (props.$isArticle ? "cover" : "contain")};
   height: ${(props) => (props.$isArticle ? "12rem" : "auto")};
   max-height: ${(props) =>
@@ -867,6 +888,10 @@ const Image = styled.img`
 
   ${ImageContainer}:hover & {
     transform: ${(props) => (props.$isArticle ? "scale(1.1)" : "none")};
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
