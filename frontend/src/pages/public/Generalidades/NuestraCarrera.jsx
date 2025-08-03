@@ -159,7 +159,7 @@ export default function NuestraCarrera() {
             </FlexRow>
             <DownloadButton href={pdfFile} download>
               <Download size={18} />
-              Descargar Brochure
+              Descargar Folleto
             </DownloadButton>
           </SectionContent>
         </Container>
