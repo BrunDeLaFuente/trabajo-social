@@ -8,11 +8,11 @@ import {
   FaFacebook,
   FaYoutube,
   FaInstagram,
-  FaTwitter,
   FaLinkedin,
   FaWhatsapp,
   FaTelegram,
 } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 // Función para obtener el icono y color según la red social
 const getSocialIcon = (nombre) => {
@@ -24,7 +24,7 @@ const getSocialIcon = (nombre) => {
     case "instagram":
       return { icon: <FaInstagram />, color: "#E4405F" };
     case "x":
-      return { icon: <FaTwitter />, color: "#000000" };
+      return { icon: <FaXTwitter />, color: "#000000" };
     case "linkedin":
       return { icon: <FaLinkedin />, color: "#0A66C2" };
     case "whatsapp":

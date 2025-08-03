@@ -6,18 +6,18 @@ import {
   FaLinkedinIn,
   FaInstagram,
   FaWhatsapp,
-  FaTwitter,
   FaYoutube,
   FaGlobe,
 } from "react-icons/fa";
-import api from "../../utils/api"; // Ajusta la ruta según tu estructura
+import { FaXTwitter } from "react-icons/fa6";
+import api from "../../utils/api";
 
 const iconMap = {
   facebook: { icon: <FaFacebookF />, color: "#1877F2" },
   telegram: { icon: <FaTelegram />, color: "#0088cc" },
   linkedin: { icon: <FaLinkedinIn />, color: "#0077B5" },
   instagram: { icon: <FaInstagram />, color: "#E4405F" },
-  x: { icon: <FaTwitter />, color: "#1DA1F2" },
+  x: { icon: <FaXTwitter />, color: "#000000" },
   youtube: { icon: <FaYoutube />, color: "#FF0000" },
   whatsapp: { icon: <FaWhatsapp />, color: "#25D366" },
   default: { icon: <FaGlobe />, color: "#6B7280" },
@@ -74,7 +74,7 @@ export default SocialBar;
 
 const SocialBarContainer = styled.div`
   background-color: #003366;
-  padding: 5px 55px; /* Mayor separación */
+  padding: 5px 55px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -82,7 +82,9 @@ const SocialBarContainer = styled.div`
   color: white;
 
   @media (max-width: 768px) {
-    padding: 5px 25px; /* Más compacto en móviles */
+    flex-direction: column;
+    padding: 10px 20px;
+    gap: 6px;
     font-size: 0.7rem;
   }
 `;
@@ -91,15 +93,18 @@ const SocialBarContainer = styled.div`
 const SocialContent = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px; /* Menos espacio entre texto e iconos */
+  gap: 8px;
+  flex-wrap: nowrap; /* ← evita que se dividan en líneas */
 
   @media (max-width: 768px) {
     gap: 4px;
+    justify-content: center;
+    overflow-x: auto; /* ← en caso de que no quepa, permite scroll horizontal */
   }
 `;
 
 const Text = styled.span`
-  white-space: nowrap;
+  white-space: nowrap; /* ← mantiene el texto en una línea */
   font-size: 0.8rem;
 
   @media (max-width: 768px) {
@@ -109,10 +114,11 @@ const Text = styled.span`
 
 const IconsContainer = styled.div`
   display: flex;
-  gap: 8px; /* Espacio entre iconos */
+  gap: 8px;
+  flex-wrap: nowrap;
 
   @media (max-width: 768px) {
-    gap: 4px;
+    gap: 6px;
   }
 `;
 
@@ -126,10 +132,16 @@ const IconLink = styled.a`
   color: white;
   font-size: 0.9rem;
   transition: transform 0.2s ease, opacity 0.3s ease;
-  background-color: ${({ $bgColor }) => $bgColor}; /* Usando transient prop */
+  background-color: ${({ $bgColor }) => $bgColor};
 
   &:hover {
     transform: scale(1.1);
     opacity: 0.8;
+  }
+
+  @media (max-width: 768px) {
+    width: 22px;
+    height: 22px;
+    font-size: 0.8rem;
   }
 `;

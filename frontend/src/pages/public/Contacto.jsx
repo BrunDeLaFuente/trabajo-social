@@ -9,10 +9,10 @@ import {
   FaEnvelope,
   FaMapMarkerAlt,
   FaLinkedinIn,
-  FaTwitter,
   FaYoutube,
   FaWhatsapp,
 } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import api from "../../utils/api";
 
 const Contacto = () => {
@@ -39,7 +39,7 @@ const Contacto = () => {
       case "telegram":
         return { icon: <FaTelegramPlane />, color: "#0088cc" };
       case "x":
-        return { icon: <FaTwitter />, color: "#1DA1F2" };
+        return { icon: <FaXTwitter />, color: "#000000" };
       case "linkedin":
         return { icon: <FaLinkedinIn />, color: "#0077B5" };
       case "youtube":
