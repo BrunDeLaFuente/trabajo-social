@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tramite;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 
@@ -32,15 +32,33 @@ class TramiteController extends Controller
             ]);
 
             if ($request->hasFile('planilla')) {
-                $path = $request->file('planilla')->store("tramites/{$tramite->id_tramite}", 'public');
-                $tramite->update(['planilla_url' => $path]);
+                $archivo = $request->file('planilla');
+
+                // Seguridad: evitar caracteres problemáticos en el nombre original
+                $nombreSeguro = time() . '_' . preg_replace('/[^A-Za-z0-9_\-\.]/', '_', $archivo->getClientOriginalName());
+
+                $rutaDestino = public_path("assets/tramites/{$tramite->id_tramite}");
+
+                // Crear la carpeta si no existe
+                if (!File::exists($rutaDestino)) {
+                    File::makeDirectory($rutaDestino, 0755, true);
+                }
+
+                // Mover el archivo
+                $archivo->move($rutaDestino, $nombreSeguro);
+
+                // Guardar la ruta relativa en DB
+                $tramite->update(['planilla_url' => "tramites/{$tramite->id_tramite}/{$nombreSeguro}"]);
             }
 
             DB::commit();
             return response()->json($tramite->append('planilla_download_url'), 201);
         } catch (QueryException $e) {
             DB::rollback();
-            return response()->json(['message' => 'Error al crear el trámite', 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'Error al crear el trámite',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -63,29 +81,44 @@ class TramiteController extends Controller
 
         DB::beginTransaction();
         try {
+            // ✅ Actualizar título y descripción
             $tramite->update([
                 'titulo_tramite' => $request->titulo_tramite,
                 'descripcion_tramite' => $request->descripcion_tramite,
             ]);
 
+            $rutaCarpeta = public_path("assets/tramites/{$tramite->id_tramite}");
+
             // 🗑️ Eliminar archivo si se solicita
             if ($request->boolean('quitar_planilla') && $tramite->planilla_url) {
-                Storage::disk('public')->deleteDirectory("tramites/{$tramite->id_tramite}");
+                File::deleteDirectory($rutaCarpeta);
                 $tramite->update(['planilla_url' => null]);
             }
 
-            // 📥 Nueva subida
+            // 📥 Subida nueva planilla (reemplazo)
             if ($request->hasFile('planilla')) {
-                Storage::disk('public')->deleteDirectory("tramites/{$tramite->id_tramite}");
-                $path = $request->file('planilla')->store("tramites/{$tramite->id_tramite}", 'public');
-                $tramite->update(['planilla_url' => $path]);
+                // Borrar anterior si existía
+                File::deleteDirectory($rutaCarpeta);
+
+                // Guardar nuevo archivo
+                $archivo = $request->file('planilla');
+                $nombre = $archivo->getClientOriginalName();
+                $archivo->move($rutaCarpeta, $nombre);
+
+                // Guardar solo la ruta relativa
+                $tramite->update([
+                    'planilla_url' => "tramites/{$tramite->id_tramite}/{$nombre}"
+                ]);
             }
 
             DB::commit();
             return response()->json($tramite->append('planilla_download_url'));
         } catch (QueryException $e) {
             DB::rollback();
-            return response()->json(['message' => 'Error al actualizar el trámite', 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'Error al actualizar el trámite',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -93,8 +126,13 @@ class TramiteController extends Controller
     {
         $tramite = Tramite::findOrFail($id);
 
-        // Borrar archivos
-        Storage::disk('public')->deleteDirectory("tramites/{$tramite->id_tramite}");
+        // Eliminar carpeta desde /public/assets/tramites/{id}
+        $ruta = public_path("assets/tramites/{$tramite->id_tramite}");
+
+        if (File::exists($ruta)) {
+            File::deleteDirectory($ruta);
+        }
+
         $tramite->delete();
 
         return response()->json(['message' => 'Trámite eliminado correctamente.']);
@@ -105,11 +143,17 @@ class TramiteController extends Controller
         try {
             $tramite = Tramite::findOrFail($id);
 
-            if (!$tramite->planilla_url || !Storage::exists('public/' . $tramite->planilla_url)) {
+            if (!$tramite->planilla_url) {
                 return response()->json(['error' => 'Planilla no encontrada.'], 404);
             }
 
-            return response()->file(storage_path('app/public/' . $tramite->planilla_url));
+            $ruta = public_path('assets/' . $tramite->planilla_url);
+
+            if (!File::exists($ruta)) {
+                return response()->json(['error' => 'Archivo no encontrado en assets.'], 404);
+            }
+
+            return response()->file($ruta);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error al descargar la planilla.',

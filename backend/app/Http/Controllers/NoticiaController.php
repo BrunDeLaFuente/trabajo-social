@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Noticia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class NoticiaController extends Controller
@@ -139,8 +138,10 @@ class NoticiaController extends Controller
             if ($request->hasFile('imagenes')) {
                 foreach ($request->file('imagenes') as $img) {
                     $imagen = $noticia->imagenes()->create(['ruta_imagen_noticia' => '']);
-                    $path = $img->store("noticias/imagenes/{$noticia->id_noticia}/{$imagen->id_noticia_imagen}", 'public');
-                    $imagen->update(['ruta_imagen_noticia' => $path]);
+                    $nombre = $img->getClientOriginalName();
+                    $destino = public_path("assets/noticias/imagenes/{$noticia->id_noticia}/{$imagen->id_noticia_imagen}");
+                    $img->move($destino, $nombre);
+                    $imagen->update(['ruta_imagen_noticia' => "noticias/imagenes/{$noticia->id_noticia}/{$imagen->id_noticia_imagen}/{$nombre}"]);
                 }
             }
 
@@ -148,8 +149,10 @@ class NoticiaController extends Controller
             if ($request->hasFile('videos')) {
                 foreach ($request->file('videos') as $vid) {
                     $video = $noticia->videos()->create(['ruta_video_noticia' => '']);
-                    $path = $vid->store("noticias/videos/{$noticia->id_noticia}/{$video->id_noticia_video}", 'public');
-                    $video->update(['ruta_video_noticia' => $path]);
+                    $nombre = $vid->getClientOriginalName();
+                    $destino = public_path("assets/noticias/videos/{$noticia->id_noticia}/{$video->id_noticia_video}");
+                    $vid->move($destino, $nombre);
+                    $video->update(['ruta_video_noticia' => "noticias/videos/{$noticia->id_noticia}/{$video->id_noticia_video}/{$nombre}"]);
                 }
             }
 
@@ -157,8 +160,10 @@ class NoticiaController extends Controller
             if ($request->hasFile('archivos')) {
                 foreach ($request->file('archivos') as $file) {
                     $archivo = $noticia->archivos()->create(['ruta_archivo' => '']);
-                    $path = $file->store("noticias/archivos/{$noticia->id_noticia}/{$archivo->id_noticia_archivo}", 'public');
-                    $archivo->update(['ruta_archivo' => $path]);
+                    $nombre = $file->getClientOriginalName();
+                    $destino = public_path("assets/noticias/archivos/{$noticia->id_noticia}/{$archivo->id_noticia_archivo}");
+                    $file->move($destino, $nombre);
+                    $archivo->update(['ruta_archivo' => "noticias/archivos/{$noticia->id_noticia}/{$archivo->id_noticia_archivo}/{$nombre}"]);
                 }
             }
 
@@ -222,76 +227,87 @@ class NoticiaController extends Controller
                 'slug' => $slug,
             ]);
 
-            // 🔴 ELIMINAR IMÁGENES
-            if ($request->has('eliminar_imagenes')) {
-                foreach ($request->eliminar_imagenes as $idImg) {
-                    $img = $noticia->imagenes()->find($idImg);
-                    if ($img) {
-                        Storage::deleteDirectory("public/noticias/imagenes/{$noticiaId}/{$img->id_noticia_imagen}");
-                        $img->delete();
-                    }
+            // Eliminar imágenes
+            foreach ($request->eliminar_imagenes ?? [] as $idImg) {
+                $img = $noticia->imagenes()->find($idImg);
+                if ($img) {
+                    $ruta = public_path('assets/' . $img->ruta_imagen_noticia);
+                    if (file_exists($ruta)) unlink($ruta);
+                    $directorio = dirname($ruta);
+                    if (is_dir($directorio)) @rmdir($directorio); // eliminar carpeta si queda vacía
+                    $img->delete();
                 }
             }
 
-            // 🔴 ELIMINAR VIDEOS
-            if ($request->has('eliminar_videos')) {
-                foreach ($request->eliminar_videos as $idVid) {
-                    $vid = $noticia->videos()->find($idVid);
-                    if ($vid) {
-                        Storage::deleteDirectory("public/noticias/videos/{$noticiaId}/{$vid->id_noticia_video}");
-                        $vid->delete();
-                    }
+            // Eliminar videos
+            foreach ($request->eliminar_videos ?? [] as $idVid) {
+                $vid = $noticia->videos()->find($idVid);
+                if ($vid) {
+                    $ruta = public_path('assets/' . $vid->ruta_video_noticia);
+                    if (file_exists($ruta)) unlink($ruta);
+                    $directorio = dirname($ruta);
+                    if (is_dir($directorio)) @rmdir($directorio);
+                    $vid->delete();
                 }
             }
 
-            // 🔴 ELIMINAR ARCHIVOS
-            if ($request->has('eliminar_archivos')) {
-                foreach ($request->eliminar_archivos as $idArc) {
-                    $arc = $noticia->archivos()->find($idArc);
-                    if ($arc) {
-                        Storage::deleteDirectory("public/noticias/archivos/{$noticiaId}/{$arc->id_noticia_archivo}");
-                        $arc->delete();
-                    }
+            // Eliminar archivos
+            foreach ($request->eliminar_archivos ?? [] as $idArc) {
+                $arc = $noticia->archivos()->find($idArc);
+                if ($arc) {
+                    $ruta = public_path('assets/' . $arc->ruta_archivo);
+                    if (file_exists($ruta)) unlink($ruta);
+                    $directorio = dirname($ruta);
+                    if (is_dir($directorio)) @rmdir($directorio);
+                    $arc->delete();
                 }
             }
 
             // ✅ LIMPIAR carpetas raíz si quedaron vacías
-            if ($noticia->imagenes()->count() === 0) {
-                Storage::deleteDirectory("public/noticias/imagenes/{$noticiaId}");
+            $imagenesDir = public_path("assets/noticias/imagenes/{$noticiaId}");
+            $videosDir = public_path("assets/noticias/videos/{$noticiaId}");
+            $archivosDir = public_path("assets/noticias/archivos/{$noticiaId}");
+
+            if ($noticia->imagenes()->count() === 0 && is_dir($imagenesDir)) {
+                @rmdir($imagenesDir);
+            }
+            if ($noticia->videos()->count() === 0 && is_dir($videosDir)) {
+                @rmdir($videosDir);
+            }
+            if ($noticia->archivos()->count() === 0 && is_dir($archivosDir)) {
+                @rmdir($archivosDir);
             }
 
-            if ($noticia->videos()->count() === 0) {
-                Storage::deleteDirectory("public/noticias/videos/{$noticiaId}");
-            }
-
-            if ($noticia->archivos()->count() === 0) {
-                Storage::deleteDirectory("public/noticias/archivos/{$noticiaId}");
-            }
-
-            // ✅ AÑADIR NUEVAS IMÁGENES
+            // Agregar nuevas imágenes
             if ($request->hasFile('imagenes')) {
                 foreach ($request->file('imagenes') as $img) {
                     $imagen = $noticia->imagenes()->create(['ruta_imagen_noticia' => '']);
-                    $path = $img->store("noticias/imagenes/{$noticiaId}/{$imagen->id_noticia_imagen}", 'public');
-                    $imagen->update(['ruta_imagen_noticia' => $path]);
+                    $nombre = $img->getClientOriginalName();
+                    $destino = public_path("assets/noticias/imagenes/{$noticiaId}/{$imagen->id_noticia_imagen}");
+                    $img->move($destino, $nombre);
+                    $imagen->update(['ruta_imagen_noticia' => "noticias/imagenes/{$noticiaId}/{$imagen->id_noticia_imagen}/{$nombre}"]);
                 }
             }
 
-            // ✅ AÑADIR NUEVOS VIDEOS
+            // Agregar nuevos videos
             if ($request->hasFile('videos')) {
                 foreach ($request->file('videos') as $vid) {
                     $video = $noticia->videos()->create(['ruta_video_noticia' => '']);
-                    $path = $vid->store("noticias/videos/{$noticiaId}/{$video->id_noticia_video}", 'public');
-                    $video->update(['ruta_video_noticia' => $path]);
+                    $nombre = $vid->getClientOriginalName();
+                    $destino = public_path("assets/noticias/videos/{$noticiaId}/{$video->id_noticia_video}");
+                    $vid->move($destino, $nombre);
+                    $video->update(['ruta_video_noticia' => "noticias/videos/{$noticiaId}/{$video->id_noticia_video}/{$nombre}"]);
                 }
             }
 
-            // ✅ AÑADIR NUEVOS ARCHIVOS
+            // Agregar nuevos archivos
             if ($request->hasFile('archivos')) {
                 foreach ($request->file('archivos') as $file) {
                     $archivo = $noticia->archivos()->create(['ruta_archivo' => '']);
-                    $path = $file->store("noticias/archivos/{$noticiaId}/{$archivo->id_noticia_archivo}", 'public');
-                    $archivo->update(['ruta_archivo' => $path]);
+                    $nombre = $file->getClientOriginalName();
+                    $destino = public_path("assets/noticias/archivos/{$noticiaId}/{$archivo->id_noticia_archivo}");
+                    $file->move($destino, $nombre);
+                    $archivo->update(['ruta_archivo' => "noticias/archivos/{$noticiaId}/{$archivo->id_noticia_archivo}/{$nombre}"]);
                 }
             }
 
@@ -306,28 +322,45 @@ class NoticiaController extends Controller
     public function destroy($id)
     {
         $noticia = Noticia::with(['imagenes', 'videos', 'archivos'])->findOrFail($id);
+        $idNoticia = $noticia->id_noticia;
 
-        $id = $noticia->id_noticia;
-
-        // Eliminar subcarpetas de cada imagen
+        // 🔴 Eliminar subcarpetas y archivos de IMÁGENES
         foreach ($noticia->imagenes as $img) {
-            Storage::deleteDirectory("public/noticias/imagenes/{$id}/{$img->id_noticia_imagen}");
+            $dir = public_path("assets/noticias/imagenes/{$idNoticia}/{$img->id_noticia_imagen}");
+            if (is_dir($dir)) {
+                foreach (glob("$dir/*") as $file) {
+                    @unlink($file);
+                }
+                @rmdir($dir);
+            }
         }
 
-        // Eliminar subcarpetas de cada video
+        // 🔴 Eliminar subcarpetas y archivos de VIDEOS
         foreach ($noticia->videos as $vid) {
-            Storage::deleteDirectory("public/noticias/videos/{$id}/{$vid->id_noticia_video}");
+            $dir = public_path("assets/noticias/videos/{$idNoticia}/{$vid->id_noticia_video}");
+            if (is_dir($dir)) {
+                foreach (glob("$dir/*") as $file) {
+                    @unlink($file);
+                }
+                @rmdir($dir);
+            }
         }
 
-        // Eliminar subcarpetas de cada archivo
-        foreach ($noticia->archivos as $file) {
-            Storage::deleteDirectory("public/noticias/archivos/{$id}/{$file->id_noticia_archivo}");
+        // 🔴 Eliminar subcarpetas y archivos de ARCHIVOS
+        foreach ($noticia->archivos as $arc) {
+            $dir = public_path("assets/noticias/archivos/{$idNoticia}/{$arc->id_noticia_archivo}");
+            if (is_dir($dir)) {
+                foreach (glob("$dir/*") as $file) {
+                    @unlink($file);
+                }
+                @rmdir($dir);
+            }
         }
 
-        // 🔥 Eliminar carpetas raíz por tipo
-        Storage::deleteDirectory("public/noticias/imagenes/{$id}");
-        Storage::deleteDirectory("public/noticias/videos/{$id}");
-        Storage::deleteDirectory("public/noticias/archivos/{$id}");
+        // 🔥 Eliminar carpetas raíz si quedaron vacías
+        @rmdir(public_path("assets/noticias/imagenes/{$idNoticia}"));
+        @rmdir(public_path("assets/noticias/videos/{$idNoticia}"));
+        @rmdir(public_path("assets/noticias/archivos/{$idNoticia}"));
 
         // Eliminar la noticia
         $noticia->delete();
@@ -340,23 +373,17 @@ class NoticiaController extends Controller
         try {
             switch ($tipo) {
                 case 'imagen':
-                    $archivo = DB::table('noticia_imagen')
-                        ->where('id_noticia_imagen', $id)
-                        ->first();
+                    $archivo = DB::table('noticia_imagen')->where('id_noticia_imagen', $id)->first();
                     $ruta = $archivo->ruta_imagen_noticia ?? null;
                     break;
 
                 case 'video':
-                    $archivo = DB::table('noticia_video')
-                        ->where('id_noticia_video', $id)
-                        ->first();
+                    $archivo = DB::table('noticia_video')->where('id_noticia_video', $id)->first();
                     $ruta = $archivo->ruta_video_noticia ?? null;
                     break;
 
                 case 'archivo':
-                    $archivo = DB::table('noticia_archivo')
-                        ->where('id_noticia_archivo', $id)
-                        ->first();
+                    $archivo = DB::table('noticia_archivo')->where('id_noticia_archivo', $id)->first();
                     $ruta = $archivo->ruta_archivo ?? null;
                     break;
 
@@ -364,11 +391,17 @@ class NoticiaController extends Controller
                     return response()->json(['error' => 'Tipo de archivo no válido.'], 400);
             }
 
-            if (!$archivo || !Storage::exists('public/' . $ruta)) {
+            if (!$archivo || !$ruta) {
                 return response()->json(['error' => 'Archivo no encontrado.'], 404);
             }
 
-            return response()->file(storage_path('app/public/' . $ruta));
+            $rutaAbsoluta = public_path('assets/' . $ruta);
+
+            if (!file_exists($rutaAbsoluta)) {
+                return response()->json(['error' => 'Archivo no encontrado en servidor.'], 404);
+            }
+
+            return response()->file($rutaAbsoluta);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error al descargar el archivo.',

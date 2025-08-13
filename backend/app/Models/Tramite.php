@@ -19,7 +19,7 @@ class Tramite extends Model
     public function getPlanillaDownloadUrlAttribute()
     {
         return $this->planilla_url
-            ? url('storage/' . $this->planilla_url)
+            ? asset('assets/' . $this->planilla_url)
             : null;
     }
 }

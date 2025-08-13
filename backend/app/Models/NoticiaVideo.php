@@ -25,7 +25,7 @@ class NoticiaVideo extends Model
     public function getUrlAttribute()
     {
         return $this->ruta_video_noticia
-            ? url('storage/' . $this->ruta_video_noticia)
+            ? asset('assets/' . $this->ruta_video_noticia)
             : null;
     }
 }

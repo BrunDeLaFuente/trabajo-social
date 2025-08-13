@@ -138,8 +138,8 @@
     </table>
 
     <div class="footer">
-        Plaza Sucre, acera sud – Teléfono 70845747 <br>
-        E-mail: <span class="correo">coord.trabajosocial@mi.umss.edu.bo</span> <br>
+        Plaza Sucre, acera sud – Teléfono {{ $telefono }} <br>
+        E-mail: <span class="correo"> {{ $correo }} </span> <br>
         Cochabamba - Bolivia
     </div>
 </body>

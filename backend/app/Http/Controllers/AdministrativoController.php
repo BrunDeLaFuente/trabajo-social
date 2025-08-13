@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Persona;
 use App\Models\PersonaCorreo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 
@@ -34,16 +34,20 @@ class AdministrativoController extends Controller
         DB::beginTransaction();
         try {
             $persona = Persona::create([
-                'id_tipo_persona' => 2,
+                'id_tipo_persona' => 2, // Administrativo
                 'nombre_persona' => $request->nombre_persona,
                 'cargo' => $request->cargo,
             ]);
 
+            // Mover imagen a /public/assets/personas/{id}
             if ($request->hasFile('imagen')) {
-                $path = $request->file('imagen')->store("personas/{$persona->id_persona}", 'public');
-                $persona->update(['imagen_persona' => $path]);
+                $nombre = $request->file('imagen')->getClientOriginalName();
+                $destino = public_path("assets/personas/{$persona->id_persona}");
+                $request->file('imagen')->move($destino, $nombre);
+                $persona->update(['imagen_persona' => "personas/{$persona->id_persona}/{$nombre}"]);
             }
 
+            // Guardar correos
             foreach ($request->correos ?? [] as $correo) {
                 PersonaCorreo::create([
                     'id_persona' => $persona->id_persona,
@@ -82,17 +86,20 @@ class AdministrativoController extends Controller
                 'cargo' => $request->cargo,
             ]);
 
+            $rutaPersona = public_path("assets/personas/{$persona->id_persona}");
+
             // ✅ Quitar imagen si viene el flag
             if ($request->boolean('quitar_imagen') && $persona->imagen_persona) {
-                Storage::disk('public')->deleteDirectory("personas/{$persona->id_persona}");
+                File::deleteDirectory($rutaPersona);
                 $persona->update(['imagen_persona' => null]);
             }
 
             // ✅ Subir nueva imagen si se envía
             if ($request->hasFile('imagen')) {
-                Storage::disk('public')->deleteDirectory("personas/{$persona->id_persona}");
-                $path = $request->file('imagen')->store("personas/{$persona->id_persona}", 'public');
-                $persona->update(['imagen_persona' => $path]);
+                File::deleteDirectory($rutaPersona); // Limpia la carpeta antes
+                $nombre = $request->file('imagen')->getClientOriginalName();
+                $request->file('imagen')->move($rutaPersona, $nombre);
+                $persona->update(['imagen_persona' => "personas/{$persona->id_persona}/{$nombre}"]);
             }
 
             // 🔄 Reemplazar correos
@@ -118,8 +125,15 @@ class AdministrativoController extends Controller
     public function destroy($id)
     {
         $persona = Persona::findOrFail($id);
-        Storage::disk('public')->deleteDirectory("personas/{$id}");
+
+        $ruta = public_path("assets/personas/{$id}");
+
+        if (is_dir($ruta)) {
+            File::deleteDirectory($ruta);
+        }
+
         $persona->delete();
+
         return response()->json(['message' => 'Administrativo eliminado']);
     }
 }

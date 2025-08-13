@@ -21,14 +21,14 @@ class MallaCurricular extends Model
     public function getImagenUrlAttribute()
     {
         return $this->imagen
-            ? url('storage/' . $this->imagen)
+            ? asset('assets/' . $this->imagen)
             : null;
     }
 
     public function getArchivoPdfUrlAttribute()
     {
         return $this->archivo_pdf
-            ? url('storage/' . $this->archivo_pdf)
+            ? asset('assets/' . $this->archivo_pdf)
             : null;
     }
 }

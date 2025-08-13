@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Evento;
 use App\Models\Expositor;
 use App\Models\Inscripcion;
+use App\Models\Carrera;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -80,7 +81,7 @@ class EventoController extends Controller
             'costo' => 'nullable|numeric',
             'es_publico' => 'boolean',
             'formulario' => 'boolean',
-            'imagen_evento' => 'nullable|image|max:5120', // 5MB
+            'imagen_evento' => 'nullable|image|max:5120',
             'qr_pago' => 'nullable|image|max:5120',
             'enlaces' => 'nullable|array',
             'enlaces.*.plataforma' => 'required|in:Google Meet,Zoom',
@@ -93,7 +94,6 @@ class EventoController extends Controller
         DB::beginTransaction();
 
         try {
-            // 1. Generar slug único
             $slugBase = Str::slug($request->titulo_evento);
             $slug = $slugBase;
             $count = 1;
@@ -102,7 +102,6 @@ class EventoController extends Controller
                 $count++;
             }
 
-            // 2. Crear evento base (imagen temporalmente vacía)
             $evento = Evento::create([
                 'titulo_evento' => $request->titulo_evento,
                 'fecha_evento' => $request->fecha_evento,
@@ -117,14 +116,24 @@ class EventoController extends Controller
                 'qr_pago' => ''
             ]);
 
-            // 3. Procesar imágenes si existen
+            $rutaBase = public_path("assets/eventos/{$evento->id_evento}");
 
             if ($request->hasFile('imagen_evento')) {
-                $evento->imagen_evento = $request->file('imagen_evento')->store("eventos/{$evento->id_evento}/portada", 'public');
+                $imagen = $request->file('imagen_evento');
+                $nombre = uniqid('portada_') . '.' . $imagen->getClientOriginalExtension();
+                $destino = "{$rutaBase}/portada";
+                @mkdir($destino, 0777, true);
+                $imagen->move($destino, $nombre);
+                $evento->imagen_evento = "eventos/{$evento->id_evento}/portada/{$nombre}";
             }
 
             if ($request->hasFile('qr_pago')) {
-                $evento->qr_pago = $request->file('qr_pago')->store("eventos/{$evento->id_evento}/qr", 'public');
+                $qr = $request->file('qr_pago');
+                $nombreQR = uniqid('qr_') . '.' . $qr->getClientOriginalExtension();
+                $destinoQR = "{$rutaBase}/qr";
+                @mkdir($destinoQR, 0777, true);
+                $qr->move($destinoQR, $nombreQR);
+                $evento->qr_pago = "eventos/{$evento->id_evento}/qr/{$nombreQR}";
             }
 
             $evento->save();
@@ -134,7 +143,6 @@ class EventoController extends Controller
                 $evento->expositores()->sync($idsExpositores);
             }
 
-            // 4. Crear enlaces si vienen
             if ($request->has('enlaces')) {
                 foreach ($request->enlaces as $enlace) {
                     $evento->enlaces()->create($enlace);
@@ -142,15 +150,20 @@ class EventoController extends Controller
             }
 
             DB::commit();
-            return response()->json(['message' => 'Evento creado exitosamente', 'evento' => $evento->load('enlaces')]);
+            return response()->json([
+                'message' => 'Evento creado exitosamente',
+                'evento' => $evento->load('enlaces')
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            // Borrar archivos subidos en caso de error
             if (isset($evento)) {
-                Storage::disk('public')->deleteDirectory("evento/{$evento->id_evento}");
+                @rmdir(public_path("assets/eventos/{$evento->id_evento}"));
                 $evento->delete();
             }
-            return response()->json(['error' => 'Error al crear el evento', 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Error al crear el evento',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -182,55 +195,92 @@ class EventoController extends Controller
 
         DB::beginTransaction();
         try {
-            // Nuevo slug si cambia título
+            // 🔄 Actualizar slug si cambia título
             if ($evento->titulo_evento !== $validated['titulo_evento']) {
                 $slugBase = Str::slug($validated['titulo_evento']);
                 $slug = $slugBase;
                 $count = 1;
                 while (Evento::where('slug', $slug)->where('id_evento', '!=', $evento->id_evento)->exists()) {
-                    $slug = $slugBase . '-' . $count;
+                    $slug = "{$slugBase}-{$count}";
                     $count++;
                 }
                 $evento->slug = $slug;
             }
 
             $evento->fill($validated);
-            $evento->save();
 
-            // Eliminar imagen actual si se solicita
-            $ruta = 'eventos/' . $evento->id_evento;
+            $rutaBase = public_path("assets/eventos/{$evento->id_evento}");
 
+            // 🗑️ Eliminar portada si se marca quitar
             if ($request->boolean('quitar_imagen') && $evento->imagen_evento) {
-                Storage::deleteDirectory("public/eventos/{$evento->id_evento}/portada");
+                $dirPortada = "{$rutaBase}/portada";
+                if (is_dir($dirPortada)) {
+                    collect(scandir($dirPortada))
+                        ->filter(fn($f) => !in_array($f, ['.', '..']))
+                        ->each(fn($f) => @unlink("{$dirPortada}/{$f}"));
+                    @rmdir($dirPortada);
+                }
                 $evento->imagen_evento = null;
             }
+
+            // 🗑️ Eliminar QR si se marca quitar
             if ($request->boolean('quitar_qr') && $evento->qr_pago) {
-                Storage::deleteDirectory("public/eventos/{$evento->id_evento}/qr");
+                $dirQR = "{$rutaBase}/qr";
+                if (is_dir($dirQR)) {
+                    collect(scandir($dirQR))
+                        ->filter(fn($f) => !in_array($f, ['.', '..']))
+                        ->each(fn($f) => @unlink("{$dirQR}/{$f}"));
+                    @rmdir($dirQR);
+                }
                 $evento->qr_pago = null;
             }
 
-
-            // ✅ LIMPIAR carpetas raíz si quedaron vacías
-            if (is_null($evento->imagen_evento) && is_null($evento->qr_pago)) {
-                Storage::deleteDirectory("public/eventos/{$evento->id_evento}");
-            }
-
-            // Nuevas imágenes
+            // ✅ Reemplazar portada
             if ($request->hasFile('imagen_evento')) {
-                $evento->imagen_evento = $request->file('imagen_evento')->store("eventos/{$evento->id_evento}/portada", 'public');
+                // Eliminar imagen anterior si existe
+                $dirPortada = "{$rutaBase}/portada";
+                if (is_dir($dirPortada)) {
+                    collect(scandir($dirPortada))
+                        ->filter(fn($f) => !in_array($f, ['.', '..']))
+                        ->each(fn($f) => @unlink("{$dirPortada}/{$f}"));
+                } else {
+                    mkdir($dirPortada, 0755, true);
+                }
+
+                $imagen = $request->file('imagen_evento');
+                $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
+                $imagen->move($dirPortada, $nombreImagen);
+                $evento->imagen_evento = "eventos/{$evento->id_evento}/portada/{$nombreImagen}";
             }
+
+            // ✅ Reemplazar QR
             if ($request->hasFile('qr_pago')) {
-                $evento->qr_pago = $request->file('qr_pago')->store("eventos/{$evento->id_evento}/qr", 'public');
+                // Eliminar QR anterior si existe
+                $dirQR = "{$rutaBase}/qr";
+                if (is_dir($dirQR)) {
+                    collect(scandir($dirQR))
+                        ->filter(fn($f) => !in_array($f, ['.', '..']))
+                        ->each(fn($f) => @unlink("{$dirQR}/{$f}"));
+                } else {
+                    mkdir($dirQR, 0755, true);
+                }
+
+                $qr = $request->file('qr_pago');
+                $nombreQR = time() . '_' . $qr->getClientOriginalName();
+                $qr->move($dirQR, $nombreQR);
+                $evento->qr_pago = "eventos/{$evento->id_evento}/qr/{$nombreQR}";
             }
+
 
             $evento->save();
 
+            // 🔁 Expositores
             if ($request->filled('expositores')) {
                 $idsExpositores = $this->procesarExpositores($request->expositores);
                 $evento->expositores()->sync($idsExpositores);
             }
 
-            // Enlaces
+            // 🔁 Enlaces
             if (is_array($request->enlaces)) {
                 $evento->enlaces()->delete(); // Limpieza completa
                 foreach ($request->enlaces as $enlace) {
@@ -243,10 +293,16 @@ class EventoController extends Controller
             }
 
             DB::commit();
-            return response()->json(['message' => 'Evento actualizado correctamente', 'data' => $evento]);
+            return response()->json([
+                'message' => 'Evento actualizado correctamente',
+                'data' => $evento
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Error al actualizar el evento', 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Error al actualizar el evento',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -257,22 +313,34 @@ class EventoController extends Controller
         try {
             $evento = Evento::with('inscripciones')->findOrFail($id);
 
-            // 🔥 Eliminar inscripciones con Eloquent para disparar el deleting
+            // 🔥 Eliminar inscripciones con Eloquent para ejecutar eventos (ej. deleting)
             foreach ($evento->inscripciones as $inscripcion) {
-                $inscripcion->delete(); // Esto ejecuta el hook deleting
+                $inscripcion->delete();
             }
 
-            // Eliminar carpeta de imágenes del evento
-            Storage::deleteDirectory('public/eventos/' . $evento->id_evento);
+            // 🧹 Eliminar carpeta de archivos del evento en public/assets
+            $rutaBase = public_path("assets/eventos/{$evento->id_evento}");
+            if (is_dir($rutaBase)) {
+                collect(scandir($rutaBase))
+                    ->filter(fn($item) => !in_array($item, ['.', '..']))
+                    ->each(function ($folder) use ($rutaBase) {
+                        $subfolderPath = "{$rutaBase}/{$folder}";
+                        if (is_dir($subfolderPath)) {
+                            collect(scandir($subfolderPath))
+                                ->filter(fn($file) => !in_array($file, ['.', '..']))
+                                ->each(fn($f) => @unlink("{$subfolderPath}/{$f}"));
+                            @rmdir($subfolderPath);
+                        }
+                    });
+                @rmdir($rutaBase);
+            }
 
             $evento->delete();
 
             DB::commit();
-
             return response()->json(['message' => 'Evento eliminado correctamente']);
         } catch (\Exception $e) {
             DB::rollBack();
-
             return response()->json([
                 'error' => 'Error al eliminar el evento',
                 'message' => $e->getMessage()
@@ -399,9 +467,15 @@ class EventoController extends Controller
             ->where('id_evento', $id)
             ->get();
 
+        $carrera = Carrera::with(['correos', 'telefonos'])->first();
+        $correo = $carrera?->correos->first()?->correo_carrera ?? '';
+        $telefono = $carrera?->telefonos->first()?->telefono ?? '';
+
         $pdf = Pdf::loadView('pdf.asistentes_evento', [
             'evento' => $evento,
-            'asistentes' => $asistentes
+            'asistentes' => $asistentes,
+            'correo' => $correo,
+            'telefono' => $telefono,
         ])->setPaper('A4', 'portrait');
 
         return $pdf->download("asistentes_{$evento->titulo_evento}.pdf");
@@ -452,11 +526,18 @@ class EventoController extends Controller
         try {
             $evento = Evento::findOrFail($id);
 
-            if (!$evento->qr_pago || !Storage::exists('public/' . $evento->qr_pago)) {
-                return response()->json(['error' => 'QR no encontrado para este evento.'], 404);
+            if (!$evento->qr_pago) {
+                return response()->json(['error' => 'QR no disponible para este evento.'], 404);
             }
 
-            return response()->file(storage_path('app/public/' . $evento->qr_pago));
+            // Obtener ruta absoluta en public/assets
+            $rutaAbsoluta = public_path('assets/' . $evento->qr_pago);
+
+            if (!file_exists($rutaAbsoluta)) {
+                return response()->json(['error' => 'Archivo QR no encontrado.'], 404);
+            }
+
+            return response()->file($rutaAbsoluta);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error al descargar el QR.',

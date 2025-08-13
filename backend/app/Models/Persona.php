@@ -37,7 +37,7 @@ class Persona extends Model
     public function getImagenPersonaUrlAttribute()
     {
         return $this->imagen_persona
-            ? url('storage/' . $this->imagen_persona)
+            ? asset('assets/' . $this->imagen_persona)
             : null;
     }
 }

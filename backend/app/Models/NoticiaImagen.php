@@ -25,7 +25,7 @@ class NoticiaImagen extends Model
     public function getUrlAttribute()
     {
         return $this->ruta_imagen_noticia
-            ? url('storage/' . $this->ruta_imagen_noticia)
+            ? asset('assets/' . $this->ruta_imagen_noticia)
             : null;
     }
 }

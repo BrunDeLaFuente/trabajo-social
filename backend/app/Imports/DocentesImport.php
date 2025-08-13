@@ -7,13 +7,26 @@ use App\Models\PersonaCorreo;
 use App\Models\DocenteAsignatura;
 use App\Models\Asignatura;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
 class DocentesImport implements ToCollection
 {
     public function collection(Collection $rows)
     {
+
+        $docentes = Persona::where('id_tipo_persona', 3)->get();
+
+        foreach ($docentes as $docente) {
+
+            $ruta = public_path("assets/personas/{$docente->id_persona}");
+            if (File::exists($ruta)) {
+                File::deleteDirectory($ruta);
+            }
+
+            $docente->delete();
+        }
+
         foreach ($rows as $index => $row) {
             // Saltar fila de encabezado
             if ($index === 0) continue;

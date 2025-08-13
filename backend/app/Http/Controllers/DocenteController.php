@@ -6,7 +6,7 @@ use App\Models\Persona;
 use App\Models\PersonaCorreo;
 use App\Models\DocenteAsignatura;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use App\Models\Asignatura;
@@ -52,8 +52,10 @@ class DocenteController extends Controller
 
             // Imagen
             if ($request->hasFile('imagen')) {
-                $path = $request->file('imagen')->store("personas/{$persona->id_persona}", 'public');
-                $persona->update(['imagen_persona' => $path]);
+                $nombre = $request->file('imagen')->getClientOriginalName();
+                $destino = public_path("assets/personas/{$persona->id_persona}");
+                $request->file('imagen')->move($destino, $nombre);
+                $persona->update(['imagen_persona' => "personas/{$persona->id_persona}/{$nombre}"]);
             }
 
             // Correos
@@ -106,17 +108,24 @@ class DocenteController extends Controller
                 'cargo' => $request->cargo,
             ]);
 
-            // ✅ Quitar imagen si viene el flag
+            $rutaDestino = public_path("assets/personas/{$persona->id_persona}");
+
+            // ✅ Quitar imagen si se solicita
             if ($request->boolean('quitar_imagen') && $persona->imagen_persona) {
-                Storage::disk('public')->deleteDirectory("personas/{$persona->id_persona}");
+                if (File::exists($rutaDestino)) {
+                    File::deleteDirectory($rutaDestino);
+                }
                 $persona->update(['imagen_persona' => null]);
             }
 
             // ✅ Subir nueva imagen si se envía
             if ($request->hasFile('imagen')) {
-                Storage::disk('public')->deleteDirectory("personas/{$persona->id_persona}");
-                $path = $request->file('imagen')->store("personas/{$persona->id_persona}", 'public');
-                $persona->update(['imagen_persona' => $path]);
+                if (File::exists($rutaDestino)) {
+                    File::deleteDirectory($rutaDestino);
+                }
+                $nombre = $request->file('imagen')->getClientOriginalName();
+                $request->file('imagen')->move($rutaDestino, $nombre);
+                $persona->update(['imagen_persona' => "personas/{$persona->id_persona}/{$nombre}"]);
             }
 
             // 🔄 Reemplazar correos
@@ -152,8 +161,14 @@ class DocenteController extends Controller
     public function destroy($id)
     {
         $persona = Persona::findOrFail($id);
-        Storage::disk('public')->deleteDirectory("personas/{$id}");
+
+        $ruta = public_path("assets/personas/{$id}");
+        if (File::exists($ruta)) {
+            File::deleteDirectory($ruta);
+        }
+
         $persona->delete();
+
         return response()->json(['message' => 'Docente eliminado']);
     }
 

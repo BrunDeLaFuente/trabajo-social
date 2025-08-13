@@ -25,7 +25,7 @@ class NoticiaArchivo extends Model
     public function getUrlAttribute()
     {
         return $this->ruta_archivo
-            ? url('storage/' . $this->ruta_archivo)
+            ? asset('assets/' . $this->ruta_archivo)
             : null;
     }
 }
