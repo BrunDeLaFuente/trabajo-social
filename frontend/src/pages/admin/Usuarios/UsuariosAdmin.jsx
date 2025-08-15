@@ -17,6 +17,9 @@ import {
   ChevronLeft,
   ChevronRight,
   AlertTriangle,
+  Shield,
+  UserCheck,
+  Filter,
 } from "lucide-react";
 import api from "../../../utils/api";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
@@ -27,6 +30,7 @@ export default function UsuariosAdmin() {
   const [filteredUsuarios, setFilteredUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("todos");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -37,6 +41,7 @@ export default function UsuariosAdmin() {
     email: "",
     password: "",
     celular_user: "",
+    is_admin: false,
     notificar: true,
   });
   const [formErrors, setFormErrors] = useState({});
@@ -85,23 +90,34 @@ export default function UsuariosAdmin() {
     fetchData();
   }, []);
 
-  // Filtrar usuarios cuando cambia el término de búsqueda
+  // Filtrar usuarios cuando cambia el término de búsqueda o filtro de rol
   useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setFilteredUsuarios(usuarios);
-    } else {
+    let filtered = usuarios;
+
+    // Filtrar por término de búsqueda
+    if (searchTerm.trim() !== "") {
       const term = searchTerm.toLowerCase();
-      const filtered = usuarios.filter(
+      filtered = filtered.filter(
         (usuario) =>
           usuario.name.toLowerCase().includes(term) ||
           usuario.email.toLowerCase().includes(term) ||
           (usuario.celular_user && usuario.celular_user.includes(term))
       );
-      setFilteredUsuarios(filtered);
     }
+
+    // Filtrar por rol
+    if (roleFilter !== "todos") {
+      if (roleFilter === "admin") {
+        filtered = filtered.filter((usuario) => usuario.is_admin === true);
+      } else if (roleFilter === "colaborador") {
+        filtered = filtered.filter((usuario) => usuario.is_admin === false);
+      }
+    }
+
+    setFilteredUsuarios(filtered);
     setCurrentPage(1);
-    setTotalPages(Math.ceil(filteredUsuarios.length / itemsPerPage));
-  }, [searchTerm, usuarios]);
+    setTotalPages(Math.ceil(filtered.length / itemsPerPage));
+  }, [searchTerm, roleFilter, usuarios]);
 
   // Actualizar total de páginas cuando cambian los resultados filtrados
   useEffect(() => {
@@ -140,6 +156,7 @@ export default function UsuariosAdmin() {
       email: usuario.email,
       password: "",
       celular_user: usuario.celular_user || "",
+      is_admin: usuario.is_admin,
       notificar: true,
     });
     setFormErrors({});
@@ -154,6 +171,7 @@ export default function UsuariosAdmin() {
       email: "",
       password: "",
       celular_user: "",
+      is_admin: false,
       notificar: true,
     });
     setFormErrors({});
@@ -169,6 +187,7 @@ export default function UsuariosAdmin() {
       email: "",
       password: "",
       celular_user: "",
+      is_admin: false,
       notificar: true,
     });
     setFormErrors({});
@@ -188,6 +207,11 @@ export default function UsuariosAdmin() {
           [name]: onlyNumbers,
         });
       }
+    } else if (name === "is_admin") {
+      setFormData({
+        ...formData,
+        [name]: value === "true",
+      });
     } else {
       setFormData({
         ...formData,
@@ -323,6 +347,7 @@ export default function UsuariosAdmin() {
           name: formData.name.trim(),
           email: formData.email.trim(),
           celular_user: formData.celular_user.trim(),
+          is_admin: formData.is_admin,
         };
 
         await api.put(`/usuariosActualizar/${selectedUsuario.id}`, updateData);
@@ -336,6 +361,7 @@ export default function UsuariosAdmin() {
                   name: formData.name.trim(),
                   email: formData.email.trim(),
                   celular_user: formData.celular_user.trim(),
+                  is_admin: formData.is_admin,
                 }
               : u
           )
@@ -352,6 +378,7 @@ export default function UsuariosAdmin() {
           email: formData.email.trim(),
           password: formData.password,
           celular_user: formData.celular_user.trim(),
+          is_admin: formData.is_admin,
           notificar: formData.notificar,
         };
 
@@ -399,17 +426,33 @@ export default function UsuariosAdmin() {
       </Title>
 
       <TopControls>
-        <SearchContainer>
-          <SearchInput
-            type="text"
-            placeholder="Buscar por nombre, correo o celular..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <SearchIcon>
-            <Search size={16} />
-          </SearchIcon>
-        </SearchContainer>
+        <SearchAndFilterContainer>
+          <SearchContainer>
+            <SearchInput
+              type="text"
+              placeholder="Buscar por nombre, correo o celular..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <SearchIcon>
+              <Search size={16} />
+            </SearchIcon>
+          </SearchContainer>
+
+          <FilterContainer>
+            <FilterSelect
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+            >
+              <option value="todos">Todos los roles</option>
+              <option value="admin">Administradores</option>
+              <option value="colaborador">Colaboradores</option>
+            </FilterSelect>
+            <FilterIcon>
+              <Filter size={16} />
+            </FilterIcon>
+          </FilterContainer>
+        </SearchAndFilterContainer>
 
         <AddButton onClick={openAddModal}>
           <Plus size={16} /> Agregar Usuario
@@ -423,7 +466,7 @@ export default function UsuariosAdmin() {
             <TableHeader>
               <TableHeaderCell>Nombre</TableHeaderCell>
               <TableHeaderCell>Correo</TableHeaderCell>
-              <TableHeaderCell>Celular</TableHeaderCell>
+              <TableHeaderCell>Rol</TableHeaderCell>
               <TableHeaderCell>Acciones</TableHeaderCell>
             </TableHeader>
 
@@ -442,8 +485,14 @@ export default function UsuariosAdmin() {
                       {usuario.email}
                     </TableCell>
                     <TableCell>
-                      <Phone size={16} />
-                      {usuario.celular_user || "No especificado"}
+                      <RoleBadge isAdmin={usuario.is_admin}>
+                        {usuario.is_admin ? (
+                          <Shield size={14} />
+                        ) : (
+                          <UserCheck size={14} />
+                        )}
+                        {usuario.is_admin ? "Administrador" : "Colaborador"}
+                      </RoleBadge>
                     </TableCell>
                     <TableCell>
                       <ActionButtons>
@@ -486,6 +535,16 @@ export default function UsuariosAdmin() {
                 <MobileCardItem>
                   <Mail size={16} />
                   {usuario.email}
+                </MobileCardItem>
+                <MobileCardItem>
+                  <RoleBadge isAdmin={usuario.is_admin}>
+                    {usuario.is_admin ? (
+                      <Shield size={14} />
+                    ) : (
+                      <UserCheck size={14} />
+                    )}
+                    {usuario.is_admin ? "Administrador" : "Colaborador"}
+                  </RoleBadge>
                 </MobileCardItem>
                 <MobileCardItem>
                   <Phone size={16} />
@@ -656,6 +715,25 @@ export default function UsuariosAdmin() {
                 )}
               </FormGroup>
 
+              <FormGroup>
+                <Label htmlFor="is_admin">
+                  <Shield size={16} className="inline mr-2" /> Rol *
+                </Label>
+                <Select
+                  id="is_admin"
+                  name="is_admin"
+                  value={formData.is_admin.toString()}
+                  onChange={handleFormChange}
+                  error={formErrors.is_admin}
+                >
+                  <option value="false">Colaborador</option>
+                  <option value="true">Administrador</option>
+                </Select>
+                {formErrors.is_admin && (
+                  <ErrorMessage>{formErrors.is_admin}</ErrorMessage>
+                )}
+              </FormGroup>
+
               {/* Contraseña (solo al crear) */}
               {!selectedUsuario && (
                 <FormGroup>
@@ -747,7 +825,6 @@ export default function UsuariosAdmin() {
 }
 
 // Animaciones
-
 const slideUp = keyframes`
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
@@ -758,6 +835,7 @@ const fadeIn = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
+// Styled Components
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -807,11 +885,22 @@ const TopControls = styled.div`
   }
 `;
 
+const SearchAndFilterContainer = styled.div`
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  min-width: 200px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
 const SearchContainer = styled.div`
   position: relative;
   flex: 1;
   min-width: 200px;
-  width: 100%;
 `;
 
 const SearchInput = styled.input`
@@ -830,6 +919,37 @@ const SearchInput = styled.input`
 `;
 
 const SearchIcon = styled.div`
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  pointer-events: none;
+`;
+
+const FilterContainer = styled.div`
+  position: relative;
+  min-width: 150px;
+`;
+
+const FilterSelect = styled.select`
+  width: 100%;
+  padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  }
+`;
+
+const FilterIcon = styled.div`
   position: absolute;
   left: 0.75rem;
   top: 50%;
@@ -884,7 +1004,7 @@ const TableContainer = styled.div`
 
 const Table = styled.div`
   width: 100%;
-  min-width: 650px; /* Ancho mínimo para evitar que se comprima demasiado */
+  min-width: 650px;
 `;
 
 const TableHeader = styled.div`
@@ -938,6 +1058,19 @@ const TableCell = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`;
+
+const RoleBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: ${(props) => (props.isAdmin ? "#dbeafe" : "#f0fdf4")};
+  color: ${(props) => (props.isAdmin ? "#1e40af" : "#166534")};
+  border: 1px solid ${(props) => (props.isAdmin ? "#93c5fd" : "#bbf7d0")};
 `;
 
 const ActionButtons = styled.div`
@@ -1111,6 +1244,23 @@ const Input = styled.input`
   border: 1px solid ${(props) => (props.error ? "#ef4444" : "#d1d5db")};
   border-radius: 0.375rem;
   font-size: 0.875rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  }
+`;
+
+const Select = styled.select`
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid ${(props) => (props.error ? "#ef4444" : "#d1d5db")};
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background-color: white;
+  cursor: pointer;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
   &:focus {

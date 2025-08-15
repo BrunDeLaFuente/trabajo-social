@@ -134,7 +134,7 @@ Route::middleware(['jwt.auth'])->group(function () {
 
 
 Route::middleware(['jwt.auth', 'admin'])->group(function () {
-    Route::get('/usuarios', [UserController::class, 'indexColaboradores']);
+    Route::get('/usuarios', [UserController::class, 'index']);
     Route::post('/usuariosCrear', [UserController::class, 'store']);
     Route::match(['PUT', 'POST'], '/usuariosActualizar/{id}', [UserController::class, 'update']);
     Route::delete('/usuariosEliminar/{id}', [UserController::class, 'destroy']);

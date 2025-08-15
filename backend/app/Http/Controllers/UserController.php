@@ -31,6 +31,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6',
             'celular_user' => 'nullable|digits:8',
+            'is_admin' => 'boolean',
             'notificar' => 'boolean'
         ]);
 
@@ -42,11 +43,11 @@ class UserController extends Controller
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'celular_user' => $validated['celular_user'],
-                'is_admin' => false,
+                'is_admin' => $validated['is_admin'],
             ]);
 
             if ($request->boolean('notificar')) {
-                Mail::to($user->email)->send(new NotificarPassword($user->name, $user->email, $request->password));
+                Mail::to($user->email)->send(new NotificarPassword($user->name, $user->email, $user->is_admin, $request->password));
             }
 
             DB::commit();
@@ -65,6 +66,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'celular_user' => 'nullable|digits:8',
+            'is_admin' => 'boolean',
         ]);
 
         $user->update($validated);

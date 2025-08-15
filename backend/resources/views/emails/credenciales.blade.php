@@ -68,7 +68,8 @@
 
         <h2>Hola, {{ $nombre }}</h2>
 
-        <p>Has sido registrado como <strong>Colaborador</strong> en el sistema web de Trabajo Social.</p>
+        <p>Has sido registrado como <strong>{{ $rol ? 'Administrador' : 'Colaborador' }}</strong> en el sistema web de
+            Trabajo Social.</p>
 
         <p>
             <strong>Correo:</strong> {{ $correo }}<br>
